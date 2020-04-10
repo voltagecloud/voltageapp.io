@@ -30,6 +30,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/composition'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -76,11 +77,11 @@ export default {
   /*
   ** Build configuration
   */
-  build: {
-    /*
-    ** You can extend webpack config here
-    */
-    extend (config, ctx) {
-    }
-  }
+  // build: {
+  //   /*
+  //   ** You can extend webpack config here
+  //   */
+  //   extend (config, ctx) {
+  //   }
+  // }
 }
