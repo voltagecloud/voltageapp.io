@@ -28,7 +28,7 @@
       "@nuxt/types",
       "@nuxtjs/axios",
       "vuetify",
-      "aws-amplify"
+      "aws-amplify",
     ]
   },
   "exclude": [

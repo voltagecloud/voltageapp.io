@@ -10,7 +10,7 @@ export default class AuthModule extends VuexModule {
     user?: CognitoUser = undefined
 
     @Mutation
-    SET_USER (user: CognitoUser) {
+    SET_USER (user?: CognitoUser) {
         this.user = user
     }
 }

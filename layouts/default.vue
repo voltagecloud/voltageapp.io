@@ -146,12 +146,18 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive } from '@vue/composition-api'
+import useAuthentication from '~/compositions/useAuthentication'
+
+
+
 
 export default defineComponent({
   setup (_, { root: { $router }}) {
 
-    const CoreFooter = () => import('~/components/core/Footer')
-    const ErrorSnackbar = () => import('~/components/core/ErrorSnackbar')
+    const CoreFooter = () => import('~/components/core/Footer.vue')
+    const ErrorSnackbar = () => import('~/components/core/ErrorSnackbar.vue')
+
+    const { logout } = useAuthentication()
 
     const showDrawer = ref(null)
 
@@ -170,10 +176,16 @@ export default defineComponent({
       {
         title: 'Logout',
         icon: 'mdi-logout',
-        fct: () => this.logout()
+        fct: logout
       }
     ])
 
+    return {
+      CoreFooter,
+      ErrorSnackbar,
+      bottomItems,
+      showDrawer
+    }
   }
 })
 

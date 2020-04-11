@@ -1,6 +1,6 @@
 import { authStore } from '~/store'
 import { layoutStore } from '~/store'
-import { Auth } from 'aws-amplify'
+import { Auth } from '@aws-amplify/auth'
 
 export default function useAuthentication () {
     async function login (email: string, password:string) {
@@ -22,21 +22,15 @@ export default function useAuthentication () {
             const user = await Auth.currentAuthenticatedUser()
             authStore.SET_USER(user)
         } catch (error) {
-            authStore.SET_USER(null)
+            authStore.SET_USER(undefined)
             layoutStore.SET_ERROR(error)
         }
     }
 
     async function logout () {
         await Auth.signOut()
-        authStore.SET_USER(null)
+        authStore.SET_USER(undefined)
         return true
-    }
-
-    async function refresh () {
-        const creds = await Auth.currentCredentials()
-        authStore.SET_USER(creds)
-        return creds
     }
 
     async function resend (email: string) {
@@ -52,7 +46,6 @@ export default function useAuthentication () {
         register,
         load,
         logout,
-        refresh,
         resend,
         confirm
     }

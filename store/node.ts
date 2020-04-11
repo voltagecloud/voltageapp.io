@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { IDName } from '~/types/api'
+import { IDName, Node } from '~/types/api'
 
 
 @Module({
@@ -15,5 +15,7 @@ export default class NodeModule extends VuexModule {
     testnetAvailable = 0
     testnetNodeIDName: IDName[] = []
     
+    nodes: Node[] = []
 
+    
 }
