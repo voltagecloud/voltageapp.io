@@ -8,7 +8,7 @@ export default ({ $axios, store }: Context) => {
         //     config.headers.common.Authorization = `Bearer ${auth}`
         // }
         if (!!authStore.user) {
-            const access = authStore.user.getSignInUserSession()?.getAccessToken()
+            const access = authStore.user.getSignInUserSession()?.getAccessToken()?.getJwtToken()
             console.log({ access })
             config.headers.common.Authorization = `Bearer ${access}`
         }
