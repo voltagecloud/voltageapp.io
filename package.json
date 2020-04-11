@@ -16,6 +16,7 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
     "@vue/composition-api": "^0.5.0",
+    "aws-amplify": "^3.0.7",
     "nuxt": "^2.0.0",
     "vuex-module-decorators": "^0.16.1"
   },

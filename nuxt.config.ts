@@ -30,7 +30,9 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/composition'
+    '~/plugins/composition',
+    '~/plugins/amplify',
+    '~/plugins/axios'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -52,6 +54,10 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    browserBaseURL: 'https://jl1csxxjw9.execute-api.us-west-2.amazonaws.com/',
+    https: true,
+    progress: true,
+    debug: true
   },
   /*
   ** vuetify module configuration
@@ -59,15 +65,30 @@ export default {
   */
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    treeShake: true,
+    options: {
+      customProperties: true
+    },
     theme: {
-      dark: true,
+      dark: false,
       themes: {
+        light: {
+          primary: '#EF820D',
+          secondary: '#fff4e3',
+          accent: '#ffcdab',
+          info: '#ffa45c',
+          warning: '#5d5d5a',
+          highlight: '#b31e6f',
+          error: '#b31e6f',
+          success: colors.green.accent3
+        },
         dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
+          primary: '#EF820D',
+          secondary: '#f6ea8c',
+          accent: '#f26d5b',
+          info: '#c03546',
+          warning: '#492540',
+          highlight: '#b31e6f',
           error: colors.deepOrange.accent4,
           success: colors.green.accent3
         }
