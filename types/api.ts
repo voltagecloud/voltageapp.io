@@ -6,19 +6,19 @@ export interface IDName {
 }
 
 export enum NodeStatus {
-    creating,
-    running,
-    failed,
-    unknown,
-    stopped,
-    stopping,
-    deleted,
-    expired
+    creating = 'creating',
+    running = 'running',
+    failed = 'failed',
+    unknown ='unknown',
+    stopped = 'stopped',
+    stopping = 'stopping',
+    deleted = 'deleted',
+    expired = 'expired'
 }
 
 export enum Network {
-    testnet,
-    mainnet
+    testnet = 'testnet',
+    mainnet = 'mainnet'
 }
 
 export interface Settings {
