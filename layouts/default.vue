@@ -34,7 +34,7 @@
           class="mt-12"
         >
           <v-list-item
-            v-for="item in navItems2"
+            v-for="item in bottomItems"
             :key="item.title"
             @click="item.fct()"
           >
@@ -107,7 +107,7 @@
               color="primary"
               overlap
             >
-              <template v-slot:badge>
+              <template v-slot:badge v-if="notifications.length">
                 <span>{{ notifications.length }}</span>
               </template>
               <v-icon>mdi-bell</v-icon>
@@ -145,18 +145,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from '@vue/composition-api'
+import { defineComponent, ref, reactive, computed } from '@vue/composition-api'
 import useAuthentication from '~/compositions/useAuthentication'
-
-
-
+import { layoutStore, nodeStore } from '../store'
 
 export default defineComponent({
+  components: {
+    CoreFooter: () => import('~/components/core/Footer.vue'),
+    ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
+  },
   setup (_, { root: { $router }}) {
-
-    const CoreFooter = () => import('~/components/core/Footer.vue')
-    const ErrorSnackbar = () => import('~/components/core/ErrorSnackbar.vue')
-
     const { logout } = useAuthentication()
 
     const showDrawer = ref(null)
@@ -180,11 +178,18 @@ export default defineComponent({
       }
     ])
 
+    const notifications = computed(() => layoutStore.notifications)
+
+    const testnetNodes = computed(() => nodeStore.testnetNodes)
+
+    const appBarTitle = computed(() => layoutStore.appBarTitle)
+
     return {
-      CoreFooter,
-      ErrorSnackbar,
       bottomItems,
-      showDrawer
+      showDrawer,
+      notifications,
+      testnetNodes,
+      appBarTitle
     }
   }
 })

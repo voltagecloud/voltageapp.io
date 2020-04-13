@@ -2,7 +2,7 @@ import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { CognitoUser } from '@aws-amplify/auth'
 
 @Module({
-    name: 'layout',
+    name: 'auth',
     stateFactory: true,
     namespaced: true
 })

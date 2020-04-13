@@ -1,8 +1,6 @@
-import { Auth } from '@aws-amplify/auth'
-import { AuthClass } from '@aws-amplify/auth/lib-esm/Auth'
+import Auth from '@aws-amplify/auth'
 
-
-export default new AuthClass({
+Auth.configure({
     region: 'us-west-2',
     userPoolId: 'us-west-2_CsBYOdrrb',
     userPoolWebClientId: 't0g17c8gua069cfq02hd83lfk'

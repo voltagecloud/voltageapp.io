@@ -1,5 +1,10 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 
+interface Notifications {
+    title: string
+    to: string
+}
+
 @Module({
     name: 'layout',
     stateFactory: true,
@@ -8,6 +13,7 @@ import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 export default class LayoutModule extends VuexModule {
     appBarTitle = 'Dashboard'
     error = ''
+    notifications: Notification[] = []
 
     @Mutation
     SET_TITLE (title: string) {

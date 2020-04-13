@@ -1,5 +1,6 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { IDName, Node, Network } from '~/types/api'
+import { IDName, Network } from '~/types/api'
+import { Node } from '~/types/apiResponse'
 
 interface AvailablePayload {
     network: Network
