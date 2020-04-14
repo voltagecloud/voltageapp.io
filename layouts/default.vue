@@ -147,7 +147,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from '@vue/composition-api'
 import useAuthentication from '~/compositions/useAuthentication'
-import { layoutStore, nodeStore } from '../store'
+import { layoutStore, nodeStore } from '~/store'
 
 export default defineComponent({
   components: {

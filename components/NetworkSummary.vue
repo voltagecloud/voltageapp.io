@@ -97,7 +97,7 @@ export default defineComponent({
 
     const capitalized = computed(() => props.network.charAt(0).toUpperCase() + props.network.slice(1))
 
-    const numNodes = computed(() => nodeStore[`num${capitalized}Nodes`])
+    const numNodes = computed(() => nodeStore[`${props.network}Nodes`].length)
 
     const available = computed(() => nodeStore[`${props.network}Available`])
 

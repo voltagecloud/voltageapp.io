@@ -8,6 +8,7 @@ export default async ({ route, redirect }: Context) => {
         await load()
     }
     if (!authStore.user) {
+        console.log('redirect')
         return redirect('/login')
     }
 }

@@ -14,6 +14,7 @@
     "strict": true,
     "noEmit": true,
     "experimentalDecorators": true,
+    "importHelpers": true,
     "baseUrl": ".",
     "paths": {
       "~/*": [
@@ -29,6 +30,9 @@
       "@nuxtjs/axios",
       "vuetify",
       "aws-amplify",
+    ],
+    "typeRoots": [
+      "./types"
     ]
   },
   "exclude": [
