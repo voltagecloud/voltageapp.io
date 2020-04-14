@@ -1,6 +1,7 @@
 import { Context } from '@nuxt/types'
-import { createStore, nodeStore } from '~/store'
+import { createStore, nodeStore, layoutStore } from '~/store'
 import { NodeSeed, Node } from '~/types/apiResponse'
+import { Settings } from '~/types/api'
 
 export default function useNodeApi ({ $axios }: Context) {
     async function generateSeed () {
@@ -35,5 +36,29 @@ export default function useNodeApi ({ $axios }: Context) {
             }]
         })
         return node
+    }
+
+    async function postNode (id:string) {
+        const node = await $axios.post<Node>('/node', {
+            node_id: id
+        })
+        nodeStore.UPDATE_NODES(node.data)
+        createStore.HYDRATE_SETTINGS(node.data.settings)
+        return node.data
+    }
+
+    async function updateSettings (id: string, settings: Settings) {
+        const res = await $axios.post('/node/settings',{
+            node_id: id,
+            settings
+        })
+        nodeStore.UPDATE_NODES(res.data)
+    }
+
+    return {
+        generateSeed,
+        createNode,
+        postNode,
+        updateSettings
     }
 }

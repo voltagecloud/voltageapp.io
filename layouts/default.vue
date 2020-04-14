@@ -14,7 +14,7 @@
           v-for="obj in testnetNodes"
           :key="obj.node_id"
           link
-          @click="$router.push(`/nodes/${obj.node_id}`)"
+          @click="$router.push(`/node/${obj.node_id}`)"
         >
           <v-list-item-action v-if="false">
             <v-icon>{{ }}</v-icon>
