@@ -16,6 +16,6 @@ export interface Node {
     status: NodeStatus
     network: Network
     expires: string
-    created: string
+    creation_date: string
     settings: Settings
 }

@@ -2,89 +2,91 @@
   <v-container>
     <v-row>
       <v-col>
-        <material-card>
-          <template v-slot:heading>
-            <h2 class="text-uppercase font-weight-light">
-              {{ node.node_name }} -- {{ node.network }}
-            </h2>
-          </template>
-          <template v:slot:after-heading>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="py-0"
-                >
-                  <v-list
-                    flat
-                    dense
+        <v-fade-transition>
+          <material-card v-if="node">
+            <template v-slot:heading>
+              <h2 class="text-uppercase font-weight-light">
+                {{ node.node_name }} -- {{ node.network }}
+              </h2>
+            </template>
+            <template v:slot:after-heading>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="8"
                     class="py-0"
                   >
-                    <v-list-item >
-                      Status: {{ node.status }}
-                    </v-list-item>
-                    <v-list-item>
-                      Public key: {{ node.public_key }}
-                    </v-list-item>
-                    <v-list-item>
-                      Tor Address: {{ node.onion_address }}
-                    </v-list-item>
-                    <v-list-item>
-                      Created: {{ node.created }}
-                    </v-list-item>
-                    <v-list-item v-if="isTestnet">
-                      Expires: {{ node.expires }}
-                    </v-list-item>
-                    <v-list-item>
-                      API Endpoint: {{ node.api_endpoint }}
-                    </v-list-item>
-                  </v-list>
-                </v-col>
-                <v-col>
-                  <v-row justify="start" justify-md="center" class="pl-6 pl-md-0">
-                    <div>
-                      <v-switch
-                        v-model="autopilot"
-                        label="autopilot"
-                        inset
-                        color="highlight"
-                      ></v-switch>
-                      <v-switch
-                        v-model="grpc"
-                        label="grpc"
-                        inset
-                        color="highlight"
-                      ></v-switch>
-                      <v-switch
-                        v-model="rest"
-                        label="rest"
-                        inset
-                        color="highlight"
-                      ></v-switch>
-                      <v-switch
-                        v-model="tor"
-                        label="tor"
-                        inset
-                        color="highlight"
-                      ></v-switch>
-                    </div>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-container>
-          </template>
-          <template v-slot:actions>
-            <v-container>
-              <v-btn
-                @click="update"
-                color="accent"
-                class="warning--text"
-                :loading="loading"
-              >Save settings</v-btn>
-            </v-container>
-          </template>
-        </material-card>
+                    <v-list
+                      flat
+                      dense
+                      class="py-0"
+                    >
+                      <v-list-item >
+                        Status: {{ node.status }}
+                      </v-list-item>
+                      <v-list-item>
+                        Public key: {{ node.public_key }}
+                      </v-list-item>
+                      <v-list-item>
+                        Tor Address: {{ node.onion_address }}
+                      </v-list-item>
+                      <v-list-item>
+                        Created: {{ node.creation_date }}
+                      </v-list-item>
+                      <v-list-item v-if="isTestnet">
+                        Expires: {{ node.expires }}
+                      </v-list-item>
+                      <v-list-item>
+                        API Endpoint: {{ node.api_endpoint }}
+                      </v-list-item>
+                    </v-list>
+                  </v-col>
+                  <v-col>
+                    <v-row justify="start" justify-md="center" class="pl-6 pl-md-0">
+                      <div>
+                        <v-switch
+                          v-model="autopilot"
+                          label="autopilot"
+                          inset
+                          color="highlight"
+                        ></v-switch>
+                        <v-switch
+                          v-model="grpc"
+                          label="grpc"
+                          inset
+                          color="highlight"
+                        ></v-switch>
+                        <v-switch
+                          v-model="rest"
+                          label="rest"
+                          inset
+                          color="highlight"
+                        ></v-switch>
+                        <v-switch
+                          v-model="tor"
+                          label="tor"
+                          inset
+                          color="highlight"
+                        ></v-switch>
+                      </div>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </template>
+            <template v-slot:actions>
+              <v-container>
+                <v-btn
+                  @click="update"
+                  color="accent"
+                  class="warning--text"
+                  :loading="loading"
+                >Save settings</v-btn>
+              </v-container>
+            </template>
+          </material-card>
+        </v-fade-transition>
       </v-col>
     </v-row>
   </v-container>
@@ -137,7 +139,6 @@ export default defineComponent({
     const node = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID)[0])
 
     const isTestnet = computed(() => node.value.network === 'testnet')
-
 
     async function update() {
       loading.value = true
