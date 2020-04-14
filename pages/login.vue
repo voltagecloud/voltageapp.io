@@ -67,8 +67,7 @@ export default defineComponent({
 
     async function login () {
       try {
-        console.log({ email, password })
-        await dispatchLogin(email.value, password.value)
+        const user = await dispatchLogin(email.value, password.value)
         $router.push('/')
       } catch (error) {
         console.log({ error })

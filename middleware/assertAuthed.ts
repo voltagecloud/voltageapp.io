@@ -1,14 +1,15 @@
 import { authStore } from '~/store'
-import { Context } from '@nuxt/types'
+import { Context, Middleware } from '@nuxt/types'
 import useAuthentication from '~/compositions/useAuthentication'
 
-export default async ({ route, redirect }: Context) => {
+const assertAuthed: Middleware = async ({ redirect }: Context) => {
     if (!authStore.user) {
         const { load } = useAuthentication()
         await load()
     }
     if (!authStore.user) {
-        console.log('redirect')
         return redirect('/login')
     }
 }
+
+export default assertAuthed

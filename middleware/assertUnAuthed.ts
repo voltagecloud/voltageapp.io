@@ -5,10 +5,9 @@ import useAuthentication from '~/compositions/useAuthentication'
 export default async ({ route, redirect }: Context) => {
     if (!authStore.user) {
         const { load } = useAuthentication()
-        await load()
+        const user = await load()
     }
     if (!!authStore.user) {
-        console.log('redirect')
         return redirect('/')
     }
 }

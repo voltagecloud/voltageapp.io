@@ -7,10 +7,10 @@ import { CognitoUser } from '@aws-amplify/auth'
     namespaced: true
 })
 export default class AuthModule extends VuexModule {
-    user?: CognitoUser = undefined
+    user: CognitoUser | null = null
 
     @Mutation
-    SET_USER (user?: CognitoUser) {
+    SET_USER (user: CognitoUser | null) {
         this.user = user
     }
 }

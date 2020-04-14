@@ -21,15 +21,16 @@ export default function useAuthentication () {
         try {
             const user = await Auth.currentAuthenticatedUser()
             authStore.SET_USER(user)
+            return user
         } catch (error) {
-            authStore.SET_USER(undefined)
+            authStore.SET_USER(null)
             layoutStore.SET_ERROR(error)
         }
     }
 
     async function logout () {
         await Auth.signOut()
-        authStore.SET_USER(undefined)
+        authStore.SET_USER(null)
         return true
     }
 
