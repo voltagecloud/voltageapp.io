@@ -1,8 +1,8 @@
 import { Address4, Address6 } from 'ip-address'
 
 export interface IDName {
-    id: string
-    name: string
+    node_id: string
+    node_name: string
 }
 
 export enum NodeStatus {

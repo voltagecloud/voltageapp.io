@@ -17,13 +17,13 @@
               >
                 <v-text-field
                   v-model="email"
-                  :rules="emailRules"
+                  :rules="[required, validEmail]"
                   label="Email"
                   required
                 />
                 <v-text-field
                   v-model="password"
-                  :rules="passwordRules"
+                  :rules="[char6]"
                   label="Password"
                   :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showPassword ? 'text' : 'password'"
@@ -51,7 +51,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import useAuthForm from '~/compositions/useAuthForm'
+import useFormValidation from '~/compositions/useFormValidation'
 import useAuthentication from '~/compositions/useAuthentication'
 
 export default defineComponent({
@@ -62,7 +62,7 @@ export default defineComponent({
     BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
   },
   setup (_, { root: { $router }}) {
-    const { valid, email, password, emailRules, passwordRules, showPassword } = useAuthForm()
+    const { valid, email, password, required, validEmail, char6, showPassword } = useFormValidation()
     const { login: dispatchLogin } = useAuthentication()
 
     async function login () {
@@ -78,8 +78,9 @@ export default defineComponent({
       valid,
       email,
       password,
-      emailRules,
-      passwordRules,
+      required,
+      validEmail,
+      char6,
       login,
       showPassword
     }

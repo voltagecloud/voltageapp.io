@@ -78,7 +78,7 @@
             <template v-slot:actions>
               <v-container>
                 <v-btn
-                  @click="update"
+                  @click="updateSettings(params.id, settings)"
                   color="accent"
                   class="warning--text"
                   :loading="loading"
@@ -110,8 +110,7 @@ export default defineComponent({
   },
   setup (_, { root }) {
     const nodeID = root.$nuxt.context.params.id
-    const { updateSettings } = useNodeApi(root.$nuxt.context)
-    const loading = ref(false)
+    const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
 
     const settings = computed(() => createStore.settings)
 
@@ -140,11 +139,6 @@ export default defineComponent({
 
     const isTestnet = computed(() => node.value.network === 'testnet')
 
-    async function update() {
-      loading.value = true
-      await updateSettings(nodeID, settings.value)
-      loading.value = false
-    }
 
     return {
       loading,
@@ -154,7 +148,8 @@ export default defineComponent({
       tor,
       node,
       isTestnet,
-      update
+      updateSettings,
+      settings
     }
   }
 })

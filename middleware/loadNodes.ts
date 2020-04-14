@@ -5,7 +5,8 @@ import { Network } from '~/types/api'
 const loadNodes: Middleware = async ({ store, $axios }: Context) => {
     const testnetUnloaded = nodeStore.testnetNodeIDName.length === 0
     const mainUnloaded = nodeStore.mainnetNodeIDName.length === 0
-    if (!!authStore.user && testnetUnloaded || mainUnloaded) {
+    if (!!authStore.user && testnetUnloaded && mainUnloaded) {
+        console.log('loading nodes from /user')
         try {
             const userRes = await $axios.get('/user')
             console.log({ userRes })
