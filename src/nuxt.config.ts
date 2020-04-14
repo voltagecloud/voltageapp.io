@@ -1,7 +1,12 @@
+import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
   mode: 'spa',
+  server: {
+    host: '0.0.0.0',
+    port: '3000'
+  },
   /*
   ** Headers of the page
   */
@@ -106,4 +111,4 @@ export default {
   //   extend (config, ctx) {
   //   }
   // }
-}
+} as Configuration

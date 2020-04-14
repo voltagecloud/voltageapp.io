@@ -5,10 +5,10 @@
   "author": "Sean Aye",
   "private": true,
   "scripts": {
-    "dev": "nuxt-ts",
-    "build": "nuxt-ts build",
-    "generate": "nuxt-ts generate",
-    "start": "nuxt-ts start",
+    "dev": "nuxt-ts src",
+    "build": "nuxt-ts build src",
+    "generate": "nuxt-ts generate src",
+    "start": "nuxt-ts start src",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {

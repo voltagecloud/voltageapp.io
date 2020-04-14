@@ -180,7 +180,7 @@ export default defineComponent({
 
     const notifications = computed(() => layoutStore.notifications)
 
-    const testnetNodes = computed(() => nodeStore.testnetNodes)
+    const testnetNodes = computed(() => nodeStore.testnetNodeIDName)
 
     const appBarTitle = computed(() => layoutStore.appBarTitle)
 
