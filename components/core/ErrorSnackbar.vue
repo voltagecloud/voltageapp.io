@@ -10,7 +10,7 @@
       color="red"
       text
       @click="error = ''"
-    />
+    >Dismiss</v-btn>
   </v-snackbar>
 </template>
 <script lang="ts">

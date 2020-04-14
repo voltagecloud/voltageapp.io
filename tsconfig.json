@@ -30,9 +30,6 @@
       "@nuxtjs/axios",
       "vuetify",
       "@aws-amplify/auth",
-    ],
-    "typeRoots": [
-      "./types"
     ]
   },
   "exclude": [

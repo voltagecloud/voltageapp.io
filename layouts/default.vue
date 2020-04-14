@@ -174,7 +174,10 @@ export default defineComponent({
       {
         title: 'Logout',
         icon: 'mdi-logout',
-        fct: logout
+        fct: async () => {
+          await logout()
+          $router.push('/login')
+        }
       }
     ])
 

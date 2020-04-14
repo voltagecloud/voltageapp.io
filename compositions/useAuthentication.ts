@@ -23,6 +23,7 @@ export default function useAuthentication () {
             authStore.SET_USER(user)
             return user
         } catch (error) {
+            console.log({ error })
             authStore.SET_USER(null)
             layoutStore.SET_ERROR(error)
         }
