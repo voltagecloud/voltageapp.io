@@ -68,7 +68,26 @@
                           | {{ item }}
             template(v-slot:actions)
               v-container
-                v-btn.warning--text(@click='updateSettings(nodeID, settings)' color='accent' :loading='loading') Save settings
+                v-row(justify="space-between")
+                  v-btn.warning--text(@click='updateSettings(nodeID, settings)' color='accent' :loading='loading') Save settings
+                  v-dialog(width="500")
+                    template(v-slot:activator="{ on }")
+                      v-btn(v-on="on" color="red") Delete Node
+                    v-card
+                      v-card-title
+                        | Delete Node
+                      v-card-text.pb-0
+                        | Are you sure you wish to delete this node? The node data will be lost forever. Type 
+                        span.font-weight-bold
+                          | {{ node.node_name }} 
+                        | to confirm
+                      v-card-actions
+                        v-row
+                          v-col(cols="12")
+                            v-text-field(v-model="confirm" :placeholder="node.node_name").mx-5
+                          v-col(cols="12")
+                            v-btn(:disabled="confirm !== node.node_name" @click="delNode" color="red").ml-5 Delete
+
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, set } from '@vue/composition-api'
@@ -81,7 +100,7 @@ import { Address4, Address6 } from 'ip-address'
 export default defineComponent({
   middleware: ['assertAuthed', 'loadNodes'],
   async fetch (context: Context) {
-    const { postNode } = useNodeApi(context)
+    const { postNode, deleteNode } = useNodeApi(context)
     const nodeData = await postNode(context.params.id)
     layoutStore.SET_TITLE(nodeData['node_name']?.toUpperCase())
   },
@@ -91,9 +110,10 @@ export default defineComponent({
   },
   setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
-    const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
+    const { updateSettings, loading, deleteNode } = useNodeApi(root.$nuxt.context)
 
     const settings = computed(() => createStore.settings)
+
 
     // init computed setters for state
     const autopilot = computed({
@@ -129,6 +149,12 @@ export default defineComponent({
 
     const isTestnet = computed(() => node.value.network === 'testnet')
 
+    const confirm = ref('')
+
+    async function delNode () {
+      await deleteNode(node.value.node_id, node.value.network)
+      root.$router.push('/')
+    }
 
     return {
       loading,
@@ -142,7 +168,9 @@ export default defineComponent({
       updateSettings,
       settings,
       nodeID,
-      remove
+      remove,
+      confirm,
+      delNode
     }
   }
 })

@@ -63,8 +63,17 @@ export default function useNodeApi ({ $axios }: Context) {
             node_id: id,
             settings
         })
-        loading.value = false
         nodeStore.UPDATE_NODES(res.data)
+        loading.value = false
+        return res
+    }
+
+    async function deleteNode (id: string, network: Network) {
+        loading.value = true
+        const res = await $axios.post('/node/delete', { node_id: id })
+        nodeStore.PURGE_NODE({ id, network })
+        loading.value = false
+        return res
     }
 
     return {
@@ -72,6 +81,7 @@ export default function useNodeApi ({ $axios }: Context) {
         createNode,
         postNode,
         updateSettings,
+        deleteNode,
         loading
     }
 }
