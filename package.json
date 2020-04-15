@@ -29,6 +29,8 @@
     "@nuxtjs/vuetify": "^1.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.1.0",
-    "eslint-plugin-nuxt": ">=0.4.2"
+    "eslint-plugin-nuxt": ">=0.4.2",
+    "pug": "^2.0.4",
+    "pug-plain-loader": "^1.0.0"
   }
 }
