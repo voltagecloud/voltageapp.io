@@ -35,6 +35,7 @@
                   color="primary"
                   light
                   class="mr-4"
+                  :loading="loading"
                 >
                   <span style="color: black;">Login</span>
                 </v-btn>
@@ -63,7 +64,7 @@ export default defineComponent({
   },
   setup (_, { root: { $router }}) {
     const { valid, email, password, required, validEmail, char6, showPassword } = useFormValidation()
-    const { login: dispatchLogin } = useAuthentication()
+    const { login: dispatchLogin, loading } = useAuthentication()
 
     async function login () {
       try {
@@ -82,7 +83,8 @@ export default defineComponent({
       validEmail,
       char6,
       login,
-      showPassword
+      showPassword,
+      loading
     }
   }
 })
