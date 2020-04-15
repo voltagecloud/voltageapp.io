@@ -14,7 +14,6 @@ export default class CreateModule extends VuexModule {
         autopilot: true,
         grpc: true,
         rest: false,
-        watchtower_client: false,
         tor: false,
         whitelist: []
     }

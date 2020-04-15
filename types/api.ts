@@ -26,6 +26,5 @@ export interface Settings {
     grpc: Boolean
     rest: Boolean
     tor: Boolean
-    watchtower_client: Boolean
-    whitelist: Address4 | Address6 []
+    whitelist: Array<Address4|Address6>
 }

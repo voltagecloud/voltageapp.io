@@ -47,12 +47,6 @@
                 inset
               />
               <v-switch
-                v-model="settings['watchtower_client']"
-                label="Watchtower"
-                color="highlight"
-                inset
-              />
-              <v-switch
                 v-model="settings.tor"
                 label="Tor"
                 color="highlight"

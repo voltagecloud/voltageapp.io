@@ -1,101 +1,81 @@
-<template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <v-fade-transition>
-          <material-card v-if="node">
-            <template v-slot:heading>
-              <h2 class="text-uppercase font-weight-light">
-                {{ node.node_name }} -- {{ node.network }}
-              </h2>
-            </template>
-            <template v:slot:after-heading>
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="py-0"
-                  >
-                    <v-list
-                      flat
-                      dense
-                      class="py-0"
-                    >
-                      <v-list-item >
-                        Status: {{ node.status }}
-                      </v-list-item>
-                      <v-list-item>
-                        Public key: {{ node.public_key }}
-                      </v-list-item>
-                      <v-list-item>
-                        Tor Address: {{ node.onion_address }}
-                      </v-list-item>
-                      <v-list-item>
-                        Created: {{ node.creation_date }}
-                      </v-list-item>
-                      <v-list-item v-if="isTestnet">
-                        Expires: {{ node.expires }}
-                      </v-list-item>
-                      <v-list-item>
-                        API Endpoint: {{ node.api_endpoint }}
-                      </v-list-item>
-                    </v-list>
-                  </v-col>
-                  <v-col>
-                    <v-row justify="start" justify-md="center" class="pl-6 pl-md-0">
-                      <div>
-                        <v-switch
-                          v-model="autopilot"
-                          label="autopilot"
-                          inset
-                          color="highlight"
-                        ></v-switch>
-                        <v-switch
-                          v-model="grpc"
-                          label="grpc"
-                          inset
-                          color="highlight"
-                        ></v-switch>
-                        <v-switch
-                          v-model="rest"
-                          label="rest"
-                          inset
-                          color="highlight"
-                        ></v-switch>
-                        <v-switch
-                          v-model="tor"
-                          label="tor"
-                          inset
-                          color="highlight"
-                        ></v-switch>
-                      </div>
-                    </v-row>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </template>
-            <template v-slot:actions>
-              <v-container>
-                <v-btn
-                  @click="updateSettings(params.id, settings)"
-                  color="accent"
-                  class="warning--text"
-                  :loading="loading"
-                >Save settings</v-btn>
-              </v-container>
-            </template>
-          </material-card>
-        </v-fade-transition>
-      </v-col>
-    </v-row>
-  </v-container>
+<template lang="pug">
+  v-container
+    v-row
+      v-col
+        v-fade-transition
+          material-card(v-if='node')
+            template(v-slot:heading)
+              h2.text-uppercase.font-weight-light
+                | {{ node.node_name }} -- {{ node.network }}
+            template(v:slot:after-heading)
+              v-container
+                v-row
+                  v-col.py-0(cols='12' md='8')
+                    v-list.py-0(flat dense)
+                      v-list-item
+                        | Status:&nbsp;
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.status"
+                        )
+                      v-list-item
+                        | Public key:&nbsp; 
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.public_key"
+                        )
+                      v-list-item
+                        | Tor Address:&nbsp;
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.onion_address"
+                        )
+                      v-list-item
+                        | Created:&nbsp;
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.creation_date"
+                        )
+                      v-list-item(v-if='isTestnet')
+                        | Expires:&nbsp;
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.expires"
+                        )
+                      v-list-item
+                        | API Endpoint:&nbsp;
+                        copy-pill(
+                          color="accent"
+                          text-color="warning"
+                          :text="node.api_endpoint"
+                        )
+                  v-col
+                    v-row.pl-6.pl-md-0(justify='start' justify-md='center')
+                      div
+                        v-switch(v-model='autopilot' label='autopilot' inset='' color='highlight')
+                        v-switch(v-model='grpc' label='grpc' inset='' color='highlight')
+                        v-switch(v-model='rest' label='rest' inset='' color='highlight')
+                        v-switch(v-model='tor' label='tor' inset='' color='highlight')
+                  v-col(cols="12")
+                    v-combobox(v-model='whitelist' chips label='Whitelist' multiple outlined color='highlight')
+                      template(v-slot:selection='{ attrs, item, select, selected }')
+                        v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
+                          | {{ item }}
+            template(v-slot:actions)
+              v-container
+                v-btn.warning--text(@click='updateSettings(nodeID, settings)' color='accent' :loading='loading') Save settings
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, set } from '@vue/composition-api'
 import { Context } from '@nuxt/types'
 import { layoutStore, createStore, nodeStore } from '~/store'
 import useNodeApi from '~/compositions/useNodeApi'
+import { Address4, Address6 } from 'ip-address'
 
 
 export default defineComponent({
@@ -106,10 +86,11 @@ export default defineComponent({
     layoutStore.SET_TITLE(nodeData['node_name']?.toUpperCase())
   },
   components: {
-    MaterialCard: () => import('~/components/core/MaterialCard.vue')
+    MaterialCard: () => import('~/components/core/MaterialCard.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   setup (_, { root }) {
-    const nodeID = root.$nuxt.context.params.id
+    const nodeID = ref(root.$nuxt.context.params.id)
     const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
 
     const settings = computed(() => createStore.settings)
@@ -135,7 +116,16 @@ export default defineComponent({
       set: (tor: Boolean) => createStore.SETTINGS({...settings.value, tor})
     })
 
-    const node = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID)[0])
+    const whitelist = computed({
+      get: () => settings.value.whitelist,
+      set: (whitelist: Array<Address4|Address6>) => createStore.SETTINGS({...settings.value, whitelist})
+    })
+
+    function remove (item: Address4|Address6) {
+      whitelist.value = whitelist.value.filter(elem => elem !== item)
+    }
+
+    const node = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
 
     const isTestnet = computed(() => node.value.network === 'testnet')
 
@@ -146,10 +136,13 @@ export default defineComponent({
       grpc,
       rest,
       tor,
+      whitelist,
       node,
       isTestnet,
       updateSettings,
-      settings
+      settings,
+      nodeID,
+      remove
     }
   }
 })

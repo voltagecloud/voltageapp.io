@@ -3,18 +3,18 @@
     v-row(justify="center")
       v-col
         v-row
-          v-col(cols="12").text-center.display-3.warning--text.font-weight-medium.
-            {{ available }}
-          v-col(cols="12").text-center.caption.font-italic.font-weight-light.
-            Available {{ capitalized }} Nodes
+          v-col(cols="12").text-center.display-3.warning--text.font-weight-medium
+            | {{ available }}
+          v-col(cols="12").text-center.caption.font-italic.font-weight-light
+            | Available {{ capitalized }} Nodes
           v-col(cols="12").text-center
             v-btn(
               color="accent"
               :class="{'warning--text': available}"
               :disabled="!available"
               @click="setupNode"
-            ).mx-auto.
-              Create New Node
+            ).mx-auto
+              | Create New Node
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
