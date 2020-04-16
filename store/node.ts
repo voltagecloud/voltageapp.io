@@ -12,11 +12,6 @@ interface NodeIDPayload {
     idName: IDName[]
 }
 
-interface PurgePayload {
-    network: Network
-    id: string
-}
-
 @Module({
     name: 'node',
     stateFactory: true,
@@ -59,15 +54,15 @@ export default class NodeModule extends VuexModule {
         this.nodes = [...uniqueNodes, node]
     }
 
-    @Mutation
-    PURGE_NODE ({ id, network }: PurgePayload) {
-        this.nodes = this.nodes.filter(n => n.node_id !== id)
-        if (network == 'testnet')
-            this.testnetNodeIDName = this.testnetNodeIDName.filter(n => n.node_id !== id)
-        else if (network == 'mainnet') {
-            this.mainnetNodeIDName = this.mainnetNodeIDName.filter(n => n.node_id !== id)
-        }
-    }
+    // @Mutation
+    // PURGE_NODE ({ id, network }: PurgePayload) {
+    //     this.nodes = this.nodes.filter(n => n.node_id !== id)
+    //     if (network == 'testnet')
+    //         this.testnetNodeIDName = this.testnetNodeIDName.filter(n => n.node_id !== id)
+    //     else if (network == 'mainnet') {
+    //         this.mainnetNodeIDName = this.mainnetNodeIDName.filter(n => n.node_id !== id)
+    //     }
+    // }
 
     @Mutation
     PURCHASED (purchased: number) {

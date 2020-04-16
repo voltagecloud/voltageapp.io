@@ -70,14 +70,14 @@
               v-container
                 v-row(justify="space-between")
                   v-btn.warning--text(@click='updateSettings(nodeID, settings)' color='accent' :loading='loading') Save settings
-                  v-dialog(width="500")
+                  v-dialog(width="500" v-model="showDialog")
                     template(v-slot:activator="{ on }")
                       v-btn(v-on="on" color="red") Delete Node
-                    v-card
+                    v-card(v-if="node.status !== 'deleted'")
                       v-card-title
                         | Delete Node
                       v-card-text.pb-0
-                        | Are you sure you wish to delete this node? The node data will be lost forever. Type 
+                        | Are you sure you wish to delete this node? This action cannot be undone, however you will still be able to export node data. 
                         span.font-weight-bold
                           | {{ node.node_name }} 
                         | to confirm
@@ -87,6 +87,14 @@
                             v-text-field(v-model="confirm" :placeholder="node.node_name").mx-5
                           v-col(cols="12")
                             v-btn(:disabled="confirm !== node.node_name" @click="delNode" color="red").ml-5 Delete
+                    v-card(v-else)
+                      v-card-title
+                        | Delete Node
+                      v-card-text
+                        | This node has already been deleted
+                      v-card-actions
+                        v-btn(@click="showDialog = false" color="accent").ml-5.warning--text Dismiss
+
 
 </template>
 <script lang="ts">
@@ -110,7 +118,7 @@ export default defineComponent({
   },
   setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
-    const { updateSettings, loading, deleteNode } = useNodeApi(root.$nuxt.context)
+    const { updateSettings, loading, deleteNode, postNode } = useNodeApi(root.$nuxt.context)
 
     const settings = computed(() => createStore.settings)
 
@@ -151,10 +159,14 @@ export default defineComponent({
 
     const confirm = ref('')
 
+    const showDialog = ref(false)
+
     async function delNode () {
       await deleteNode(node.value.node_id, node.value.network)
-      root.$router.push('/')
+      showDialog.value = false
+      await postNode(nodeID.value)
     }
+
 
     return {
       loading,
@@ -170,7 +182,8 @@ export default defineComponent({
       nodeID,
       remove,
       confirm,
-      delNode
+      delNode,
+      showDialog
     }
   }
 })
