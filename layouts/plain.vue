@@ -1,29 +1,13 @@
-<template>
-  <v-app>
-    <v-content>
-      <v-container id="align-container">
-        <v-row
-          justify="start"
-          justify-lg="start"
-          align="center"
-          style="height: 100%;"
-        >
-          <v-container fluid>
-            <v-row justify="center">
-              <v-img
-                :src="require('~/assets/logo/logo-orange.svg')"
-                max-height="100"
-                max-width="100"
-                class="mb-12"
-              />
-              <nuxt />
-            </v-row>
-          </v-container>
-        </v-row>
-      </v-container>
-    </v-content>
-    <core-footer />
-  </v-app>
+<template lang="pug">
+  v-app
+    v-content
+      v-container#align-container
+        v-row(justify='start' justify-lg='start' align='center' style='height: 100%;')
+          v-container(fluid='')
+            v-row(justify='center')
+              v-img.mb-12(:src="require('~/assets/logo/logo-orange.svg')" max-height='100' max-width='100')
+                nuxt
+    core-footer
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
