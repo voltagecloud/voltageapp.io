@@ -15,6 +15,7 @@ export default class CreateModule extends VuexModule {
         grpc: true,
         rest: false,
         tor: false,
+        keysend: false,
         whitelist: []
     }
     newNodeID: string = ''

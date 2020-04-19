@@ -26,5 +26,6 @@ export interface Settings {
     grpc: Boolean
     rest: Boolean
     tor: Boolean
+    keysend: Boolean
     whitelist: Array<Address4|Address6>
 }

@@ -57,10 +57,11 @@
                   v-col
                     v-row.pl-6.pl-md-0(justify='start' justify-md='center')
                       div
-                        v-switch(v-model='autopilot' label='autopilot' inset='' color='highlight')
-                        v-switch(v-model='grpc' label='grpc' inset='' color='highlight')
-                        v-switch(v-model='rest' label='rest' inset='' color='highlight')
-                        v-switch(v-model='tor' label='tor' inset='' color='highlight')
+                        v-switch(v-model='autopilot' label='Autopilot' inset='' color='highlight')
+                        v-switch(v-model='grpc' label='GRPC' inset color='highlight')
+                        v-switch(v-model='rest' label='REST' inset color='highlight')
+                        v-switch(v-model='tor' label='Tor' inset color='highlight')
+                        v-switch(v-model='keysend' label="Keysend" inset color='highlight')
                   v-col(cols="12")
                     v-combobox(v-model='whitelist' chips label='Whitelist' multiple outlined color='highlight')
                       template(v-slot:selection='{ attrs, item, select, selected }')
@@ -83,10 +84,10 @@
                         | to confirm
                       v-card-actions
                         v-row
-                          v-col(cols="12")
+                          v-col(cols='12')
                             v-text-field(v-model="confirm" :placeholder="node.node_name").mx-5
-                          v-col(cols="12")
-                            v-btn(:disabled="confirm !== node.node_name" @click="delNode" color="red").ml-5 Delete
+                          v-col(cols='12')
+                            v-btn(:disabled="confirm !== node.node_name" @click="delNode" color='red').ml-5 Delete
                     v-card(v-else)
                       v-card-title
                         | Delete Node
@@ -144,6 +145,11 @@ export default defineComponent({
       set: (tor: Boolean) => createStore.SETTINGS({...settings.value, tor})
     })
 
+    const keysend = computed({
+      get: () => settings.value.keysend,
+      set: (keysend: Boolean) => createStore.SETTINGS({...settings.value, keysend})
+    })
+
     const whitelist = computed({
       get: () => settings.value.whitelist,
       set: (whitelist: Array<Address4|Address6>) => createStore.SETTINGS({...settings.value, whitelist})
@@ -174,6 +180,7 @@ export default defineComponent({
       grpc,
       rest,
       tor,
+      keysend,
       whitelist,
       node,
       isTestnet,
