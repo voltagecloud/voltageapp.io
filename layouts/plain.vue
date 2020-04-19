@@ -6,7 +6,7 @@
           v-container(fluid='')
             v-row(justify='center')
               v-img.mb-12(:src="require('~/assets/logo/logo-orange.svg')" max-height='100' max-width='100')
-                nuxt
+              nuxt
     core-footer
 </template>
 <script lang="ts">
