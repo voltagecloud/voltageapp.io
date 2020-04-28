@@ -60,7 +60,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: 'https://jl1csxxjw9.execute-api.us-west-2.amazonaws.com/',
+    browserBaseURL: 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com/',
     https: true,
     progress: true,
     debug: true
