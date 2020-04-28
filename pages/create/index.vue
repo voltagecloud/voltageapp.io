@@ -53,7 +53,7 @@
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import useNodeApi from '~/compositions/useNodeApi'
 import useAnimation from '~/compositions/useAnimation'
-import { createStore } from '~/store'
+import { createStore, layoutStore } from '~/store'
 
 export default defineComponent({
   components: {
@@ -63,6 +63,7 @@ export default defineComponent({
   setup (_, {root}) {
     const { loading, createNode } = useNodeApi(root.$nuxt.context)
     const { beforeEnter, enter } = useAnimation()
+    layoutStore.DRAWER(false)
 
     const seed = computed(() => createStore.seed)
 

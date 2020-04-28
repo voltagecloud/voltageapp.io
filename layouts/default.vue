@@ -69,7 +69,10 @@ export default defineComponent({
   setup (_, { root: { $router }}) {
     const { logout } = useAuthentication()
 
-    const showDrawer = ref(null)
+    const showDrawer = computed({
+      get: () => layoutStore.showDrawer,
+      set: (v: boolean | null) => layoutStore.DRAWER(v)
+    })
 
 
     const bottomItems = reactive([

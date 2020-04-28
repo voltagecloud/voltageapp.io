@@ -17,6 +17,7 @@ export default defineComponent({
     },
     setup () {
       layoutStore.SET_TITLE('Dashboard')
+      layoutStore.DRAWER(null)
     }
 })
 </script>

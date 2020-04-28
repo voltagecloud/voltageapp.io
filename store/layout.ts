@@ -14,6 +14,7 @@ export default class LayoutModule extends VuexModule {
     appBarTitle = 'Dashboard'
     error = ''
     notifications: Notification[] = []
+    showDrawer: boolean | null = null
 
     @Mutation
     SET_TITLE (title: string) {
@@ -23,5 +24,10 @@ export default class LayoutModule extends VuexModule {
     @Mutation
     SET_ERROR (error: string) {
         this.error = error
+    }
+
+    @Mutation
+    DRAWER (v: boolean | null) {
+        this.showDrawer = v
     }
 }
