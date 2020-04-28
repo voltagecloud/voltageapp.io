@@ -12,7 +12,6 @@
               color="accent"
               :class="{'warning--text': available}"
               :disabled="!available"
-              @click="setupNode"
             ).mx-auto
               | Create New Node
 </template>
@@ -34,15 +33,15 @@ export default defineComponent({
       return (network === 'testnet') ? nodeStore.testnetAvailable : nodeStore.mainnetAvailable
     })
     
-    function setupNode () {
-      createStore.SEED([])
-      createStore.NETWORK(network)
-      root.$router.push('/create')
-    }
+    // function setupNode () {
+    //   createStore.SEED([])
+    //   createStore.NETWORK(network)
+    //   root.$router.push('/create')
+    // }
 
     return {
       capitalized,
-      setupNode,
+      // setupNode,
       available,
     }
   }

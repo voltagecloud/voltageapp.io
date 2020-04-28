@@ -8,3 +8,7 @@
 html {
   transition: all .5s;
 }
+
+.align-container {
+  height: calc(100vh - 100px);
+}

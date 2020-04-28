@@ -23,7 +23,7 @@
     v-app-bar(app='' clipped-left='' color='warning' dark='' hide-on-scroll='')
       v-btn(icon @click='showDrawer = !showDrawer')
         v-icon mdi-menu
-      v-toolbar-title
+      v-toolbar-title.hidden-xs-only
         | {{ layoutStore.appBarTitle }}
       v-spacer
         //- v-btn.mx-2(icon='' @click='$vuetify.theme.dark = !$vuetify.theme.dark')
@@ -35,6 +35,9 @@
       v-btn(text to='/create')
         template(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
         v-icon mdi-plus
+      v-btn(text to='/purchase')
+        template(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
+        v-icon mdi-cash-plus
         //- v-menu(bottom='' left='' offset-y='' origin='top right' transition='scale-transition')
         //-   template(v-slot:activator='{ on, attrs }')
         //-     v-btn.mx-2(v-bind='attrs' icon='' v-on='on')
@@ -52,7 +55,7 @@
     v-content
       nuxt
     error-snackbar
-      core-footer
+    core-footer
 
 </template>
 

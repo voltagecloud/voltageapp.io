@@ -1,6 +1,11 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Network, Settings } from '~/types/api'
 
+interface NodeTypePayload {
+    network: Network
+    trial: boolean
+}
+
 @Module({
     name: 'create',
     stateFactory: true,
@@ -9,6 +14,7 @@ import { Network, Settings } from '~/types/api'
 export default class CreateModule extends VuexModule {
     nodeName: string = ''
     network: Network = Network.testnet
+    trial = false
     seed: string[] = []
     settings: Settings = {
         autopilot: true,
@@ -19,6 +25,7 @@ export default class CreateModule extends VuexModule {
         whitelist: []
     }
     newNodeID: string = ''
+    currentStep = 0
 
     @Mutation
     NODE_NAME (name: string) {
@@ -26,8 +33,14 @@ export default class CreateModule extends VuexModule {
     }
 
     @Mutation
-    NETWORK (network: Network) {
+    STEP (step: number) {
+        this.currentStep = step
+    }
+
+    @Mutation
+    NODE_TYPE ({ network, trial }: NodeTypePayload) {
         this.network = network
+        this.trial = trial
     }
 
     @Mutation
