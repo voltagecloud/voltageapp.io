@@ -4,7 +4,7 @@ import { createStore } from '~/store'
 
 export default function useFormValidation () {
     // is form valid
-    const valid = ref(false)
+    const valid = ref(null)
     const form = ref(null)
 
     // email logic
