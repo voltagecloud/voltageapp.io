@@ -1,54 +1,22 @@
-<template>
-  <v-container>
-    <v-row justify="center" align="center">
-      <v-col cols="12" md="10" lg="7" xl="5">
-        <base-material-card>
-          <template v-slot:heading>
-            <h2 class="font-weight-light">
-              Login
-            </h2>
-          </template>
-          <v-card-actions>
-            <v-col cols="12">
-              <v-form
-                ref="loginForm"
-                v-model="valid"
-                @submit.prevent="login"
-              >
-                <v-text-field
-                  v-model="email"
-                  :rules="[required, validEmail]"
-                  label="Email"
-                  required
-                />
-                <v-text-field
-                  v-model="password"
-                  :rules="[char6]"
-                  label="Password"
-                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                  :type="showPassword ? 'text' : 'password'"
-                  @click:append="showPassword = !showPassword"
-                />
-                <v-btn
-                  type="submit"
-                  :disabled="!valid"
-                  color="primary"
-                  light
-                  class="mr-4"
-                  :loading="loading"
-                >
-                  <span style="color: black;">Login</span>
-                </v-btn>
-                <nuxt-link to="register">
-                  Dont have an account?
-                </nuxt-link>
-              </v-form>
-            </v-col>
-          </v-card-actions>
-        </base-material-card>
-      </v-col>
-    </v-row>
-  </v-container>
+<template lang="pug">
+  v-container
+    v-row(justify='center' align='center')
+      v-col(cols='12' md='10' lg='7' xl='5')
+        base-material-card
+          template(v-slot:heading='')
+            h2.font-weight-light
+              | Login
+          v-card-actions
+            v-col(cols='12')
+              v-form(ref='loginForm' v-model='valid' @submit.prevent='login')
+                v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required='')
+                v-text-field(v-model='password' :rules='[char6]' label='Password' :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" @click:append='showPassword = !showPassword')
+                v-col(cols='12' v-if='error').error--text
+                  | {{ error.message }}
+                v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
+                  span(style='color: black;') Login
+                nuxt-link(to='register')
+                  | Dont have an account?
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
@@ -64,7 +32,7 @@ export default defineComponent({
   },
   setup (_, { root: { $router }}) {
     const { valid, email, password, required, validEmail, char6, showPassword } = useFormValidation()
-    const { login: dispatchLogin, loading } = useAuthentication()
+    const { login: dispatchLogin, loading, error } = useAuthentication()
 
     async function login () {
       try {
@@ -84,7 +52,8 @@ export default defineComponent({
       char6,
       login,
       showPassword,
-      loading
+      loading,
+      error
     }
   }
 })

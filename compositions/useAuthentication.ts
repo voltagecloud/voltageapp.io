@@ -5,23 +5,33 @@ import { ref } from '@vue/composition-api'
 
 export default function useAuthentication () {
     const loading = ref(false)
+    const error = ref('')
 
     async function login (email: string, password:string) {
         loading.value = true
-        const user = await Auth.signIn(email, password)
-        authStore.SET_USER(user)
-        loading.value = false
-        return user
+        try {
+            const user = await Auth.signIn(email, password)
+            authStore.SET_USER(user)
+            return user
+        } catch(e) {
+            error.value = e
+        } finally {
+            loading.value = false
+        }
     }
 
     async function register (email: string, password: string) {
         loading.value = true
-        const user = await Auth.signUp({
-            username: email,
-            password
-        })
-         loading.value = false
-        return user
+        try {
+            return await Auth.signUp({
+                username: email,
+                password
+            })
+        } catch (e) {
+            error.value = e
+        } finally {
+            loading.value = false
+        }
     }
 
     async function load () {
@@ -29,11 +39,12 @@ export default function useAuthentication () {
         try {
             const user = await Auth.currentAuthenticatedUser()
             authStore.SET_USER(user)
-            loading.value = false
             return user
-        } catch (error) {
+        } catch (e) {
+            console.log({ e })
+            error.value = e
+        } finally {
             loading.value = false
-            console.log({ error })
         }
     }
 
@@ -47,16 +58,24 @@ export default function useAuthentication () {
 
     async function resend (email: string) {
         loading.value = true
-        const res = await Auth.resendSignUp(email)
-        loading.value = false
-        return res
+        try {
+            return await Auth.resendSignUp(email)
+        } catch (e) {
+            error.value = e
+        } finally {
+            loading.value = false
+        }
     }
 
     async function confirm (email: string, code: string) {
         loading.value = true
-        const res = await Auth.confirmSignUp(email, code)
-        loading.value = false
-        return res
+        try {
+            return await Auth.confirmSignUp(email, code)
+        } catch (e) {
+            error.value = e
+        } finally {
+            loading.value = false
+        }
     }
 
     return {
@@ -66,6 +85,7 @@ export default function useAuthentication () {
         load,
         logout,
         resend,
-        confirm
+        confirm,
+        error
     }
 }
