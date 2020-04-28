@@ -30,8 +30,8 @@ export interface User {
     trial_available: boolean
     available_nodes: number
     purchased_nodes: number
-    mainnet_nodes: string[]
-    testnet_nodes: string[] 
+    mainnet_nodes: IDName[]
+    testnet_nodes: IDName[] 
     deleted_mainnet_nodes: IDName[]
     deleted_testnet_nodes: IDName[]
 }

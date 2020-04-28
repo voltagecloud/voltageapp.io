@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { IDName, Network } from '~/types/api'
-import { Node } from '~/types/apiResponse'
+import { Node, User } from '~/types/apiResponse'
 
 interface AvailablePayload {
     network: Network
@@ -18,6 +18,7 @@ interface NodeIDPayload {
     namespaced: true
 })
 export default class NodeModule extends VuexModule {
+    user: User | null = null
     purchased = 0
     mainnetAvailable = 0
     mainnetNodeIDName: IDName[] = []
@@ -26,6 +27,11 @@ export default class NodeModule extends VuexModule {
     testnetNodeIDName: IDName[] = []
     
     nodes: Node[] = []
+
+    @Mutation
+    HYDRATE_USER(user: User) {
+        this.user = user
+    }
 
     @Mutation
     SET_AVAILABLE ({network, available}: AvailablePayload) {

@@ -107,7 +107,7 @@ import { Address4, Address6 } from 'ip-address'
 
 
 export default defineComponent({
-  middleware: ['assertAuthed', 'loadNodes'],
+  middleware: ['assertAuthed', 'loadUser'],
   async fetch (context: Context) {
     const { postNode, deleteNode } = useNodeApi(context)
     const nodeData = await postNode(context.params.id)

@@ -59,7 +59,7 @@ export default defineComponent({
   components: {
     CreateNode: () => import('~/components/CreateNode.vue')
   },
-  middleware: ['assertAuthed', 'loadNodes'],
+  middleware: ['assertAuthed', 'loadUser'],
   setup (_, {root}) {
     const { loading, createNode } = useNodeApi(root.$nuxt.context)
     const { beforeEnter, enter } = useAnimation()

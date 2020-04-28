@@ -11,7 +11,7 @@ import { defineComponent } from '@vue/composition-api'
 import { layoutStore } from '~/store'
 
 export default defineComponent({
-    middleware: ['assertAuthed', 'loadNodes'],
+    middleware: ['assertAuthed', 'loadUser'],
     components: {
         AvailableNode: () => import('~/components/AvailableNode.vue')
     },
