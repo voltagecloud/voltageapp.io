@@ -1,4 +1,4 @@
-import { Network, Settings, NodeStatus } from '~/types/api'
+import { Network, Settings, NodeStatus, IDName } from '~/types/api'
 
 export interface NodeSeed {
     name: string
@@ -18,4 +18,20 @@ export interface Node {
     expires: string
     creation_date: string
     settings: Settings
+}
+
+
+export interface User {
+    user_id: string
+    email: string
+    email_verified: boolean
+    phone: number
+    phone_verified: boolean
+    trial_available: boolean
+    available_nodes: number
+    purchased_nodes: number
+    mainnet_nodes: string[]
+    testnet_nodes: string[] 
+    deleted_mainnet_nodes: IDName[]
+    deleted_testnet_nodes: IDName[]
 }
