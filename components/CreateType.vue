@@ -20,7 +20,7 @@ import { Network } from '../types/api'
 export default defineComponent({
   setup () {
     const stdMsg = 'You dont have any available nodes. Purchase one to create this node type.'
-    const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes > 0)
+    const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes == 0)
 
     const cards = reactive([
       {

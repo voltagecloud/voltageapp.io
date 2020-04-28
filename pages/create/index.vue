@@ -1,11 +1,21 @@
 <template lang="pug">
   v-container.align-container
-    v-row(justify='center' align='center' style='height: 100%')
+    v-row(justify='center' align='start')
+      v-col(cols='12')
+        v-container
+          v-row(justify='center')
+            v-btn(
+              v-for='i in steps'
+              :key='i' :disabled='i > currentStep'
+              :class='{ "v-btn--active": i == currentStep }'
+              @click="currentStep=i"
+              outlined 
+              fab
+            ).mx-3 {{i + 1}}
       v-col(cols='12' xl='8')
-        v-fade-transition(mode='out-in')
-          create-type(v-if='currentStep == 0' key='0')
-          create-node(v-else-if='currentStep == 1' key='1')
-          confirm-seed(v-else-if='currentStep == 2' key='2')
+        v-scroll-x-transition(mode='out-in' :hide-on-leave='false')
+          component(:is='currentComponent')
+
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from '@vue/composition-api'
@@ -23,11 +33,26 @@ export default defineComponent({
   setup (_, {root}) {
     
     layoutStore.DRAWER(false)
-
-    const currentStep = computed(() => createStore.currentStep)
+    const steps = ref([0,1,2])
+    const currentStep = computed({
+      get: () => createStore.currentStep,
+      set: (v: number) => createStore.STEP(v)
+    })
+    currentStep.value = 0
+    const currentComponent = computed(() => {
+      if (currentStep.value == 0) {
+        return 'create-type'
+      } else if (currentStep.value == 1) {
+        return 'create-node'
+      } else {
+        return 'confirm-seed'
+      }
+    })
 
     return {
-      currentStep
+      currentStep,
+      steps,
+      currentComponent
     }
   }
 })
