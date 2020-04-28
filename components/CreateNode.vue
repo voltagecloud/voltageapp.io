@@ -1,7 +1,7 @@
 <template lang="pug">
   v-card(color='info')
     v-card-title.font-weight-light.warning--text.text--darken-1
-      | Creating {{ displayNetwork }} Node
+      | Creating {{ displayNetwork }} Node {{ isTrial }}
     v-form(ref='form' v-model='valid' lazy-validation='' @submit.prevent='createNode')
       v-container
         v-row(justify='center')
@@ -51,6 +51,8 @@ export default defineComponent({
       return n.charAt(0).toUpperCase() + n.slice(1) 
     })
 
+    const isTrial = computed(() => createStore.trial ? '(trial)' : '')
+
     return {
       valid,
       settings,
@@ -60,7 +62,8 @@ export default defineComponent({
       loading,
       createNode,
       remove,
-      displayNetwork
+      displayNetwork,
+      isTrial
     }
   }
   // data () {
