@@ -70,16 +70,10 @@ export default class NodeModule extends VuexModule {
     //     }
     // }
 
-    @Mutation
-    PURCHASED (purchased: number) {
-        this.purchased = purchased
-    }
-
-    get mainnetNodes () {
-        return this.nodes.filter(node => node.network === 'mainnet')
-    }
-
-    get testnetNodes () {
-        return this.nodes.filter(node => node.network === 'testnet')
+    get IDNames () {
+        if (this.user) {
+            return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => a.node_name > b.node_name ? 1 : -1)
+        }
+        return []
     }
 }
