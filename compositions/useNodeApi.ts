@@ -7,19 +7,25 @@ import { ref } from '@vue/composition-api'
 export default function useNodeApi ({ $axios }: Context) {
     const loading = ref(false)
 
-    async function generateSeed (name: string, network: Network) {
+    async function generateSeed (name: string, network: Network, purchased: boolean) {
         loading.value = true
-        createStore.NODE_NAME(name)
-        const seed = await $axios.post<NodeSeed>(
-            '/node/seed',
-            {
-                name,
-                network
-            }
-        )
-        createStore.SEED(seed.data?.seed)
-        loading.value = false
-        return seed
+        try {
+            const seed = await $axios.post<NodeSeed>(
+                '/node/seed',
+                {
+                    name,
+                    network,
+                    purchased_type: purchased ? 'trial' : 'paid'
+                }
+            )
+            createStore.NODE_NAME(name)
+            createStore.SEED(seed.data?.seed)
+            return seed
+        } catch (e) {
+            layoutStore.SET_ERROR(e)
+        } finally {
+            loading.value = false
+        }
     }
 
     async function createNode () {
@@ -30,6 +36,7 @@ export default function useNodeApi ({ $axios }: Context) {
                 network: createStore.network,
                 name: createStore.nodeName,
                 seed: createStore.seed,
+                purchased_type: createStore.trial ? 'trial' : 'paid',
                 settings: createStore.settings
             }
         )

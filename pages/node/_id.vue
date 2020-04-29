@@ -107,7 +107,7 @@ import { Address4, Address6 } from 'ip-address'
 
 
 export default defineComponent({
-  middleware: ['assertAuthed', 'loadUser'],
+  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   async fetch (context: Context) {
     const { postNode, deleteNode } = useNodeApi(context)
     const nodeData = await postNode(context.params.id)
@@ -127,27 +127,27 @@ export default defineComponent({
     // init computed setters for state
     const autopilot = computed({
       get: () => settings.value.autopilot,
-      set: (autopilot: Boolean) => createStore.SETTINGS({...settings.value, autopilot})
+      set: (autopilot: boolean) => createStore.SETTINGS({...settings.value, autopilot})
     })
 
     const grpc = computed({
       get: () => settings.value.grpc,
-      set: (grpc: Boolean) => createStore.SETTINGS({...settings.value, grpc})
+      set: (grpc: boolean) => createStore.SETTINGS({...settings.value, grpc})
     })
 
     const rest = computed({
       get: () => settings.value.rest,
-      set: (rest: Boolean) => createStore.SETTINGS({...settings.value, rest})
+      set: (rest: boolean) => createStore.SETTINGS({...settings.value, rest})
     })
 
     const tor = computed({
       get: () => settings.value.tor,
-      set: (tor: Boolean) => createStore.SETTINGS({...settings.value, tor})
+      set: (tor: boolean) => createStore.SETTINGS({...settings.value, tor})
     })
 
     const keysend = computed({
       get: () => settings.value.keysend,
-      set: (keysend: Boolean) => createStore.SETTINGS({...settings.value, keysend})
+      set: (keysend: boolean) => createStore.SETTINGS({...settings.value, keysend})
     })
 
     const whitelist = computed({

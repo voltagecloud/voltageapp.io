@@ -22,6 +22,8 @@ export default class CreateModule extends VuexModule {
         rest: false,
         tor: false,
         keysend: false,
+        alias: '',
+        color: '',
         whitelist: []
     }
     newNodeID: string = ''
@@ -46,6 +48,9 @@ export default class CreateModule extends VuexModule {
     @Mutation
     SEED (seed: string[]) {
         this.seed = seed
+        if (seed.length > 0) {
+            this.currentStep = 2
+        }
     }
 
     @Mutation

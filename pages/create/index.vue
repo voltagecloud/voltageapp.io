@@ -29,7 +29,7 @@ export default defineComponent({
     CreateNode: () => import('~/components/CreateNode.vue'),
     ConfirmSeed: () => import('~/components/ConfirmSeed.vue')
   },
-  middleware: ['assertAuthed', 'loadUser'],
+  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, {root}) {
     
     layoutStore.DRAWER(false)
@@ -39,6 +39,7 @@ export default defineComponent({
       set: (v: number) => createStore.STEP(v)
     })
     currentStep.value = 0
+    createStore.SEED([])
     const currentComponent = computed(() => {
       if (currentStep.value == 0) {
         return 'create-type'
@@ -58,9 +59,4 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
-.seed-word {
-  transition: all 0.5s ease-in-out;
-  word-spacing: 1rem;
-}
-</style>
+

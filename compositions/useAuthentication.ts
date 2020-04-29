@@ -1,6 +1,6 @@
 import { authStore } from '~/store'
 import { layoutStore } from '~/store'
-import { Auth } from '@aws-amplify/auth'
+import { Auth, CognitoUser } from '@aws-amplify/auth'
 import { ref } from '@vue/composition-api'
 
 export default function useAuthentication () {
@@ -37,7 +37,7 @@ export default function useAuthentication () {
     async function load () {
         loading.value = true
         try {
-            const user = await Auth.currentAuthenticatedUser()
+            const user: CognitoUser | null = await Auth.currentAuthenticatedUser()
             authStore.SET_USER(user)
             return user
         } catch (e) {

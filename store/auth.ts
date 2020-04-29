@@ -8,9 +8,11 @@ import { CognitoUser } from '@aws-amplify/auth'
 })
 export default class AuthModule extends VuexModule {
     user: CognitoUser | null = null
+    exp: number = 0
 
     @Mutation
     SET_USER (user: CognitoUser | null) {
         this.user = user
+        this.exp = user?.getSignInUserSession()?.getAccessToken().getExpiration() || 0
     }
 }

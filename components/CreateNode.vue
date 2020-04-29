@@ -15,7 +15,7 @@
               v-switch(v-model='settings.tor' label='Tor' color='highlight' inset)
               v-switch(v-model="settings.keysend" label="Keysend" color="highlight" inset)
           v-col(cols='12')
-            v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary')
+            v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
                   | {{ item }}
@@ -25,26 +25,28 @@
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
-import { createStore } from '~/store'
+import { createStore, layoutStore } from '~/store'
 
 export default defineComponent({
   name: 'CreateNode',
   setup (_ , {root}) {
-    const { valid, settings, required, nodeName, form } = useFormValidation()
+    const { valid, settings, required, form, validIP } = useFormValidation()
     const { generateSeed, loading } = useNodeApi(root.$nuxt.context)
 
     async function createNode () {
       if (form.value.validate()) {
         createStore.SETTINGS(settings.value)
-        await generateSeed(nodeName.value, createStore.network)
+        await generateSeed(nodeName.value, createStore.network, createStore.trial)
       }
     }
     function remove (item) {
       settings.value.whitelist = settings.value.whitelist.filter(elem => elem !== item)
     }
+
+    const nodeName = ref(createStore.nodeName.value)
 
     const displayNetwork = computed(() => {
       const n = createStore.network
@@ -63,7 +65,8 @@ export default defineComponent({
       createNode,
       remove,
       displayNetwork,
-      isTrial
+      isTrial,
+      validIP
     }
   }
   // data () {

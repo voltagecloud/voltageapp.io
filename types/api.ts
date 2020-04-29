@@ -22,10 +22,12 @@ export enum Network {
 }
 
 export interface Settings {
-    autopilot: Boolean
-    grpc: Boolean
-    rest: Boolean
-    tor: Boolean
-    keysend: Boolean
+    autopilot: boolean
+    grpc: boolean
+    rest: boolean
+    tor: boolean
+    keysend: boolean
+    alias: string
+    color: string
     whitelist: Array<Address4|Address6>
 }

@@ -2,14 +2,14 @@
   v-container(style='height: 100%;')
     v-row(style='height: 100%;' justify='center')
       v-col(cols='12' md='4' v-for='(card, i) in cards' :key='i')
-        v-card(flat height='100%').pad-bottom
-          v-card-title {{ card.nodeType }}
+        v-card(color='info' height='100%' hover).pad-bottom
+          v-card-title.font-weight-light.warning--text.text--darken-1 {{ card.nodeType }}
           v-card-text {{ card.desc }}
           v-card-actions.make-bottom
             v-tooltip(top :disabled='!card.disabled')
               template(v-slot:activator='{ on }')
                 div(v-on='on')
-                  v-btn(@click='card.selectFn' :disabled='card.disabled' color='info').warning--text Create
+                  v-btn(@click='card.selectFn' :disabled='card.disabled' color='secondary' block ).warning--text Create
               span {{ card.disabledMsg }}
 </template>
 <script lang="ts">
@@ -64,10 +64,22 @@ export default defineComponent({
 <style lang="scss" scoped>
 .make-bottom {
   bottom: 0;
+  width: 100%;
   position: absolute;
+  
+  div {
+    width: 100%;
+  }
 }
 
 .pad-bottom {
   padding-bottom: 48px;
+}
+
+.v-card--hover {
+  transition: all 0.5s;
+  &:hover {
+    transform: translateY(-3px);
+  }
 }
 </style>
