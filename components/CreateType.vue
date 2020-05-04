@@ -1,10 +1,10 @@
 <template lang="pug">
   v-container(style='height: 100%;')
     v-row(style='height: 100%;' justify='center')
-      v-col(cols='12' md='4' v-for='(card, i) in cards' :key='i')
+      v-col(cols='12' lg='4' v-for='(card, i) in cards' :key='i')
         v-card(color='info' height='100%' hover).pad-bottom
           v-card-title.font-weight-light.warning--text.text--darken-1 {{ card.nodeType }}
-          v-card-text {{ card.desc }}
+          v-card-text(style='line-height: 1.7em;') {{ card.desc }}
           v-card-actions.make-bottom
             v-tooltip(top :disabled='!card.disabled')
               template(v-slot:activator='{ on }')

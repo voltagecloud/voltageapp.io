@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container.align-container
+  v-container
     v-row(justify='center' align='start')
       v-col(cols='12')
         v-container
