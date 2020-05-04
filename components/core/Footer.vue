@@ -2,6 +2,7 @@
   <v-footer
     app
     padless
+    elevation="3"
   >
     <v-container fluid>
       <v-row justify="end">

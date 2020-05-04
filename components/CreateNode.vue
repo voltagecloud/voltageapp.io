@@ -5,9 +5,9 @@
     v-form(ref='form' v-model='valid' lazy-validation='' @submit.prevent='createNode')
       v-container
         v-row(justify='center')
-          v-col(cols='12')
+          v-col(cols='12').pb-0
             v-text-field(v-model='nodeName' label='Node Name' outlined color='highlight' background-color='secondary' :rules='[required]' required='')
-          v-col.px-10(cols='12' md='10')
+          v-col(cols='12' md='10').px-10.py-0
             v-row(justify='space-between')
               v-switch(v-model='settings.autopilot' label='Autopilot' color='highlight' inset)
               v-switch(v-model='settings.grpc' label='GRPC' color='highlight' inset)
@@ -27,12 +27,12 @@
                     show-swatches
                     :width="colWidth.clientWidth" 
                   )
-          v-col(cols='12')
+          v-col(cols='12').pb-0.pt-1
             v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
                   | {{ item }}
-          v-col(cols='12')
+          v-col(cols='12').pt-0
             v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
               | Create Node
 </template>
