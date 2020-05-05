@@ -7,6 +7,8 @@
         v-row(justify='center')
           v-col(cols='12').pb-0
             v-text-field(v-model='nodeName' label='Node Name' outlined color='highlight' background-color='secondary' :rules='[required]' required='')
+          v-col(cols='12').py-0
+            v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
           v-col(cols='12' md='10').px-10.py-0
             v-row(justify='space-between')
               v-switch(v-model='settings.autopilot' label='Autopilot' color='highlight' inset)
@@ -17,11 +19,11 @@
           v-col(cols='12')
             v-row(justify='center')
               v-col(cols='12' ref='colWidth')
-                v-btn(block @click='showPalette = !showPalette' :color='chosenColor' :style='{color: oppositeColor}') Color: {{chosenColor}}
+                v-btn(block @click='showPalette = !showPalette' :color='settings.color' :style='{color: oppositeColor}') Color: {{settings.color}}
               v-expand-transition
                 v-col(cols='12' v-if='showPalette')
                   v-color-picker(
-                    v-model='chosenColor'
+                    v-model='settings.color'
                     mode='hexa'
                     hide-mode-switch
                     show-swatches
@@ -46,12 +48,14 @@ import { createStore, layoutStore } from '~/store'
 export default defineComponent({
   name: 'CreateNode',
   setup (_ , {root}) {
-    const { valid, settings, required, form, validIP, showPalette, chosenColor, invertColor } = useFormValidation()
+    const { valid, settings, required, form, validIP, showPalette, invertColor } = useFormValidation()
     const { generateSeed, loading } = useNodeApi(root.$nuxt.context)
-    const oppositeColor = computed(() => invertColor(chosenColor.value))
+
+    const oppositeColor = computed(() => invertColor(settings.color))
+
     async function createNode () {
       if (form.value.validate()) {
-        createStore.SETTINGS(settings.value)
+        createStore.SETTINGS(settings)
         await generateSeed(nodeName.value, createStore.network, createStore.trial)
       }
     }
@@ -82,7 +86,6 @@ export default defineComponent({
       isTrial,
       validIP,
       showPalette,
-      chosenColor,
       oppositeColor,
       colWidth
     }

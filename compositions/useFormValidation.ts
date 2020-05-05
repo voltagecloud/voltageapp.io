@@ -20,7 +20,7 @@ export default function useFormValidation () {
     const showPassword = ref(false)
 
     // node creation
-    const settings = ref<Settings>(Object.assign({}, createStore.settings))
+    const settings = reactive<Settings>(Object.assign({}, createStore.settings))
 
     // generic validation
     const required = (v: string) => !!v || 'Value is required'
@@ -34,7 +34,6 @@ export default function useFormValidation () {
 
 
     const showPalette = ref(false)
-    const chosenColor = ref('#'+(Math.random()*0xFFFFFF<<0).toString(16))
 
     function invertColor(hex: string) {
         if (hex.indexOf('#') === 0) {
@@ -63,7 +62,6 @@ export default function useFormValidation () {
         // // pad each with zeros and return
         // return "#" + padZero(r) + padZero(g) + padZero(b);
     }
-    const oppositeColor = ref(invertColor(chosenColor.value))
     // function padZero(str: string, len: number) {
     //     len = len || 2
     //     var zeros = new Array(len).join('0')
@@ -86,8 +84,6 @@ export default function useFormValidation () {
         form,
         validIP,
         showPalette,
-        chosenColor,
         invertColor,
-        oppositeColor
     }
 }
