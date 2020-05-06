@@ -1,8 +1,8 @@
 <template lang="pug">
   v-fade-transition
-    v-card(color='info' v-if='node')
+    v-card(color='info' v-if='nodeData')
       v-card-title.font-weight-light.warning--text.text--darken-1
-        | {{ node.node_name }}
+        | {{ nodeData.node_name }}
         v-row(justify='end')
           v-btn(:disabled='canStart' icon).mx-1
             v-icon mdi-play
@@ -37,7 +37,7 @@
           ref='form'
           v-model='valid'
           lazy-validation
-          @submit.prevent='updateSettings(nodeID, settings)'
+          @submit.prevent='form.validate() ? updateSettings(nodeID, settings) : null'
         )
           v-container
             v-row(justify='center')
@@ -68,7 +68,7 @@
               v-col(cols='12').pb-0
                 v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
                   template(v-slot:selection='{ attrs, item, select, selected }')
-                    v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
+                    v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                       | {{ item }}
               v-col(cols='12').pt-0
                 v-btn.px-4.warning--text(block type='submit' color='secondary' :loading='loading' :disabled='!valid')
@@ -77,7 +77,7 @@
           
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watchEffect } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import useNodeApi from '~/compositions/useNodeApi'
 import useNodeControls from '~/compositions/useNodeControls'
 import { Context } from '@nuxt/types'
@@ -90,31 +90,35 @@ export default defineComponent({
     // @ts-ignore
     const ctx = this.$nuxt.context
     const { postNode } = useNodeApi(ctx)
-    const nodeData = await postNode(ctx.params.id)
+    await postNode(ctx.params.id)
   },
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   setup (_, {root}) {
-    console.log(root.$vuetify)
     const nodeID = ref(root.$nuxt.context.params.id)
-    const node = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
+    const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
 
     const nodeInfo = computed(() => ([
-      { dataName: 'Status', data: node.value?.status },
-      { dataName: 'Public Key', data: node.value?.public_key },
-      { dataName: 'Onion Address', data: node.value?.onion_address },
-      { dataName: 'Creation Date', data: node.value?.creation_date },
-      { dataName: 'Expiry Date', data: node.value?.expires },
-      { dataName: 'API Endpoint', data: node.value?.api_endpoint }
+      { dataName: 'Status', data: nodeData.value?.status },
+      { dataName: 'Public Key', data: nodeData.value?.public_key },
+      { dataName: 'Onion Address', data: nodeData.value?.onion_address },
+      { dataName: 'Creation Date', data: nodeData.value?.creation_date },
+      { dataName: 'Expiry Date', data: nodeData.value?.expires },
+      { dataName: 'API Endpoint', data: nodeData.value?.api_endpoint }
     ]))
 
     const showSettings = ref(false)
-    const settings = computed(() => Object.assign({}, node.value?.settings || {}))
+    const settings = ref(Object.assign({}, nodeData.value?.settings || {}))
+    watch(nodeData, ()=>{
+      if (nodeData.value && nodeData.value.settings) {
+        settings.value = Object.assign({}, nodeData.value?.settings || {})
+      }
+    })
 
     const { deleteNode, updateSettings, loading } = useNodeApi(root.$nuxt.context)
-    const { canStart, canStop, canDelete} = useNodeControls(node)
-    const { valid, form, validIP } = useFormValidation()
+    const { canStart, canStop, canDelete} = useNodeControls(nodeData)
+    const { valid, form, validIP, remove } = useFormValidation()
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -127,7 +131,7 @@ export default defineComponent({
 
     return {
       nodeID,
-      node,
+      nodeData,
       nodeInfo,
       showSettings,
       settings,
@@ -141,6 +145,7 @@ export default defineComponent({
       valid,
       form,
       validIP,
+      remove,
       computedWidth
     }
   }

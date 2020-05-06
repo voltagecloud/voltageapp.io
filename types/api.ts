@@ -31,3 +31,14 @@ export interface Settings {
     color: string
     whitelist: Array<Address4|Address6>
 }
+
+export enum MacaroonLevel {
+    walletkit = 'walletkit',
+    signer = 'signer',
+    router = 'router',
+    readonly = 'readonly',
+    invoice = 'invoice',
+    invoices = 'invoices',
+    chainnotifier = 'chainnotifier',
+    admin = 'admin'
+}

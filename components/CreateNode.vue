@@ -32,7 +32,7 @@
           v-col(cols='12').pb-0.pt-1
             v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
-                v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
+                v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
           v-col(cols='12').pt-0
             v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
@@ -48,7 +48,16 @@ import { createStore, layoutStore } from '~/store'
 export default defineComponent({
   name: 'CreateNode',
   setup (_ , {root}) {
-    const { valid, settings, required, form, validIP, showPalette, invertColor } = useFormValidation()
+    const { 
+      valid,
+      settings,
+      required,
+      form,
+      validIP,
+      remove,
+      showPalette,
+      invertColor,
+    } = useFormValidation()
     const { generateSeed, loading } = useNodeApi(root.$nuxt.context)
 
     const oppositeColor = computed(() => invertColor(settings.color))
@@ -58,9 +67,6 @@ export default defineComponent({
         createStore.SETTINGS(settings)
         await generateSeed(nodeName.value, createStore.network, createStore.trial)
       }
-    }
-    function remove (item) {
-      settings.value.whitelist = settings.value.whitelist.filter(elem => elem !== item)
     }
 
     const nodeName = ref(createStore.nodeName.value)

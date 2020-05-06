@@ -1,4 +1,4 @@
-import { ref, reactive } from '@vue/composition-api'
+import { ref, reactive, Ref } from '@vue/composition-api'
 import { Settings } from '~/types/api'
 import { createStore } from '~/store'
 import { Address4, Address6 } from 'ip-address'
@@ -31,6 +31,11 @@ export default function useFormValidation () {
         const ip6 = new Address6(e)
         return ip4.isValid() || ip6.isValid()
     }) || 'Invalid IP Address'
+
+
+    function remove (settings: Settings, item: Address4|Address6) {
+      settings.whitelist = settings.whitelist.filter(elem => elem !== item)
+    }
 
 
     const showPalette = ref(false)
@@ -83,6 +88,7 @@ export default function useFormValidation () {
         settings,
         form,
         validIP,
+        remove, //function to remove items from combobox
         showPalette,
         invertColor,
     }
