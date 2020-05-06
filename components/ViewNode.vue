@@ -10,18 +10,27 @@
             v-icon mdi-stop
           v-btn(:disabled='canDelete' icon).ml-1.mr-3
             v-icon mdi-delete
-      v-simple-table
-        tbody
-          template(v-for='(elem, i) in nodeInfo')
-            tr(v-if='!!elem.data' :key='i')
-              td {{ elem.dataName }}
-              td.text-end
-                copy-pill(
-                  color='accent'
-                  text-color='warning'
-                  :text='elem.data'
-                ).mr-3
-      v-btn(block @click='showSettings = !showSettings')
+      v-divider
+      v-container
+        v-simple-table(
+          :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
+        )
+          tbody
+            template(v-for='(elem, i) in nodeInfo')
+              tr(v-if='!!elem.data' :key='i')
+                td {{ elem.dataName }}
+                td.text-end
+                  copy-pill(
+                    color='accent'
+                    text-color='warning'
+                    :text='elem.data'
+                  ).mr-3
+      v-container
+        v-btn(
+          block
+          @click='showSettings = !showSettings'
+          color='secondary'
+        ).warning--text {{showSettings ? 'Collapse' : 'Expand'}} Settings
       v-expand-transition
         v-form(
           v-if='showSettings'
@@ -62,8 +71,8 @@
                     v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(item)')
                       | {{ item }}
               v-col(cols='12').pt-0
-                v-btn.px-4.warning--text(block type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
-                  | Update Settings
+                v-btn.px-4.warning--text(block type='submit' color='secondary' :loading='loading' :disabled='!valid')
+                  | Save Settings
 
           
 </template>
@@ -80,7 +89,6 @@ export default defineComponent({
   async fetch () {
     // @ts-ignore
     const ctx = this.$nuxt.context
-    console.log('fetching')
     const { postNode } = useNodeApi(ctx)
     const nodeData = await postNode(ctx.params.id)
   },
@@ -88,7 +96,7 @@ export default defineComponent({
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   setup (_, {root}) {
-
+    console.log(root.$vuetify)
     const nodeID = ref(root.$nuxt.context.params.id)
     const node = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
 
