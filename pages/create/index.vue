@@ -33,6 +33,7 @@ export default defineComponent({
   setup (_, {root}) {
     
     layoutStore.DRAWER(false)
+    layoutStore.SET_TITLE('Create Node')
     const steps = ref([0,1,2])
     const currentStep = computed({
       get: () => createStore.currentStep,
