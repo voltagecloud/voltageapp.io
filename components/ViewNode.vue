@@ -37,7 +37,7 @@
           ref='form'
           v-model='valid'
           lazy-validation
-          @submit.prevent='form.validate() ? updateSettings(nodeID, settings) : null'
+          @submit.prevent='confirmSettings'
         )
           v-container
             v-row(justify='center')
@@ -117,7 +117,7 @@ export default defineComponent({
     })
 
     const { deleteNode, updateSettings, loading } = useNodeApi(root.$nuxt.context)
-    const { canStart, canStop, canDelete} = useNodeControls(nodeData)
+    const { canStart, canStop, canDelete } = useNodeControls(nodeData)
     const { valid, form, validIP, remove } = useFormValidation()
 
     const colWidth = ref<HTMLBaseElement|null>(null)
@@ -129,6 +129,13 @@ export default defineComponent({
       }
     })
 
+    async function confirmSettings () {
+      if (form.value?.validate()) {
+        await updateSettings(nodeID.value, settings.value)
+        showSettings.value = false
+      }
+    }
+
     return {
       nodeID,
       nodeData,
@@ -136,7 +143,6 @@ export default defineComponent({
       showSettings,
       settings,
       deleteNode,
-      updateSettings,
       loading,
       canStart,
       canStop,
@@ -146,7 +152,8 @@ export default defineComponent({
       form,
       validIP,
       remove,
-      computedWidth
+      computedWidth,
+      confirmSettings
     }
   }
 })

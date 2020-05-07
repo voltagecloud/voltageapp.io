@@ -6,7 +6,7 @@ import { Address4, Address6 } from 'ip-address'
 export default function useFormValidation () {
     // is form valid
     const valid = ref(null)
-    const form = ref(null)
+    const form = ref<HTMLFormElement|null>(null)
 
     // email logic
     const email = ref('')
