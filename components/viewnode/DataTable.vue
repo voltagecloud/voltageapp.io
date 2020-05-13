@@ -4,14 +4,14 @@ v-container
     :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
   )
     tbody
-      template(v-for='(elem, i) in nodeInfo')
-        tr(v-if='!!elem.data' :key='i')
-          td {{ elem.dataName }}
+      template(v-for='(v, k) in nodeInfo')
+        tr(v-if='!!v' :key='k')
+          td {{ k }}
           td.text-end
             copy-pill(
               color='accent'
               text-color='warning'
-              :text='elem.data'
+              :text='v'
             ).mr-3
 </template>
 <script lang="ts">
@@ -28,15 +28,15 @@ export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  setup ({node}) {
-    const nodeInfo = computed(() => ([
-      { dataName: 'Status', data: node.status },
-      { dataName: 'Public Key', data: node.public_key },
-      { dataName: 'Onion Address', data: node.onion_address },
-      { dataName: 'Creation Date', data: node.creation_date },
-      { dataName: 'Expiry Date', data: node.expires },
-      { dataName: 'API Endpoint', data: node.api_endpoint }
-    ]))
+  setup (props) {
+    const nodeInfo = computed(() => ({
+      Status: props.node.status,
+      'Public Key': props.node.public_key,
+      'Onion Address': props.node.onion_address,
+      'Creation Date': props.node.creation_date,
+      'Expiry Date': props.node.expires,
+      'API Endpoint': props.node.api_endpoint
+    }))
 
     return {
       nodeInfo

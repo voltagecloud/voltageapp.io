@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { IDName, Network } from '~/types/api'
-import { Node, User } from '~/types/apiResponse'
+import { Node, User, NodeStatusUpdate } from '~/types/apiResponse'
 
 interface AvailablePayload {
     network: Network
@@ -55,9 +55,19 @@ export default class NodeModule extends VuexModule {
     }
 
     @Mutation
-    UPDATE_NODES (node: Node) {
-        const uniqueNodes = this.nodes.filter(nodeObj => nodeObj.node_id !== nodeObj.node_id)
+    ADD_NODE (node: Node) {
+        const uniqueNodes = this.nodes.filter(nodeObj => nodeObj.node_id !== node.node_id)
         this.nodes = [...uniqueNodes, node]
+    }
+
+    @Mutation
+    UPDATE_NODE (payload: NodeStatusUpdate) {
+        this.nodes = this.nodes.map(nodeObj => {
+            if (nodeObj.node_id == payload.node_id) {
+                return Object.assign({}, nodeObj, payload)
+            }
+            return nodeObj
+        })
     }
 
     // @Mutation

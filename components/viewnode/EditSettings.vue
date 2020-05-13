@@ -63,7 +63,7 @@ export default defineComponent({
   },
   setup ({node}, {root}) {
     const showSettings = ref(false)
-    const { valid, form, validIP } = useFormValidation()
+    const { valid, form, validIP, remove } = useFormValidation()
 
     const settings = ref(Object.assign({}, node.settings || {}))
 
@@ -95,7 +95,8 @@ export default defineComponent({
       colWidth,
       computedWidth,
       confirmSettings,
-      loading
+      loading,
+      remove
     }
   }
 })

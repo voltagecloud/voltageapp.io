@@ -41,7 +41,7 @@ export default function useNodeApi ({ $axios }: Context) {
             }
         )
         createStore.NEW_NODE_ID(node.data?.['node_id'])
-        nodeStore.UPDATE_NODES(node.data)
+        nodeStore.ADD_NODE(node.data)
         nodeStore.SET_NODE_IDS({
             network: node.data?.network,
             idName: [{
@@ -58,7 +58,7 @@ export default function useNodeApi ({ $axios }: Context) {
         const node = await $axios.post<Node>('/node', {
             node_id: id
         })
-        nodeStore.UPDATE_NODES(node.data)
+        nodeStore.ADD_NODE(node.data)
         createStore.HYDRATE_SETTINGS(node.data.settings)
         loading.value = false
         return node.data
@@ -70,7 +70,7 @@ export default function useNodeApi ({ $axios }: Context) {
             node_id: id,
             settings
         })
-        nodeStore.UPDATE_NODES(res.data)
+        nodeStore.ADD_NODE(res.data)
         loading.value = false
         return res
     }

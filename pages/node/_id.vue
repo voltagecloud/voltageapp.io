@@ -1,16 +1,14 @@
 <template lang="pug">
-  v-container
-    v-row
-      v-col
-        v-fade-transition
-          node-controls(v-if='nodeData && nodeData.node_name' :node='nodeData')
-            template(v-slot:append-content)
-              v-divider
-              data-table(:node='nodeData')
-              v-divider
-              edit-settings(:node='nodeData')
-              
-        
+v-container
+  v-row
+    v-col
+      v-fade-transition
+        node-controls(v-if='nodeData && nodeData.node_name' :node='nodeData')
+          template(v-slot:append-content)
+            v-divider
+            data-table(:node='nodeData')
+            v-divider
+            edit-settings(:node='nodeData')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'

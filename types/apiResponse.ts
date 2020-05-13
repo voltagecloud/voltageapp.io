@@ -20,6 +20,17 @@ export interface Node {
     settings: Settings
 }
 
+export interface NodeStatusUpdate {
+    "node_id": string
+    "owner": string
+    "node_name": string
+    "public_key": string
+    "onion_address": string
+    "api_endpoint": string
+    "status": NodeStatus
+    "network": Network
+}
+
 
 export interface User {
     user_id: string

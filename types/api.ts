@@ -8,6 +8,7 @@ export interface IDName {
 export enum NodeStatus {
     creating = 'creating',
     running = 'running',
+    starting = 'starting',
     failed = 'failed',
     unknown ='unknown',
     stopped = 'stopped',
