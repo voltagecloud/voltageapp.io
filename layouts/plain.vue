@@ -18,3 +18,10 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+main.v-content{
+  background-image: url('~assets/pattern.png');
+  background-repeat: repeat;
+  background-size: 300px;
+}
+</style>

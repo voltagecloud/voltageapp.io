@@ -3,8 +3,8 @@ v-container
   v-row
     v-col
       v-fade-transition
-        node-controls(v-if='nodeData && nodeData.node_name' :nodeID='nodeID')
-          template(v-slot:append-content)
+        node-controls(:nodeID='nodeID')
+          template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
             data-table(:node='nodeData')
             v-divider
