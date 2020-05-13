@@ -75,19 +75,12 @@ export default function useNodeApi ({ $axios }: Context) {
         return res
     }
 
-    async function deleteNode (id: string, network: Network) {
-        loading.value = true
-        const res = await $axios.post('/node/delete', { node_id: id })
-        loading.value = false
-        return res
-    }
 
     return {
         generateSeed,
         createNode,
         postNode,
         updateSettings,
-        deleteNode,
         loading
     }
 }
