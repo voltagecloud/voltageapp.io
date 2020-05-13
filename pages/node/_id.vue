@@ -3,7 +3,7 @@ v-container
   v-row
     v-col
       v-fade-transition
-        node-controls(v-if='nodeData && nodeData.node_name' :node='nodeData')
+        node-controls(v-if='nodeData && nodeData.node_name' :nodeID='nodeID')
           template(v-slot:append-content)
             v-divider
             data-table(:node='nodeData')
@@ -22,18 +22,13 @@ export default defineComponent({
     EditSettings: () => import('~/components/viewnode/EditSettings.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  async fetch () {
-    // @ts-ignore
-    const ctx = this.$nuxt.context
-    const { postNode } = useNodeApi(ctx)
-    await postNode(ctx.params.id)
-  },
   setup (_, {root}) {
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
 
     return {
-      nodeData
+      nodeData,
+      nodeID
     }
   }
 })
