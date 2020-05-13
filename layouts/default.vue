@@ -23,8 +23,7 @@
     v-app-bar(app='' clipped-left='' color='warning' dark='' hide-on-scroll='')
       v-btn(icon @click='showDrawer = !showDrawer')
         v-icon mdi-menu
-      //- v-toolbar-title.hidden-xs-only
-        //- | {{ layoutStore.appBarTitle }}
+      v-img(:src='require("~/assets/logo/name-white.svg")' max-height='18' max-width='100' contain )
       v-spacer
         //- v-btn.mx-2(icon='' @click='$vuetify.theme.dark = !$vuetify.theme.dark')
         //-   v-icon
