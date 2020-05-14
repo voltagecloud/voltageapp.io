@@ -1,5 +1,10 @@
 import { Network, Settings, NodeStatus, IDName } from '~/types/api'
 
+export enum PurchasedType {
+    paid = 'paid',
+    trial = 'trial'
+}
+
 export interface NodeSeed {
     name: string
     network: Network
@@ -18,6 +23,7 @@ export interface Node {
     expires: string
     creation_date: string
     settings: Settings
+    purchased_type: PurchasedType
 }
 
 export interface NodeStatusUpdate {

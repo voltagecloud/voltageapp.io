@@ -29,13 +29,13 @@
         //-   v-icon
         //-     | mdi-theme-light-dark
       v-btn(text to='/')
-        template(v-if='$vuetify.breakpoint.mdAndUp') Home&nbsp;
+        span(v-if='$vuetify.breakpoint.mdAndUp') Home&nbsp;
         v-icon mdi-home
       v-btn(text to='/create')
-        template(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
+        span(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
         v-icon mdi-plus
       v-btn(text to='/purchase')
-        template(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
+        span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
         v-icon mdi-cash-plus
         //- v-menu(bottom='' left='' offset-y='' origin='top right' transition='scale-transition')
         //-   template(v-slot:activator='{ on, attrs }')
@@ -106,56 +106,6 @@ export default defineComponent({
     }
   }
 })
-
-//   data () {
-//     return {
-//       showDrawer: null,
-//       notifications: [
-//         {
-//           title: 'some notif 1',
-//           to: '/'
-//         },
-//         {
-//           title: 'some notif 2',
-//           to: '/'
-//         },
-//         {
-//           title: 'some notif 3',
-//           to: '/'
-//         }
-//       ],
-//       navItems2: [
-//         {
-//           title: 'Manage Nodes',
-//           icon: 'mdi-resistor-nodes',
-//           fct: () => this.$router.push('/nodes')
-//         },
-//         {
-//           title: 'Settings',
-//           icon: 'mdi-cog-outline',
-//           fct: () => this.$router.push('/')
-//         },
-//         {
-//           title: 'Logout',
-//           icon: 'mdi-logout',
-//           fct: () => this.logout()
-//         }
-//       ]
-//     }
-//   },
-//   computed: {
-//     ...mapState({
-//       appBarTitle: state => state.meta.appBarTitle,
-//       testnetNodes: state => state.node.testnetNodeIDName
-//     })
-//   },
-//   methods: {
-//     async logout () {
-//       await this.$store.dispatch('auth/logout')
-//       this.$router.push('/')
-//     }
-//   }
-// }
 </script>
 <style lang="scss" scoped>
 main.v-content{

@@ -4,12 +4,12 @@ v-card(color='info')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
       v-row(align='center' justify='space-between' no-gutters)
-        v-col(@click='navigate' cols='auto')
+        v-col(@click='navigate' cols='4')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               | {{ nodeData.node_name }}
             v-col(cols='12').overline
-              | {{ nodeData.network }}
+              | {{ nodeData.purchased_type=='trial' ? 'Testnet (trial)' : nodeData.network }}
         v-col(cols='auto')
           v-row(justify='end')
             v-btn(icon ).mx-1
