@@ -3,14 +3,14 @@ v-card(color='info')
   v-progress-linear(indeterminate absolute top v-if='loading' color='accent')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
-      v-row(align='center' no-gutters)
-        v-col(@click='navigate')
+      v-row(align='center' justify='space-between' no-gutters)
+        v-col(@click='navigate' cols='auto')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               | {{ nodeData.node_name }}
             v-col(cols='12').overline
               | {{ nodeData.network }}
-        v-col
+        v-col(cols='auto')
           v-row(justify='end')
             v-btn(icon ).mx-1
               v-icon mdi-qrcode-scan
@@ -55,7 +55,6 @@ export default defineComponent({
         root.$router.push(`/node/${nodeData.value.node_id}`)
       }
     }
-
     
     return {
       ...useNodeControls(nodeData, root.$nuxt.context),

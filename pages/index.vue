@@ -1,11 +1,11 @@
 <template lang="pug">
   v-container(cols="12" lg="8")
-    v-row(justify="center" align="center")
+    v-row(justify="center" align="center" no-gutters)
       v-col(cols="12" md="8" xl='6')
         v-fade-transition(group)
           template(v-if='display')
-            v-container(v-for='(node, i) in nodes' :key='node.node_id')
-              v-col(cols='12')
+            div(v-for='(node, i) in nodes' :key='node.node_id')
+              v-col(cols='12').px-0
                 node-controls(:nodeID='node.node_id')
 
 </template>
