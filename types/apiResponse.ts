@@ -56,5 +56,4 @@ export interface User {
 export interface Connect {
     endpoint: string
     lndconnect_uri: string
-    lndconnect_qr: string
 }
