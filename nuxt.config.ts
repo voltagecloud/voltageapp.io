@@ -25,7 +25,11 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { color: '#fff4e3' },
+  loadingIndicator: {
+    name: '~/static/loader.html',
+    background: '#fff4e3'
+  },
   /*
   ** Global CSS
   */
