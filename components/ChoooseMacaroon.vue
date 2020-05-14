@@ -14,7 +14,7 @@
 import { defineComponent, ref, reactive, computed, watch } from '@vue/composition-api'
 import { MacaroonLevel, ApiType } from '~/types/api'
 import useNodeControls from '~/compositions/useNodeControls'
-import { nodeStore } from '../store'
+import { nodeStore } from '~/store'
 import { Connect } from '~/types/apiResponse'
 
 export default defineComponent({

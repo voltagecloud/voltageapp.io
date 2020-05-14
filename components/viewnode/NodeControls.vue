@@ -31,7 +31,7 @@ import { defineComponent, computed, reactive } from '@vue/composition-api'
 import useNodeControls from '~/compositions/useNodeControls'
 import useNodeApi from '~/compositions/useNodeApi'
 import { Node } from '~/types/apiResponse'
-import { nodeStore } from '../../store'
+import { nodeStore } from '~/store'
 
 
 export default defineComponent({

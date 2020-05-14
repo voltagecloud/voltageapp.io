@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent, reactive, computed } from '@vue/composition-api'
 import { nodeStore, createStore } from '~/store'
-import { Network } from '../types/api'
+import { Network } from '~/types/api'
 
 export default defineComponent({
   setup () {
