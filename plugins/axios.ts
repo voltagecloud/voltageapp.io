@@ -9,7 +9,6 @@ export default ({ $axios, store }: Context) => {
         // }
         if (!!authStore.user) {
             const access = authStore.user.getSignInUserSession()?.getAccessToken()?.getJwtToken()
-            console.log({ access })
             config.headers.common.Authorization = `Bearer ${access}`
         }
     })

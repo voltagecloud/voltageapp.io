@@ -7,13 +7,17 @@ v-card(color='info')
         v-col(@click='navigate' cols='4')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
-              | {{ nodeData.node_name }}
+              span {{ nodeData.node_name }}
+              span.hidden-xs-only.caption.warning--text.ml-2 {{ nodeData.status }}
             v-col(cols='12').overline
               | {{ nodeData.purchased_type=='trial' ? 'Testnet (trial)' : nodeData.network }}
         v-col(cols='auto')
           v-row(justify='end')
-            v-btn(icon ).mx-1
-              v-icon mdi-qrcode-scan
+            v-dialog(max-width='800')
+              template(v-slot:activator='{ on }')
+                v-btn(icon v-on='on').mx-1
+                  v-icon mdi-qrcode-scan
+              choose-macaroon(:nodeID='nodeData.node_id')
             v-btn(:disabled='!canStart' icon @click='startNode').mx-1
               v-icon mdi-play
             v-btn(:disabled='!canStop' icon @click='stopNode').mx-1
@@ -46,6 +50,9 @@ export default defineComponent({
     const { postNode } = useNodeApi(ctx)
     // @ts-ignore
     await postNode(this.nodeID)
+  },
+  components: {
+    ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
   },
   setup (props, {root}) {
     const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id == props.nodeID)[0])

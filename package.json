@@ -20,6 +20,7 @@
     "@vue/composition-api": "^0.5.0",
     "ip-address": "^6.3.0",
     "nuxt": "^2.0.0",
+    "qrcode.vue": "^1.7.0",
     "vuex-module-decorators": "^0.16.1"
   },
   "devDependencies": {

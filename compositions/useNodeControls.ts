@@ -1,6 +1,6 @@
 import { computed, ref, Ref } from '@vue/composition-api'
-import { NodeStatus, Network } from '~/types/api'
-import { Node, NodeStatusUpdate } from '~/types/apiResponse'
+import { NodeStatus, Network, MacaroonLevel, ApiType } from '~/types/api'
+import { Node, NodeStatusUpdate, Connect } from '~/types/apiResponse'
 import { Context } from '@nuxt/types'
 import { nodeStore } from '~/store'
 
@@ -49,6 +49,17 @@ export default function useNodeControls (node: Ref<Node>, { $axios }: Context) {
         return res
     }
 
+    async function connect (macaroon: MacaroonLevel, api: ApiType) {
+        loading.value = true
+        const res = await $axios.post<Connect>('/node/connect', {
+            node_id: node.value.node_id,
+            macaroon,
+            api
+        })
+        loading.value = false
+        return res
+    }
+
     return {
         canStart,
         canStop,
@@ -56,6 +67,7 @@ export default function useNodeControls (node: Ref<Node>, { $axios }: Context) {
         loading,
         deleteNode,
         startNode,
-        stopNode
+        stopNode,
+        connect
     }
 }

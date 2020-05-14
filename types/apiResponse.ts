@@ -52,3 +52,9 @@ export interface User {
     deleted_mainnet_nodes: IDName[]
     deleted_testnet_nodes: IDName[]
 }
+
+export interface Connect {
+    endpoint: string
+    lndconnect_uri: string
+    lndconnect_qr: string
+}

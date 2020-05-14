@@ -43,3 +43,8 @@ export enum MacaroonLevel {
     chainnotifier = 'chainnotifier',
     admin = 'admin'
 }
+
+export enum ApiType {
+    grpc = 'grpc',
+    rest = 'rest'
+}
