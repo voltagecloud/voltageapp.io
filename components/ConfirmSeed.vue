@@ -3,7 +3,7 @@
     div.text-center.warning--text
       | Your seed phrase is
     v-divider.mx-12.mb-6
-    v-fade-transition.justify-center.align-center.row.px-2(key='seed' group='' appear='' tag='div' name='staggerd-fade' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
+    v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
       span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in createStore.seed' :key='i' :data-index='i') {{ word }}
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12

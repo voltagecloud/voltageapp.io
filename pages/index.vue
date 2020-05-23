@@ -1,7 +1,7 @@
 <template lang="pug">
-  v-container(cols="12" lg="8")
-    v-row(justify="center" align="center" no-gutters)
-      v-col(cols="12" md="8" xl='6')
+  v-container
+    v-row(justify='center' align='center' no-gutters)
+      v-col(cols='12' lg='10' xl='8')
         v-fade-transition(group)
           template(v-if='display')
             div(v-for='(node, i) in nodes' :key='node.node_id')

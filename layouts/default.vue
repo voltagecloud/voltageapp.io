@@ -51,7 +51,7 @@
       //- v-btn.mx-2(icon='' @click="$router.push('user')")
       //-   v-icon
       //-     | mdi-account
-    v-content
+    v-content(:class='{background: $route.path != "/settings"}')
       nuxt
     error-snackbar
     core-footer
@@ -79,14 +79,9 @@ export default defineComponent({
 
     const bottomItems = reactive([
       {
-        title: 'Manage Nodes',
-        icon: 'mdi-resistor-nodes',
-        fct: () => $router.push('/nodes')
-      },
-      {
         title: 'Settings',
         icon: 'mdi-cog-outline',
-        fct: () => $router.push('/')
+        fct: () => $router.push('/settings')
       },
       {
         title: 'Logout',
@@ -108,7 +103,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-main.v-content{
+main.v-content.background {
   background-image: url('~assets/pattern.png');
   background-repeat: repeat;
   background-size: 300px;
