@@ -3,7 +3,8 @@
     v-row(justify='center')
       v-col(cols='12')
         v-fade-transition(group)
-          node-export(:exportID='exportData.export_id' v-for='(exportData, i) in filteredExports' :key='exportData.export_id')
+          v-col(cols='12' v-for='(exportData, i) in filteredExports' :key='exportData.export_id')
+            node-export(:exportID='exportData.export_id')
 
 </template>
 <script lang="ts">
