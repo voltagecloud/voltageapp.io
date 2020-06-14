@@ -8,14 +8,17 @@ v-container
             v-divider
             data-table(:node='nodeData')
             v-divider
-            v-container
+            v-container(v-if='canInit')
               v-btn(color='secondary' block).warning--text Initialize
+            v-container(v-if='canUnlock')
+              v-btn(color='secondary' block).warning--text Unlock
             edit-settings(:node='nodeData')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import useNodeApi from '~/compositions/useNodeApi'
 import { nodeStore } from '~/store'
+import useNodeStatus from '~/compositions/useNodeStatus'
 
 export default defineComponent({
   components: {
@@ -28,9 +31,13 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
 
+    const { canInit, canUnlock } = useNodeStatus(nodeData)
+
     return {
       nodeData,
-      nodeID
+      nodeID,
+      canInit,
+      canUnlock
     }
   }
 })

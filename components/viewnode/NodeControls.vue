@@ -15,7 +15,7 @@ v-card(color='info')
           v-row(justify='end')
             v-dialog(max-width='800')
               template(v-slot:activator='{ on }')
-                v-btn(icon v-on='on').mx-1
+                v-btn(icon v-on='on' :disabled='!canConnect').mx-1
                   v-icon mdi-qrcode-scan
               choose-macaroon(:nodeID='nodeData.node_id')
             v-btn(:disabled='!canStart' icon @click='startNode').mx-1
@@ -29,6 +29,7 @@ v-card(color='info')
 <script lang="ts">
 import { defineComponent, computed, reactive } from '@vue/composition-api'
 import useNodeControls from '~/compositions/useNodeControls'
+import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import { Node } from '~/types/apiResponse'
 import { nodeStore } from '~/store'
@@ -62,9 +63,15 @@ export default defineComponent({
         root.$router.push(`/node/${nodeData.value.node_id}`)
       }
     }
+
+    const { canStart, canStop, canDelete, canConnect } = useNodeStatus(nodeData)
     
     return {
       ...useNodeControls(nodeData, root.$nuxt.context),
+      canStart,
+      canStop,
+      canDelete,
+      canConnect,
       nodeData,
       navigate
     }

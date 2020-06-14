@@ -6,13 +6,14 @@ export interface IDName {
 }
 
 export enum NodeStatus {
-    creating = 'creating',
-    running = 'running',
+    provisioning = 'provisioning',
     starting = 'starting',
-    failed = 'failed',
-    unknown ='unknown',
-    stopped = 'stopped',
     stopping = 'stopping',
+    running = 'running',
+    stopped = 'stopped',
+    failed = 'failed',
+    waiting_init = 'waiting_init',
+    waiting_unlock = 'waiting_unlock',
     deleted = 'deleted',
     expired = 'expired'
 }
@@ -47,4 +48,12 @@ export enum MacaroonLevel {
 export enum ApiType {
     grpc = 'grpc',
     rest = 'rest'
+}
+
+
+export enum ExportData {
+    full = 'full',
+    log = 'log',
+    channelbackup = 'channelbackup',
+    tls = 'tls'
 }
