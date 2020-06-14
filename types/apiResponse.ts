@@ -11,19 +11,27 @@ export interface NodeSeed {
     seed: string[]
 }
 
-export interface Node {
+export interface CreateNode {
     node_id: string
-    owner: string
-    node_name: string
-    public_key: string
-    onion_address: string
-    api_endpoint: string
-    status: NodeStatus
+    owner_id: string
     network: Network
     expires: string
-    creation_date: string
-    settings: Settings
+    created: string
     purchased_type: PurchasedType
+}
+
+export interface PopulateNode extends CreateNode {
+    node_name: string
+    api_endpoint: string
+    status: NodeStatus
+    lnd_version: string
+    tls_cert: string
+    macaroon_backup: boolean
+    macaroons: string[]
+}
+
+export interface Node extends PopulateNode {
+    settings: Settings
 }
 
 export interface NodeStatusUpdate {

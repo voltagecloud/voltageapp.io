@@ -2,7 +2,7 @@
   v-card(color='info')
     v-card-title.font-weight-light.warning--text.text--darken-1
       | Creating {{ displayNetwork }} Node {{ isTrial }}
-    v-form(ref='form' v-model='valid' lazy-validation='' @submit.prevent='createNode')
+    v-form(ref='form' v-model='valid' lazy-validation='' @submit.prevent='handlePopulate')
       v-container
         v-row(justify='center')
           v-col(cols='12').pb-0
@@ -36,10 +36,10 @@
                   | {{ item }}
           v-col(cols='12').pt-0
             v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
-              | Create Node
+              | Save Settings
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -58,18 +58,20 @@ export default defineComponent({
       showPalette,
       invertColor,
     } = useFormValidation()
-    const { generateSeed, loading } = useNodeApi(root.$nuxt.context)
+    const { populateNode, loading } = useNodeApi(root.$nuxt.context)
 
     const oppositeColor = computed(() => invertColor(settings.color))
 
-    async function createNode () {
-      if (form.value.validate()) {
-        createStore.SETTINGS(settings)
-        await generateSeed(nodeName.value, createStore.network, createStore.trial)
-      }
+    async function handlePopulate () {
+      createStore.SETTINGS(settings)
+      const res = await populateNode()
+      root.$router.push(`/node/${createStore.newNodeID}`)
     }
 
-    const nodeName = ref(createStore.nodeName.value)
+    const nodeName = computed({
+      get: () => createStore.nodeName,
+      set: (v: string) => createStore.NODE_NAME(v)
+    })
 
     const displayNetwork = computed(() => {
       const n = createStore.network
@@ -86,7 +88,7 @@ export default defineComponent({
       nodeName,
       form,
       loading,
-      createNode,
+      handlePopulate,
       remove,
       displayNetwork,
       isTrial,
@@ -96,41 +98,5 @@ export default defineComponent({
       colWidth
     }
   }
-  // data () {
-  //   return {
-  //     valid: true,
-  //     nodeName: '',
-  //     // defaults populated on create hook
-  //     settings: {},
-  //     loading: false,
-  //     rules: {
-  //       exists: v => v.length > 0 || 'Required Field'
-  //     }
-  //   }
-  // },
-  // computed: {
-  //   network () {
-  //     const network = this.$store.state.create.network
-  //     return network.charAt(0).toUpperCase() + network.slice(1)
-  //   }
-  // },
-  // created () {
-  //   this.nodeName = `${this.$store.state.create.nodeName}`
-  //   this.settings = Object.assign({}, this.$store.state.create.settings)
-  // },
-  // methods: {
-  //   async createNode () {
-  //     if (this.$refs.form.validate()) {
-  //       this.loading = true
-  //       this.$store.commit('create/NODE_NAME', this.nodeName)
-  //       this.$store.commit('create/SETTINGS', this.settings)
-  //       await this.$store.dispatch('create/generateSeed')
-  //       this.loading = false
-  //     }
-  //   },
-  //   remove (item) {
-  //     this.settings.whitelist = this.settings.whitelist.filter(elem => elem !== item)
-  //   }
-  // }
 })
 </script>

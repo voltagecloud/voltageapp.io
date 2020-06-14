@@ -31,9 +31,9 @@ export default defineComponent({
   setup (props) {
     const nodeInfo = computed(() => ({
       Status: props.node.status,
-      'Public Key': props.node.public_key,
-      'Onion Address': props.node.onion_address,
-      'Creation Date': props.node.creation_date,
+      'LND Version': props.node.lnd_version,
+      'TLS Cert': props.node.tls_cert,
+      'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
     }))

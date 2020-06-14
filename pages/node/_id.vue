@@ -8,6 +8,8 @@ v-container
             v-divider
             data-table(:node='nodeData')
             v-divider
+            v-container
+              v-btn(color='secondary' block).warning--text Initialize
             edit-settings(:node='nodeData')
 </template>
 <script lang="ts">

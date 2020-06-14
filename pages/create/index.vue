@@ -26,15 +26,15 @@ import { createStore, layoutStore } from '~/store'
 export default defineComponent({
   components: {
     CreateType: () => import('~/components/CreateType.vue'),
-    CreateNode: () => import('~/components/CreateNode.vue'),
-    ConfirmSeed: () => import('~/components/ConfirmSeed.vue')
+    CreateNode: () => import('~/components/CreateNode.vue')
+    // ConfirmSeed: () => import('~/components/ConfirmSeed.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, {root}) {
     
     layoutStore.DRAWER(false)
     layoutStore.SET_TITLE('Create Node')
-    const steps = ref([0,1,2])
+    const steps = ref([0,1])
     const currentStep = computed({
       get: () => createStore.currentStep,
       set: (v: number) => createStore.STEP(v)
@@ -46,8 +46,6 @@ export default defineComponent({
         return 'create-type'
       } else if (currentStep.value == 1) {
         return 'create-node'
-      } else {
-        return 'confirm-seed'
       }
     })
 

@@ -2,6 +2,14 @@
 
 > My amazing Nuxt.js project
 
+
+## TODO 
+
+* Node exports
+* Node initialization
+* Working MFA
+* General Polish
+
 ## Build Setup
 
 ```bash

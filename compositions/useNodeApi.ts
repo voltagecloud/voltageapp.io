@@ -1,8 +1,9 @@
 import { Context } from '@nuxt/types'
 import { createStore, nodeStore, layoutStore } from '~/store'
-import { NodeSeed, Node } from '~/types/apiResponse'
+import { NodeSeed, Node, CreateNode, PopulateNode } from '~/types/apiResponse'
 import { Settings, Network } from '~/types/api'
 import { ref } from '@vue/composition-api'
+
 
 export default function useNodeApi ({ $axios }: Context) {
     const loading = ref(false)
@@ -30,25 +31,28 @@ export default function useNodeApi ({ $axios }: Context) {
 
     async function createNode () {
         loading.value = true
-        const node = await $axios.post<Node>(
+        const node = await $axios.post<CreateNode>(
             '/node/create',
             {
                 network: createStore.network,
-                name: createStore.nodeName,
-                seed: createStore.seed,
-                purchased_type: createStore.trial ? 'trial' : 'paid',
-                settings: createStore.settings
+                purchased_type: createStore.trial ? 'trial' : 'paid'
             }
         )
         createStore.NEW_NODE_ID(node.data?.['node_id'])
-        nodeStore.ADD_NODE(node.data)
-        nodeStore.SET_NODE_IDS({
-            network: node.data?.network,
-            idName: [{
-                node_id: node.data?.node_id,
-                node_name: node.data?.node_name
-            }]
-        })
+        loading.value = false
+        return node
+    }
+
+    async function populateNode () {
+        loading.value = true
+        const node = await $axios.post<PopulateNode>(
+            '/node/populate',
+            {
+                node_id: createStore.newNodeID,
+                name: createStore.nodeName,
+                settings: createStore.settings
+            }
+        )
         loading.value = false
         return node
     }
@@ -79,6 +83,7 @@ export default function useNodeApi ({ $axios }: Context) {
     return {
         generateSeed,
         createNode,
+        populateNode,
         postNode,
         updateSettings,
         loading

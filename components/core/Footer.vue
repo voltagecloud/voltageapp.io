@@ -5,8 +5,8 @@
     elevation="3"
   >
     <v-container fluid>
-      <v-row justify="end">
-        <div class="pr-4 font-weight-light warning--text text--darken-1">
+      <v-row justify="start">
+        <div class="px-4 font-weight-light warning--text text--darken-1">
           Copyright &copy; 2020 VoltageApp
         </div>
       </v-row>
