@@ -23,6 +23,7 @@ v-container
                 v-switch(v-model='settings.rest' label='REST' inset color='highlight')
                 v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
                 v-switch(v-model='settings.keysend' label='Keysend' inset color='highlight')
+                v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12' sm='8' md='6')
             v-color-picker(
               v-if='!!colWidth'
@@ -66,6 +67,7 @@ export default defineComponent({
     const { valid, form, validIP, remove } = useFormValidation()
 
     const settings = ref(Object.assign({}, node.settings || {}))
+    const backupMacaroon = ref(!!node.macaroon_backup)
 
     const { updateSettings, loading  } = useNodeApi(root.$nuxt.context)
 
@@ -80,7 +82,7 @@ export default defineComponent({
 
     async function confirmSettings () {
       if (form.value?.validate()) {
-        await updateSettings(node.node_id, settings.value)
+        await updateSettings(node.node_id, backupMacaroon.value, settings.value)
         showSettings.value = false
       }
     }
@@ -92,6 +94,7 @@ export default defineComponent({
       validIP,
       showSettings,
       settings,
+      backupMacaroon,
       colWidth,
       computedWidth,
       confirmSettings,

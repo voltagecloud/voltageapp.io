@@ -16,6 +16,7 @@ export default class CreateModule extends VuexModule {
     network: Network = Network.testnet
     trial = false
     seed: string[] = []
+    macaroon_backup = true
     settings: Settings = {
         autopilot: true,
         grpc: true,
@@ -32,6 +33,11 @@ export default class CreateModule extends VuexModule {
     @Mutation
     NODE_NAME (name: string) {
         this.nodeName = name
+    }
+
+    @Mutation
+    MACAROON_BACKUP (v: boolean) {
+        this.macaroon_backup = v
     }
 
     @Mutation

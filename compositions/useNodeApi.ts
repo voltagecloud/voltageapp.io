@@ -68,10 +68,11 @@ export default function useNodeApi ({ $axios }: Context) {
         return node.data
     }
 
-    async function updateSettings (id: string, settings: Settings) {
+    async function updateSettings (id: string, backup: boolean, settings: Settings) {
         loading.value = true
         const res = await $axios.post('/node/settings',{
             node_id: id,
+            "macaroon_backup": backup,
             settings
         })
         nodeStore.ADD_NODE(res.data)
