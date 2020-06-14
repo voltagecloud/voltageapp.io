@@ -79,6 +79,11 @@ export default defineComponent({
 
     const bottomItems = reactive([
       {
+        title: 'Exports',
+        icon: 'mdi-file-export-outline',
+        fct: () => $router.push('/exports')
+      },
+      {
         title: 'Settings',
         icon: 'mdi-cog-outline',
         fct: () => $router.push('/settings')

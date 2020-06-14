@@ -1,6 +1,6 @@
 import { Context } from '@nuxt/types'
 import { createStore, nodeStore, layoutStore, exportsStore } from '~/store'
-import { NodeSeed, Node, CreateNode, PopulateNode } from '~/types/apiResponse'
+import { NodeSeed, Node, CreateNode, PopulateNode, NodeExport } from '~/types/apiResponse'
 import { Settings, Network, ExportData } from '~/types/api'
 import { ref } from '@vue/composition-api'
 
@@ -81,7 +81,7 @@ export default function useNodeApi ({ $axios }: Context) {
 
     async function startExport (id: string, exportData: ExportData) {
         loading.value = true
-        const res = await $axios.post('/export', {
+        const res = await $axios.post<NodeExport>('/export', {
             node_id: id,
             type: exportData
         })

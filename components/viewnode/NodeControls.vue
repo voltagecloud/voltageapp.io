@@ -4,7 +4,7 @@ v-card(color='info')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
       v-row(align='center' justify='space-between' no-gutters)
-        v-col(@click='navigate' cols='4')
+        v-col(@click='navigate' cols='4' style='cursor: pointer;')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               span {{ nodeData.node_name }}

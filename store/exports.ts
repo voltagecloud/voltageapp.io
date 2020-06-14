@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { NodeExport } from '~/types/apiResponse'
+import { NodeExport, NodeExportStatus } from '~/types/apiResponse'
 
 @Module({
     name: 'exports',
@@ -18,5 +18,9 @@ export default class ExportsModule extends VuexModule {
     @Mutation
     EXPORTS(data: NodeExport[]) {
         this.exports = data
+    }
+
+    get shouldRefresh () {
+        return this.exports.some((elem) => elem.status === NodeExportStatus.pending)
     }
 }

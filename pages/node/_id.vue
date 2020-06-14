@@ -13,6 +13,11 @@ v-container
             v-container(v-if='canUnlock')
               v-btn(color='secondary' block).warning--text Unlock
             edit-settings(:node='nodeData')
+            v-container
+              v-dialog(max-width='800')
+                template(v-slot:activator='{ on }')
+                  v-btn(v-on='on' color='secondary' block).warning--text Export Data
+                export-data(:nodeID='nodeID')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
@@ -24,7 +29,8 @@ export default defineComponent({
   components: {
     NodeControls: () => import('~/components/viewnode/NodeControls.vue'),
     DataTable: () => import('~/components/viewnode/DataTable.vue'),
-    EditSettings: () => import('~/components/viewnode/EditSettings.vue')
+    EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
+    ExportData: () => import('~/components/ExportData.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, {root}) {

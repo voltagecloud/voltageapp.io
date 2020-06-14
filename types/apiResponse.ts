@@ -37,14 +37,19 @@ export interface Node extends PopulateNode {
 
 export interface NodeExport {
     name: string
-    status: string
+    status: NodeExportStatus
     type: ExportData
     node_id: string
     owner_id: string
     export_id: string
-    expire_date: string
-    creation_date: string
+    expires: string
     url: string
+}
+
+export enum NodeExportStatus {
+    pending = 'pending',
+    created = 'created',
+    failed = 'failed'
 }
 
 export interface NodeStatusUpdate {
