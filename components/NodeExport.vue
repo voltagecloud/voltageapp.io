@@ -34,30 +34,33 @@
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
 import { NodeExportStatus, NodeExport } from '~/types/apiResponse'
+import { exportsStore } from '../store'
 
 export default defineComponent({
   props: {
-    exportData: {
+    exportID: {
       required: true,
-      type: Object as () => NodeExport
+      type: String
     }
   },
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  setup ({ exportData }) {
-    const isPending = computed(() => exportData.status === NodeExportStatus.pending)
+  setup ({ exportID }) {
+    const exportData = computed(() => exportsStore.exports.filter((elem) => elem.export_id === exportID)[0])
+    const isPending = computed(() => exportData.value.status === NodeExportStatus.pending)
 
     const exportInfo = computed(() => ({
-      Type: exportData.type,
-      "Node ID": exportData.node_id,
-      "Export ID": exportData.export_id,
-      "Expire Date": exportData.expires
+      Type: exportData.value.type,
+      "Node ID": exportData.value.node_id,
+      "Export ID": exportData.value.export_id,
+      "Expire Date": exportData.value.expires
     }))
 
     return {
       isPending,
-      exportInfo
+      exportInfo,
+      exportData
     }
   }
 })
