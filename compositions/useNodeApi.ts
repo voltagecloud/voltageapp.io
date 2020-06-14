@@ -1,7 +1,7 @@
 import { Context } from '@nuxt/types'
-import { createStore, nodeStore, layoutStore } from '~/store'
+import { createStore, nodeStore, layoutStore, exportsStore } from '~/store'
 import { NodeSeed, Node, CreateNode, PopulateNode } from '~/types/apiResponse'
-import { Settings, Network } from '~/types/api'
+import { Settings, Network, ExportData } from '~/types/api'
 import { ref } from '@vue/composition-api'
 
 
@@ -79,6 +79,17 @@ export default function useNodeApi ({ $axios }: Context) {
         return res
     }
 
+    async function startExport (id: string, exportData: ExportData) {
+        loading.value = true
+        const res = await $axios.post('/export', {
+            node_id: id,
+            type: exportData
+        })
+        loading.value = false
+        exportsStore.ADD_EXPORT(res.data)
+        return res
+    }
+
 
     return {
         generateSeed,
@@ -86,6 +97,7 @@ export default function useNodeApi ({ $axios }: Context) {
         populateNode,
         postNode,
         updateSettings,
-        loading
+        loading,
+        startExport
     }
 }

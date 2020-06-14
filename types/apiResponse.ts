@@ -1,4 +1,4 @@
-import { Network, Settings, NodeStatus, IDName } from '~/types/api'
+import { Network, Settings, NodeStatus, IDName, ExportData } from '~/types/api'
 
 export enum PurchasedType {
     paid = 'paid',
@@ -32,6 +32,19 @@ export interface PopulateNode extends CreateNode {
 
 export interface Node extends PopulateNode {
     settings: Settings
+}
+
+
+export interface NodeExport {
+    name: string
+    status: string
+    type: ExportData
+    node_id: string
+    owner_id: string
+    export_id: string
+    expire_date: string
+    creation_date: string
+    url: string
 }
 
 export interface NodeStatusUpdate {
