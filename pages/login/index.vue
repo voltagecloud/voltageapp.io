@@ -15,8 +15,9 @@
                   | {{ error.message }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
                   span(style='color: black;') Login
-                nuxt-link(to='register')
+                nuxt-link(to='/register')
                   | Dont have an account?
+                nuxt-link(to='/forgot').ml-3 Forgot Password?
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
@@ -27,7 +28,6 @@ export default defineComponent({
   layout: 'plain',
   middleware: ['loadCognito', 'assertUnAuthed'],
   components: {
-    // @ts-ignore
     BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
   },
   setup (_, { root: { $router }}) {

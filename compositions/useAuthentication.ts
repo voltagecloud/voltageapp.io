@@ -78,6 +78,20 @@ export default function useAuthentication () {
         }
     }
 
+    async function forgotPassword (email: string) {
+        loading.value = true
+        const res = await Auth.forgotPassword(email)
+        loading.value = false
+        return res
+    }
+
+    async function confirmNewPassword (email: string, code: string, newPw: string) {
+        loading.value = true
+        const res = await Auth.forgotPasswordSubmit(email, code, newPw)
+        loading.value = false
+        return res
+    }
+
     return {
         loading,
         login,
@@ -86,6 +100,8 @@ export default function useAuthentication () {
         logout,
         resend,
         confirm,
-        error
+        error,
+        forgotPassword,
+        confirmNewPassword
     }
 }
