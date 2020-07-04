@@ -14,7 +14,7 @@
               v-switch(v-model='settings.autopilot' label='Autopilot' color='highlight' inset)
               v-switch(v-model='settings.grpc' label='GRPC' color='highlight' inset)
               v-switch(v-model='settings.rest' label='REST' color='highlight' inset)
-              v-switch(v-model='settings.tor' label='Tor' color='highlight' inset)
+              //- v-switch(v-model='settings.tor' label='Tor' color='highlight' inset)
               v-switch(v-model="settings.keysend" label="Keysend" color="highlight" inset)
           v-col(cols='12')
             v-row(justify='center')
