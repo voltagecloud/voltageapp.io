@@ -10,13 +10,13 @@
                   v-row(align='center')
                     v-col(cols='auto') MFA is {{MFAState ? 'enabled': 'disabled'}}
                     v-spacer
-                    v-dialog(max-width='800')
+                    v-dialog(max-width='800' v-model='open')
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on').warning--text {{MFAState ? 'Disable' : 'Enable'}} MFA
-                      component(:is='MFAState ? "disable-mfa":"enable-mfa"')
+                      component(:is='MFAState ? "disable-mfa":"enable-mfa"' @done='open = false')
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import { authStore } from '~/store'
 
 export default defineComponent({
@@ -27,9 +27,12 @@ export default defineComponent({
   setup () {
     // @ts-ignore
     const MFAState = computed(() => !!authStore.user && authStore.user.preferredMFA != 'NOMFA')
+    const open = ref(false)
+    console.log(authStore.user)
 
     return {
-      MFAState
+      MFAState,
+      open
     }
   }
 })
