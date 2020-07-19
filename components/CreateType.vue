@@ -26,7 +26,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   setup (_, { root }) {
-    const stdMsg = 'You dont have any available nodes. Purchase one to create this node type.'
+    const stdMsg =  'Coming soon.' //'You dont have any available nodes. Purchase one to create this node type.'
     const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes == 0)
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
