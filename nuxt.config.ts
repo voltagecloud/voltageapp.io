@@ -97,7 +97,7 @@ export default {
           info: '#ffa45c',
           warning: '#5d5d5a',
           highlight: '#343851',
-          error: '#b31e6f',
+          error: '#8B0000',
           success: colors.green.accent3
         },
         dark: {

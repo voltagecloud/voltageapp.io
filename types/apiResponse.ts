@@ -84,3 +84,9 @@ export interface Connect {
     endpoint: string
     lndconnect_uri: string
 }
+
+export interface NodeNameResponse {
+    taken: boolean
+    valid: boolean
+    node_name: string
+}

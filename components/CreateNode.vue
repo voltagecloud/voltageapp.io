@@ -6,7 +6,15 @@
       v-container
         v-row(justify='center')
           v-col(cols='12').pb-0
-            v-text-field(v-model='nodeName' label='Node Name' outlined color='highlight' background-color='secondary' :rules='[required]' required='')
+            v-text-field(
+              v-model='nodeName'
+              label='Node Name'
+              outlined
+              color='highlight'
+              background-color='secondary'
+              :error-messages='errorMessage'
+              :rules='[required]'
+            )
           v-col(cols='12').py-0
             v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
           v-col(cols='12' md='10').px-10.py-0
@@ -40,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
 import { createStore, layoutStore } from '~/store'
@@ -58,7 +66,7 @@ export default defineComponent({
       showPalette,
       invertColor,
     } = useFormValidation()
-    const { populateNode, loading } = useNodeApi(root.$nuxt.context)
+    const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
 
     const oppositeColor = computed(() => invertColor(settings.color))
 
@@ -71,6 +79,20 @@ export default defineComponent({
     const nodeName = computed({
       get: () => createStore.nodeName,
       set: (v: string) => createStore.NODE_NAME(v)
+    })
+
+    const errorMessage = ref('')
+
+    watch(nodeName, async (val: string) => {
+      if (!val) return
+      const res = await checkNodeName(val, createStore.network)
+      if (res.data.taken) {
+        errorMessage.value = 'Node name is already taken'
+      } else if (!res.data.valid) {
+        errorMessage.value = 'Invalid node name'
+      } else {
+        errorMessage.value = ''
+      }
     })
 
     const displayNetwork = computed(() => {
@@ -95,7 +117,8 @@ export default defineComponent({
       validIP,
       showPalette,
       oppositeColor,
-      colWidth
+      colWidth,
+      errorMessage
     }
   }
 })
