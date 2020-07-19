@@ -1,14 +1,21 @@
 <template lang="pug">
   v-container
-    v-row(justify='center')
+    v-row(
+      v-if='!loading && !filteredExports.length'
+      justify='center'
+      align='center'
+      style='height: 100%;'
+    )
+      v-col(col='12').text-center
+        v-card You have not created any node exports
+    v-row(v-else justify='center')
       v-col(cols='12')
         v-fade-transition(group)
           v-col(cols='12' v-for='(exportData, i) in filteredExports' :key='exportData.export_id')
             node-export(:exportID='exportData.export_id')
-
 </template>
 <script lang="ts">
-import { defineComponent, SetupContext, computed } from '@vue/composition-api'
+import { defineComponent, SetupContext, computed, ref } from '@vue/composition-api'
 import { exportsStore } from '~/store'
 
 let timerID: NodeJS.Timeout
@@ -39,15 +46,21 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   async fetch () {
     // @ts-ignore
+    this.loading = true
+    // @ts-ignore
     const axios = this.$nuxt.context.$axios
     console.log(this)
     // @ts-ignore
     const res = await axios.get('/export')
     exportsStore.EXPORTS(res.data.exports)
     // @ts-ignore
+    this.loading = false
+    // @ts-ignore
     checkStartRefresh(this)
   },
   setup (_, { root }) {
+
+    const loading = ref(false)
 
     const filteredExports = computed(() => {
       return exportsStore.exports.filter((exp) => {
@@ -60,7 +73,8 @@ export default defineComponent({
     })
 
     return {
-      filteredExports
+      filteredExports,
+      loading
     }
   }
 })
