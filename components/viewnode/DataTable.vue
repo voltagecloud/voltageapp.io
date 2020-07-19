@@ -32,6 +32,7 @@ export default defineComponent({
     const nodeInfo = computed(() => ({
       Status: props.node.status,
       'LND Version': props.node.lnd_version,
+      'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,

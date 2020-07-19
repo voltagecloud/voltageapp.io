@@ -32,6 +32,7 @@ export interface PopulateNode extends CreateNode {
 
 export interface Node extends PopulateNode {
     settings: Settings
+    volt_version: String
 }
 
 
