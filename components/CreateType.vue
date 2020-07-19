@@ -9,14 +9,20 @@
             v-tooltip(top :disabled='!card.disabled')
               template(v-slot:activator='{ on }')
                 div(v-on='on')
-                  v-btn(@click='card.selectFn' :disabled='card.disabled' color='secondary' block :loading='loading').warning--text Create
+                  v-btn(
+                    @click='card.selectFn'
+                    :disabled='card.disabled || (loading && clickedButton !== i)'
+                    color='secondary'
+                    block
+                    :loading='loading && clickedButton === i'
+                  ).warning--text Create
               span {{ card.disabledMsg }}
 </template>
 <script lang="ts">
-import { defineComponent, reactive, computed } from '@vue/composition-api'
+import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
 import { nodeStore, createStore } from '~/store'
 import { Network } from '~/types/api'
-import useNodeApi from '../compositions/useNodeApi'
+import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   setup (_, { root }) {
@@ -25,11 +31,14 @@ export default defineComponent({
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
+    const clickedButton = ref<null|number>(null)
+
     const cards = reactive([
       {
         nodeType: 'Mainnet',
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
+          clickedButton.value = 0
           createStore.NODE_TYPE({network: Network.mainnet, trial: false})
           await createNode()
           createStore.STEP(1)
@@ -41,6 +50,7 @@ export default defineComponent({
         nodeType: 'Testnet (trial)',
         desc: 'Create a trial testnet lightning node. Experiment with test Bitcoins. This node will expire after one week.',
         selectFn: async () => {
+          clickedButton.value = 1
           createStore.NODE_TYPE({network: Network.testnet, trial: true})
           await createNode()
           createStore.STEP(1)
@@ -52,6 +62,7 @@ export default defineComponent({
         nodeType: 'Testnet (persistent)',
         desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
         selectFn: async () => {
+          clickedButton.value = 2
           createStore.NODE_TYPE({network: Network.testnet, trial:false})
           await createNode()
           createStore.STEP(1)
@@ -63,7 +74,8 @@ export default defineComponent({
 
     return {
       cards,
-      loading
+      loading,
+      clickedButton
     }
   }
 })
