@@ -14,6 +14,7 @@
               background-color='secondary'
               :error-messages='errorMessage'
               :rules='[required]'
+              @blur='validateName'
             )
           v-col(cols='12').py-0
             v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
@@ -83,9 +84,9 @@ export default defineComponent({
 
     const errorMessage = ref('')
 
-    watch(nodeName, async (val: string) => {
-      if (!val) return
-      const res = await checkNodeName(val, createStore.network)
+    async function validateName () {
+      if (!nodeName.value) return
+      const res = await checkNodeName(nodeName.value, createStore.network)
       if (res.data.taken) {
         errorMessage.value = 'Node name is already taken'
       } else if (!res.data.valid) {
@@ -93,7 +94,7 @@ export default defineComponent({
       } else {
         errorMessage.value = ''
       }
-    })
+    }
 
     const displayNetwork = computed(() => {
       const n = createStore.network
@@ -118,7 +119,8 @@ export default defineComponent({
       showPalette,
       oppositeColor,
       colWidth,
-      errorMessage
+      errorMessage,
+      validateName
     }
   }
 })
