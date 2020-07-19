@@ -96,7 +96,7 @@ export default {
           accent: '#ffcdab',
           info: '#ffa45c',
           warning: '#5d5d5a',
-          highlight: '#b31e6f',
+          highlight: '#343851',
           error: '#b31e6f',
           success: colors.green.accent3
         },
