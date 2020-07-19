@@ -7,7 +7,7 @@
     <v-container fluid>
       <v-row justify="start">
         <div class="px-4 font-weight-light warning--text text--darken-1">
-          Copyright &copy; 2020 VoltageApp
+          Copyright &copy; 2020 Voltage
         </div>
       </v-row>
     </v-container>
