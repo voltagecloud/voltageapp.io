@@ -22,12 +22,19 @@ v-card(color='info')
               v-icon mdi-play
             v-btn(:disabled='!canStop' icon @click='stopNode').mx-1
               v-icon mdi-stop
-            v-btn(:disabled='!canDelete' icon @click='deleteNode').ml-1.mr-3
+            v-btn(:disabled='!canDelete' icon @click='deleteModal = true').ml-1.mr-3
               v-icon mdi-delete
+            v-dialog(v-model='deleteModal' max-width='800')
+              v-card
+                v-card-text.pt-3 Are you sure you wish to delete this node?
+                v-card-actions
+                  v-btn(color='info' @click='closeAndDelete') Yes
+                  v-btn(@click='deleteModal = false') No
+              
     slot(name='append-content')
 </template>
 <script lang="ts">
-import { defineComponent, computed, reactive } from '@vue/composition-api'
+import { defineComponent, computed, reactive, ref } from '@vue/composition-api'
 import useNodeControls from '~/compositions/useNodeControls'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -64,16 +71,30 @@ export default defineComponent({
       }
     }
 
+    const deleteModal = ref(false)
+
     const { canStart, canStop, canDelete, canConnect } = useNodeStatus(nodeData)
     
+    const { deleteNode, startNode, stopNode, connect, loading } = useNodeControls(nodeData, root.$nuxt.context)
+
+    async function closeAndDelete () {
+      deleteModal.value = false
+      await deleteNode()
+    }
+
     return {
-      ...useNodeControls(nodeData, root.$nuxt.context),
       canStart,
       canStop,
       canDelete,
       canConnect,
       nodeData,
-      navigate
+      navigate,
+      deleteModal,
+      closeAndDelete,
+      startNode,
+      stopNode,
+      connect,
+      loading
     }
   }
 })
