@@ -5,6 +5,10 @@ export enum PurchasedType {
     trial = 'trial'
 }
 
+export interface CheckInvite {
+    granted: boolean
+}
+
 export interface NodeSeed {
     name: string
     network: Network

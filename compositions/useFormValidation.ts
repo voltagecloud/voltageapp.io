@@ -8,6 +8,8 @@ export default function useFormValidation () {
     const valid = ref<null|boolean>(null)
     const form = ref<HTMLFormElement|null>(null)
 
+    const invite = ref('')
+
     // email logic
     const email = ref('')
     const validEmail = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
@@ -76,6 +78,7 @@ export default function useFormValidation () {
 
 
     return {
+        invite,
         email,
         required,
         validEmail,
