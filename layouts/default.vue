@@ -34,9 +34,9 @@
       v-btn(text to='/create')
         span(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
         v-icon mdi-plus
-      v-btn(text to='/purchase')
-        span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
-        v-icon mdi-cash-plus
+      //- v-btn(text to='/purchase')
+      //-   span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
+      //-   v-icon mdi-cash-plus
         //- v-menu(bottom='' left='' offset-y='' origin='top right' transition='scale-transition')
         //-   template(v-slot:activator='{ on, attrs }')
         //-     v-btn.mx-2(v-bind='attrs' icon='' v-on='on')
