@@ -13,9 +13,13 @@
                   v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required='')
                   v-text-field(v-model='password' :rules='[char6, required]' :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" label='Password' required @click:append='showPassword = !showPassword')
                   v-text-field(v-model='confirmPassword' :rules='[char6, matchPassword, required]' :type="showPassword ? 'text' : 'password'" label='Confirm Password' required)
+                  v-col(cols='12' v-if='error').error--text
+                    | {{ error.message }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
-                  a(@click='currentStep += 1') Already have a confirmation code?
+                  a(@click='currentStep += 1') Resend Confirmation Code
+                  a   |   
+                  a(@click='$router.push("/login")') Login
                 v-form(v-else='' key='2' ref='confirmForm' v-model='valid' @submit.prevent='confirm')
                   v-text-field(v-model='email' label='Email' :rules='[required, validEmail]' required='')
                   v-text-field(v-model='confirmCode' label='Confirmation Code' :rules='[required]' required='')
@@ -24,6 +28,8 @@
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Confirm
                   a(@click='resend(email)') Resend Code
+                  a   |   
+                  a(@click='currentStep = 0') Register
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
@@ -43,9 +49,13 @@ export default defineComponent({
     const { register: registerApi, confirm: confirmApi, login, loading, resend, error } = useAuthentication()
 
     async function register () {
+      // set error to none so when retrying it will reset the error
+      error.value = ''
       await registerApi(logic.email.value, logic.password.value)
-      currentStep.value += 1
-      logic.valid.value = null
+      if (error.value === '') {
+        currentStep.value += 1
+        logic.valid.value = null
+      }
     }
 
     const confirmCode = ref('')

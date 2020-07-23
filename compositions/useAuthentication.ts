@@ -14,7 +14,12 @@ export default function useAuthentication () {
             authStore.SET_USER(user)
             return user
         } catch(e) {
-            error.value = e
+            if (e.code === "UserNotFoundException" ||
+                e.code === "NotAuthorizedException") {
+                error.value = "Invalid Login"
+            } else {
+                error.value = e
+            }
         } finally {
             loading.value = false
         }
@@ -80,9 +85,17 @@ export default function useAuthentication () {
 
     async function forgotPassword (email: string) {
         loading.value = true
-        const res = await Auth.forgotPassword(email)
-        loading.value = false
-        return res
+        try {
+            return await Auth.forgotPassword(email)
+        } catch (e) {
+            if (e.code === 'UserNotFoundException') {
+                error.value = "Email not found"
+            } else {
+                error.value = e
+            }
+        } finally {
+            loading.value = false
+        }
     }
 
     async function confirmNewPassword (email: string, code: string, newPw: string) {

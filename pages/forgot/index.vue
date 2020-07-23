@@ -12,9 +12,13 @@
               v-fade-transition(mode='out-in')
                 v-form(v-if='currentStep === 0' key='1' ref='form' v-model='valid' @submit.prevent='handleForm1')
                   v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required)
+                  v-col(cols='12' v-if='error').error--text
+                    | {{ error.message }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Request Reset
-                  a(@click='currentStep += 1') Already have a reset code?
+                  a(@click='currentStep += 1') Use Existing Code
+                  a   |   
+                  a(@click='$router.push("/login")') Login
                 v-form(v-else key='2' ref='confirmForm' v-model='valid' @submit.prevent='handleForm2')
                   v-text-field(v-model='email' label='Email' :rules='[required, validEmail]' required='')
                   v-text-field(v-model='code' label='Confirmation Code' :rules='[required]' required='')
@@ -24,6 +28,7 @@
                     | {{ error.message }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Reset
+                  a(@click='$router.push("/login")') Back to Login
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
@@ -49,9 +54,13 @@ export default defineComponent({
     const confirmForm = ref<HTMLFormElement|null>(null)
 
     async function handleForm1() {
+      // set error to none so when retrying it will reset the error
+      error.value = ''
       await forgotPassword(email.value)
-      currentStep.value += 1
-      valid.value = false
+      if (error.value === '') {
+        currentStep.value += 1
+        valid.value = false
+      }
     }
 
     async function handleForm2() {
