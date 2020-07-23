@@ -5,7 +5,13 @@
       v-container
         v-row(justify='center' no-gutters)
           v-col(cols='12') 
-            v-select(v-model='chosenExport' :items='exportTypes' placeholder='Export Type' outlined)
+            v-select(
+              v-model='chosenExport'
+              :items='exportTypes'
+              :error-messages='errorMessage'
+              placeholder='Export Type'
+              outlined
+            )
           v-col(cols='12')
             v-btn(color='info' @click='handleExport' block).warning--text Start Export
 </template>
@@ -19,20 +25,31 @@ export default defineComponent({
     nodeID: {
       type: String,
       required: true
+    },
+    nodeStatus: {
+      type: String,
+      required: true
     }
   },
   setup (props, { root }) {
     const chosenExport = ref(ExportData.full)
     const exportTypes = Object.values(ExportData)
-
+    const errorMessage = ref('')
     const { startExport, loading } = useNodeApi(root.$nuxt.context)
 
     async function handleExport () {
-      const res = await startExport(props.nodeID, chosenExport.value)
-      root.$router.push(`/exports?filter=${res.data.export_id}`)
+      if (props.nodeStatus !== "stopped" && chosenExport.value === "full") {
+        errorMessage.value = 'Node must be stopped for a full export'
+        return
+      } else {
+        errorMessage.value = ''
+        const res = await startExport(props.nodeID, chosenExport.value)
+        root.$router.push(`/exports?filter=${res.data.export_id}`)
+      }
     }
 
     return {
+      errorMessage,
       chosenExport,
       loading,
       handleExport,
