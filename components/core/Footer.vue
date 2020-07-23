@@ -7,7 +7,8 @@
     <v-container fluid>
       <v-row justify="start">
         <div class="px-4 font-weight-light warning--text text--darken-1">
-          Copyright &copy; 2020 Voltage
+          Copyright &copy; 2020 Voltage | <a href="https://getvoltage.io/terms.html" target="_blank">Terms</a>
+           - <a href="https://getvoltage.io/privacy.html" target="_blank">Privacy</a>
         </div>
       </v-row>
     </v-container>
