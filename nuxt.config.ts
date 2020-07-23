@@ -122,5 +122,11 @@ export default {
   //   */
   //   extend (config, ctx) {
   //   }
+  },
+  /*
+  ** Generate configuration
+  */
+  generate: {
+    fallback: '404.html'
   }
 } as Configuration
