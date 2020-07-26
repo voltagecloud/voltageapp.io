@@ -61,9 +61,13 @@ export default defineComponent({
     const confirmCode = ref('')
 
     async function confirm () {
+      // set error to none so when retrying it will reset the error
+      error.value = ''
       await confirmApi(logic.email.value, confirmCode.value)
-      await login(logic.email.value, logic.password.value)
-      root.$router.push('/')
+      if (error.value === '') {
+        await login(logic.email.value, logic.password.value)
+        root.$router.push('/')
+      }
     }
 
     return {
