@@ -17,7 +17,7 @@
                     | {{ error.message }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
-                  a(@click='currentStep += 1') Resend Confirmation Code
+                  a(@click='currentStep += 1') Use Existing Code
                   a   |   
                   a(@click='$router.push("/login")') Login
                 v-form(v-else='' key='2' ref='confirmForm' v-model='valid' @submit.prevent='confirm')

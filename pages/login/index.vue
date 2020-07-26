@@ -15,9 +15,9 @@
                   | {{ error.message }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
                   span(style='color: black;') Login
-                nuxt-link(to='/register')
+                a(@click='$router.push("/register")')
                   | Dont have an account?
-                nuxt-link(to='/forgot').ml-3 Forgot Password?
+                a(@click='$router.push("/forgot")').ml-3 Forgot Password?
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
