@@ -38,6 +38,7 @@ export default function useNodeApi ({ $axios }: Context) {
       }
     )
     createStore.NEW_NODE_ID(node.data?.['node_id'])
+    createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
     loading.value = false
     return node
   }

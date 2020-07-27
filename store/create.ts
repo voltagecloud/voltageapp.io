@@ -1,5 +1,6 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { Network, Settings } from '~/types/api'
+import { Address4, Address6 } from 'ip-address'
 
 interface NodeTypePayload {
     network: Network
@@ -71,6 +72,12 @@ export default class CreateModule extends VuexModule {
     @Mutation
     NEW_NODE_ID (nodeID: string) {
       this.newNodeID = nodeID
+    }
+
+    @Mutation
+    AUTOFILL_WHITELIST(ip: string) {
+        // @ts-ignore
+        this.settings.whitelist = [ip]
     }
 
     @Mutation
