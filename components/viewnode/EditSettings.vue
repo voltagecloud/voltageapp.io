@@ -30,7 +30,10 @@ v-container
               v-model='settings.color'
               mode='hexa'
               hide-mode-switch
+              hide-canvas
               show-swatches
+              hide-inputs
+              flat
               :width='computedWidth'
             ).mx-auto
           v-col(cols='12').pb-0

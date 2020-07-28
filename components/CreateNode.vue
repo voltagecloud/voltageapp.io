@@ -35,7 +35,10 @@
                     v-model='settings.color'
                     mode='hexa'
                     hide-mode-switch
+                    hide-canvas
                     show-swatches
+                    hide-inputs
+                    flat
                     :width="colWidth.clientWidth" 
                   )
           v-col(cols='12').pb-0.pt-1
