@@ -17,7 +17,7 @@ v-container
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
                   v-btn(v-on='on' color='secondary' block).warning--text Export Data
-                export-data(:nodeID='nodeID' :nodeStatus='nodeStatus')
+                export-data(:nodeID='nodeID' :nodeStatus='status')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
@@ -36,13 +36,12 @@ export default defineComponent({
   setup (_, {root}) {
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
-    const nodeStatus = ref(nodeData.value.status)
-    const { canInit, canUnlock } = useNodeStatus(nodeData)
+    const { canInit, canUnlock, status} = useNodeStatus(nodeData)
 
     return {
       nodeData,
       nodeID,
-      nodeStatus,
+      status,
       canInit,
       canUnlock
     }

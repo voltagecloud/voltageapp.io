@@ -33,12 +33,17 @@ export default function useNodeStatus (node: Ref<Node>) {
         return node.value.status === NodeStatus.waiting_unlock
     })
 
+    const status = computed(() => {
+        return node.value.status
+    })
+
     return {
         canStart,
         canStop,
         canDelete,
         canConnect,
         canInit,
-        canUnlock
+        canUnlock,
+        status
     }
 }
