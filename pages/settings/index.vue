@@ -8,6 +8,10 @@
               v-col(cols='12')
                 v-container.py-0
                   v-row(align='center')
+                    v-col(cols='auto') Email:
+                    v-spacer
+                     v-col(cols='auto') {{emailAddr}}
+                  v-row(align='center')
                     v-col(cols='auto') MFA is {{MFAState ? 'enabled': 'disabled'}}
                     v-spacer
                     v-dialog(max-width='800' v-model='open')
@@ -28,11 +32,13 @@ export default defineComponent({
     // @ts-ignore
     const MFAState = computed(() => !!authStore.user && authStore.user.preferredMFA != 'NOMFA')
     const open = ref(false)
-    console.log(authStore.user)
+    // @ts-ignore
+    const emailAddr = authStore.user.attributes.email
 
     return {
       MFAState,
-      open
+      open,
+      emailAddr
     }
   }
 })

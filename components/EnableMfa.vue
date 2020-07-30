@@ -5,7 +5,7 @@
       v-fade-transition
         v-card(v-if='step === 0' key='0' color='secondary' flat).text-center
           qrcode-vue(v-model='encodedSecret' size='300').my-3
-          copy-pill(:text='encodedSecret' color='accent' text-color='warning').text-break.my-3
+          // copy-pill(:text='encodedSecret' color='accent' text-color='warning').text-break.my-3
           v-btn(block @click='step += 1' color='info').my-3 I have scanned the code in Google Authenticator
         v-card(v-else ley='1' color='secondary' flat).text-center
           div Enter the code displayed in Authenticator
@@ -41,8 +41,9 @@ export default defineComponent({
 
     const encodedSecret = computed(() => {
       if (!authCode.value) return ''
-      const username = authStore.user?.getUsername()
-      return `otpauth://totp/Voltage:${username}?secret=${authCode.value}&issuer=Voltage&algorithm=SHA1&digits=6&period=30`
+      // @ts-ignore
+      const email = authStore.user.attributes.email
+      return `otpauth://totp/Voltage:${email}?secret=${authCode.value}&issuer=Voltage&algorithm=SHA1&digits=6&period=30`
     })
 
     async function confirmMFA () {
