@@ -13,7 +13,9 @@ export default function useNodeStatus (node: Ref<Node>) {
     const canStop = computed(() => {
         return node.value.status === NodeStatus.running ||
         node.value.status === NodeStatus.failed ||
-        node.value.status === NodeStatus.starting
+        node.value.status === NodeStatus.starting ||
+        node.value.status === NodeStatus.waiting_init ||
+        node.value.status === NodeStatus.waiting_unlock
     })
   
     const canDelete = computed(() => {
