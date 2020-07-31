@@ -10,7 +10,14 @@
                   v-row(align='center')
                     v-col(cols='auto') Email:
                     v-spacer
-                     v-col(cols='auto') {{emailAddr}}
+                     v-col(cols='auto').warning--text {{emailAddr}}
+                  v-row(align='center')
+                    v-col(cols='auto') Password
+                    v-spacer
+                    v-dialog(max-width='800' v-model='open')
+                      template(v-slot:activator='{ on }')
+                        v-btn(color='secondary' v-on='on').warning--text Change Password
+                      component(@done='open = false')
                   v-row(align='center')
                     v-col(cols='auto') MFA is {{MFAState ? 'enabled': 'disabled'}}
                     v-spacer
