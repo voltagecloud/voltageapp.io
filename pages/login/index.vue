@@ -8,7 +8,7 @@
               | Login
           v-card-actions
             v-col(cols='12')
-              v-form(ref='loginForm' v-model='valid' @submit.prevent='login')
+              v-form(v-if='!showMFA' key='0' v-model='valid' @submit.prevent='login')
                 v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required='')
                 v-text-field(
                   v-model='password'
@@ -21,13 +21,23 @@
                 v-col(cols='12' v-if='error').error--text
                   | {{ error.message || error }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
-                  span(style='color: black;') Login
+                  span.warning--text Login
                 a(@click='$router.push("/register")')
                   | Dont have an account?
                 a(@click='$router.push("/forgot")').ml-3 Forgot Password?
+              v-form(v-else v-model='valid' @submit.prevent='confirm' key='1')
+                v-text-field(
+                  v-model='code'
+                  label='MFA Code'
+                  :rules='[char6]'
+                )
+                v-col(cols='12' v-if='error').error--text
+                  | {{ error.message || error }}
+                v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light :loading='loading')
+                  span.warning--text Confirm
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, ref } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useAuthentication from '~/compositions/useAuthentication'
 
@@ -39,11 +49,24 @@ export default defineComponent({
   },
   setup (_, { root: { $router } }) {
     const { valid, email, password, required, validEmail, char6, showPassword } = useFormValidation()
-    const { login: dispatchLogin, loading, error } = useAuthentication()
+    const { login: dispatchLogin, loading, error, showMFA, confirmLogin } = useAuthentication()
 
     async function login () {
       try {
         await dispatchLogin(email.value, password.value)
+        console.log('show value')
+        if (!showMFA.value) {
+          $router.push('/')
+        }
+      } catch (error) {
+        console.log({ error })
+      }
+    }
+
+    const code = ref('')
+    async function confirm () {
+      try {
+        await confirmLogin(code.value)
         $router.push('/')
       } catch (error) {
         console.log({ error })
@@ -60,7 +83,10 @@ export default defineComponent({
       login,
       showPassword,
       loading,
-      error
+      error,
+      showMFA,
+      confirm,
+      code
     }
   }
 })

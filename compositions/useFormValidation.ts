@@ -25,8 +25,8 @@ export default function useFormValidation () {
 
   // generic validation
   const required = (v: string) => !!v || 'Value is required'
-  const char6 = (v: string) => v.length > 6 || 'Must be longer than 6 characters'
-  const validIP = (v: string[]) => v.length === 0 || v.every(e => {
+  const char6 = (v: string) => v.length >= 6 || 'Must be at least 6 characters'
+  const validIP = (v: string[]) => v.length === 0 || v.every((e) => {
     console.log({ e })
     const ip4 = new Address4(e)
     const ip6 = new Address6(e)

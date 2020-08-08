@@ -82,7 +82,7 @@ export default defineComponent({
     async function disableMfa () {
       loading.value = true
       const user = await Auth.currentAuthenticatedUser()
-      const disable = await Auth.setPreferredMFA(user, 'NOMFA')
+      await Auth.setPreferredMFA(user, 'NOMFA')
       await loadMFAState()
       loading.value = false
     }
