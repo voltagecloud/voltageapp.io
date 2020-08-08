@@ -10,7 +10,7 @@
         v-card(v-else ley='1' color='secondary' flat).text-center
           div Enter the code displayed in Authenticator
           v-text-field(v-model='newCode' label='Code' outlined).mt-3
-          v-btn(:disabled='newCode.length < 6' @click='confirmMFA' block).mb-3 Confirm MFA
+          v-btn(:disabled='newCode.length < 6' @click='confirmMFA' block color='secondary').mb-3.warning--text Confirm MFA
 
 </template>
 <script lang="ts">

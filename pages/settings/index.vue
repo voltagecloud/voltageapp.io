@@ -21,10 +21,13 @@
                   v-row(align='center')
                     v-col(cols='auto') {{ MFAText }}
                     v-spacer
-                    v-dialog(max-width='800' v-model='open')
-                      template(v-slot:activator='{ on }')
-                        v-btn(color='secondary' v-on='on').warning--text {{MFAState ? 'Disable' : 'Enable'}} MFA
-                      component(:is='MFAState ? "disable-mfa":"enable-mfa"' @done='handleComplete')
+                    template(v-if='!MFAEnabled')
+                      v-dialog(max-width='800' v-model='open')
+                        template(v-slot:activator='{ on }')
+                          v-btn(color='secondary' v-on='on' :loading='loading').warning--text Enable MFA
+                        enable-mfa(@done='handleComplete')
+                    template(v-else)
+                      v-btn(color='secondary' @click='disableMfa' :loading='loading').warning--text Disable MFA
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
@@ -38,15 +41,16 @@ export default defineComponent({
   },
   setup () {
     const loading = ref(true)
-    const MFAState = ref('')
+    const MFAState = ref('NOMFA')
+    const MFAEnabled = computed(() => MFAState.value === 'SOFTWARE_TOKEN_MFA')
 
     async function loadMFAState () {
       if (authStore.user) {
+        loading.value = true
         const user = await Auth.currentAuthenticatedUser()
         const res = await Auth.getPreferredMFA(user, {
           bypassCache: true
         })
-        console.log({ res })
         MFAState.value = res
         loading.value = false
       }
@@ -61,7 +65,7 @@ export default defineComponent({
     const MFAText = computed(() => {
       if (loading.value) {
         return 'Loading MFA settings...'
-      } else if (MFAState.value) {
+      } else if (MFAEnabled.value) {
         return 'MFA is enabled'
       } else {
         return 'MFA is disabled'
@@ -73,12 +77,23 @@ export default defineComponent({
       await loadMFAState()
     }
 
+    async function disableMfa () {
+      loading.value = true
+      const user = await Auth.currentAuthenticatedUser()
+      const disable = await Auth.setPreferredMFA(user, 'NOMFA')
+      await loadMFAState()
+      loading.value = false
+    }
+
     return {
       MFAState,
       open,
       emailAddr,
       MFAText,
-      handleComplete
+      handleComplete,
+      disableMfa,
+      MFAEnabled,
+      loading
     }
   }
 })
