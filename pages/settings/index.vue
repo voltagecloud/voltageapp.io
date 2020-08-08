@@ -24,7 +24,7 @@
                     v-dialog(max-width='800' v-model='open')
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on').warning--text {{MFAState ? 'Disable' : 'Enable'}} MFA
-                      component(:is='MFAState ? "disable-mfa":"enable-mfa"' @done='open = false')
+                      component(:is='MFAState ? "disable-mfa":"enable-mfa"' @done='handleComplete')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
@@ -68,11 +68,17 @@ export default defineComponent({
       }
     })
 
+    async function handleComplete () {
+      open.value = false
+      await loadMFAState()
+    }
+
     return {
       MFAState,
       open,
       emailAddr,
-      MFAText
+      MFAText,
+      handleComplete
     }
   }
 })
