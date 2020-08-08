@@ -6,6 +6,17 @@ interface NodeTypePayload {
     trial: boolean
 }
 
+const defaultSettings = {
+  autopilot: true,
+  grpc: true,
+  rest: false,
+  tor: false,
+  keysend: false,
+  alias: '',
+  color: '#EF820D',
+  whitelist: []
+}
+
 @Module({
   name: 'create',
   stateFactory: true,
@@ -17,16 +28,7 @@ export default class CreateModule extends VuexModule {
     trial = false
     seed: string[] = []
     macaroon_backup = true
-    settings: Settings = {
-      autopilot: true,
-      grpc: true,
-      rest: false,
-      tor: false,
-      keysend: false,
-      alias: '',
-      color: '#EF820D',
-      whitelist: []
-    }
+    settings: Settings = Object.assign({}, defaultSettings)
 
     newNodeID = ''
     currentStep = 0
@@ -73,5 +75,12 @@ export default class CreateModule extends VuexModule {
     @Mutation
     HYDRATE_SETTINGS (settings: Settings) {
       this.settings = Object.assign(this.settings, settings)
+    }
+
+    @Mutation
+    WIPE () {
+      this.settings = Object.assign(this.settings, defaultSettings)
+      this.nodeName = ''
+      this.newNodeID = ''
     }
 }

@@ -39,6 +39,7 @@ export default defineComponent({
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
           clickedButton.value = 0
+          createStore.WIPE()
           createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
           await createNode()
           createStore.STEP(1)
@@ -51,6 +52,7 @@ export default defineComponent({
         desc: 'Create a trial testnet lightning node. Experiment with test Bitcoins. This node will expire after one week.',
         selectFn: async () => {
           clickedButton.value = 1
+          createStore.WIPE()
           createStore.NODE_TYPE({ network: Network.testnet, trial: true })
           await createNode()
           createStore.STEP(1)
@@ -63,6 +65,7 @@ export default defineComponent({
         desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
         selectFn: async () => {
           clickedButton.value = 2
+          createStore.WIPE()
           createStore.NODE_TYPE({ network: Network.testnet, trial: false })
           await createNode()
           createStore.STEP(1)

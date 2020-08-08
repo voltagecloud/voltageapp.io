@@ -9,7 +9,7 @@ v-container
             data-table(:node='nodeData')
             v-divider
             v-container(v-if='canInit')
-              v-btn(color='secondary' block).warning--text Initialize
+              v-btn(color='secondary' block @click='initialize').warning--text Initialize
             v-container(v-if='canUnlock')
               v-btn(color='secondary' block).warning--text Unlock
             edit-settings(:node='nodeData')
@@ -37,12 +37,31 @@ export default defineComponent({
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, status } = useNodeStatus(nodeData)
 
+    async function initialize () {
+      const res = await root.$axios.get(
+        `/tls/${nodeStore.user?.user_id}/${nodeID.value}`
+      )
+      console.log({ res })
+      console.log(nodeData.value)
+      const seed = await root.$axios({
+        url: `http://${nodeData.value.api_endpoint}:8080/v1/genseed`,
+        method: 'get',
+        data: {
+          stateless_init: true
+        },
+        baseURL: ''
+      }
+      )
+      console.log({ seed })
+    }
+
     return {
       nodeData,
       nodeID,
       status,
       canInit,
-      canUnlock
+      canUnlock,
+      initialize
     }
   }
 })
