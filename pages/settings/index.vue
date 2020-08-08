@@ -11,6 +11,7 @@
                     v-col(cols='auto') Email:
                     v-spacer
                      v-col(cols='auto').warning--text {{emailAddr}}
+                  v-divider
                   v-row(align='center')
                     v-col(cols='auto') Password
                     v-spacer
@@ -18,6 +19,7 @@
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on').warning--text Change Password
                       component(@done='open = false')
+                  v-divider
                   v-row(align='center')
                     v-col(cols='auto') {{ MFAText }}
                     v-spacer
