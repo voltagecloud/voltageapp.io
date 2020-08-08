@@ -10,9 +10,16 @@
             v-col(cols='12')
               v-form(ref='loginForm' v-model='valid' @submit.prevent='login')
                 v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required='')
-                v-text-field(v-model='password' :rules='[char6]' label='Password' :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" @click:append='showPassword = !showPassword')
+                v-text-field(
+                  v-model='password'
+                  :rules='[char6]'
+                  label='Password'
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append='showPassword = !showPassword'
+                )
                 v-col(cols='12' v-if='error').error--text
-                  | {{ error.message }}
+                  | {{ error.message || error }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
                   span(style='color: black;') Login
                 a(@click='$router.push("/register")')

@@ -19,7 +19,7 @@
                         v-btn(color='secondary' v-on='on').warning--text Change Password
                       component(@done='open = false')
                   v-row(align='center')
-                    v-col(cols='auto') MFA is {{MFAState ? 'enabled': 'disabled'}}
+                    v-col(cols='auto') {{ MFAText }}
                     v-spacer
                     v-dialog(max-width='800' v-model='open')
                       template(v-slot:activator='{ on }')
@@ -27,7 +27,8 @@
                       component(:is='MFAState ? "disable-mfa":"enable-mfa"' @done='open = false')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
+import Auth from '@aws-amplify/auth'
 import { authStore } from '~/store'
 
 export default defineComponent({
@@ -36,16 +37,42 @@ export default defineComponent({
     EnableMfa: () => import('~/components/EnableMfa.vue')
   },
   setup () {
-    // @ts-ignore
-    const MFAState = computed(() => !!authStore.user && authStore.user.preferredMFA !== 'NOMFA')
+    const loading = ref(true)
+    const MFAState = ref('')
+
+    async function loadMFAState () {
+      if (authStore.user) {
+        const user = await Auth.currentAuthenticatedUser()
+        const res = await Auth.getPreferredMFA(user, {
+          bypassCache: true
+        })
+        console.log({ res })
+        MFAState.value = res
+        loading.value = false
+      }
+    }
+
+    onMounted(loadMFAState)
+
     const open = ref(false)
     // @ts-ignore
     const emailAddr = authStore.user.attributes.email
 
+    const MFAText = computed(() => {
+      if (loading.value) {
+        return 'Loading MFA settings...'
+      } else if (MFAState.value) {
+        return 'MFA is enabled'
+      } else {
+        return 'MFA is disabled'
+      }
+    })
+
     return {
       MFAState,
       open,
-      emailAddr
+      emailAddr,
+      MFAText
     }
   }
 })
