@@ -65,12 +65,12 @@ export default defineComponent({
       required: true
     }
   },
-  setup ({ node }, { root }) {
+  setup (props, { root }) {
     const showSettings = ref(false)
     const { valid, form, validIP, remove } = useFormValidation()
 
-    const settings = ref(Object.assign({}, node.settings || {}))
-    const backupMacaroon = ref(!!node.macaroon_backup)
+    const settings = ref(Object.assign({}, props.node.settings || {}))
+    const backupMacaroon = ref(!!props.node.macaroon_backup)
 
     const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
 
@@ -85,7 +85,7 @@ export default defineComponent({
 
     async function confirmSettings () {
       if (form.value?.validate()) {
-        await updateSettings(node.node_id, backupMacaroon.value, settings.value)
+        await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
         showSettings.value = false
       }
     }

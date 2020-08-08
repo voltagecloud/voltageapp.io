@@ -10,5 +10,6 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    camelcase: ['error', { properties: 'never' }]
   }
 }
