@@ -30,13 +30,13 @@ export default defineComponent({
   components: {
     BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
   },
-  setup (_, { root: { $router }}) {
+  setup (_, { root: { $router } }) {
     const { valid, email, password, required, validEmail, char6, showPassword } = useFormValidation()
     const { login: dispatchLogin, loading, error } = useAuthentication()
 
     async function login () {
       try {
-        const user = await dispatchLogin(email.value, password.value)
+        await dispatchLogin(email.value, password.value)
         $router.push('/')
       } catch (error) {
         console.log({ error })

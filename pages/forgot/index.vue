@@ -17,7 +17,7 @@
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Request Reset
                   a(@click='currentStep += 1') Use Existing Code
-                  a   |   
+                  a   |
                   a(@click='$router.push("/login")') Login
                 v-form(v-else key='2' ref='confirmForm' v-model='valid' @submit.prevent='handleForm2')
                   v-text-field(v-model='email' label='Email' :rules='[required, validEmail]' required='')
@@ -53,7 +53,7 @@ export default defineComponent({
     const form = ref<HTMLFormElement|null>(null)
     const confirmForm = ref<HTMLFormElement|null>(null)
 
-    async function handleForm1() {
+    async function handleForm1 () {
       // set error to none so when retrying it will reset the error
       error.value = ''
       await forgotPassword(email.value)
@@ -63,7 +63,7 @@ export default defineComponent({
       }
     }
 
-    async function handleForm2() {
+    async function handleForm2 () {
       await confirmNewPassword(email.value, code.value, confirmPassword.value)
       await login(email.value, confirmPassword.value)
       root.$router.push('/')

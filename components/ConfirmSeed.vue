@@ -18,7 +18,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 import useAnimation from '~/compositions/useAnimation'
 
 export default defineComponent({
-  setup (_, {root}) {
+  setup (_, { root }) {
     const { loading, createNode } = useNodeApi(root.$nuxt.context)
 
     async function confirmSeed () {

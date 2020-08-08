@@ -20,15 +20,15 @@ import { exportsStore } from '~/store'
 
 let timerID: NodeJS.Timeout
 
-function checkStartRefresh (root: SetupContext["root"]) {
+function checkStartRefresh (root: SetupContext['root']) {
   const anchor = root
   console.log({ anchor })
   console.log({ exportsStore })
   if (exportsStore.shouldRefresh && !timerID) {
     // make suer interval is clean
-    //set new interval
+    // set new interval
     const timerID = setInterval(async () => {
-      console.log({anchor})
+      console.log({ anchor })
       await anchor.$fetch()
       if (!exportsStore.shouldRefresh) {
         clearInterval(timerID)
@@ -59,7 +59,6 @@ export default defineComponent({
     checkStartRefresh(this)
   },
   setup (_, { root }) {
-
     const loading = ref(false)
 
     const filteredExports = computed(() => {

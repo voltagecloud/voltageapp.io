@@ -21,7 +21,6 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import useNodeApi from '~/compositions/useNodeApi'
 import { nodeStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 
@@ -33,10 +32,10 @@ export default defineComponent({
     ExportData: () => import('~/components/ExportData.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  setup (_, {root}) {
+  setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
-    const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id == nodeID.value)[0])
-    const { canInit, canUnlock, status} = useNodeStatus(nodeData)
+    const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
+    const { canInit, canUnlock, status } = useNodeStatus(nodeData)
 
     return {
       nodeData,

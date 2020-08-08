@@ -30,17 +30,15 @@ v-card(color='info')
                 v-card-actions
                   v-btn(color='info' @click='closeAndDelete') Yes
                   v-btn(@click='deleteModal = false') No
-              
+
     slot(name='append-content')
 </template>
 <script lang="ts">
-import { defineComponent, computed, reactive, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import useNodeControls from '~/compositions/useNodeControls'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
-import { Node } from '~/types/apiResponse'
 import { nodeStore } from '~/store'
-
 
 export default defineComponent({
   props: {
@@ -62,8 +60,8 @@ export default defineComponent({
   components: {
     ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
   },
-  setup (props, {root}) {
-    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id == props.nodeID)[0])
+  setup (props, { root }) {
+    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
 
     function navigate () {
       if (root.$route.name !== 'node-id') {
@@ -74,7 +72,7 @@ export default defineComponent({
     const deleteModal = ref(false)
 
     const { canStart, canStop, canDelete, canConnect } = useNodeStatus(nodeData)
-    
+
     const { deleteNode, startNode, stopNode, connect, loading } = useNodeControls(nodeData, root.$nuxt.context)
 
     async function closeAndDelete () {

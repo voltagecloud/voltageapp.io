@@ -28,22 +28,21 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props, {root}) {
+  setup (props, { root }) {
     const macaroonOpts = reactive(Object.values(MacaroonLevel))
     const macaroon = ref<MacaroonLevel|null>(null)
 
     const apiType = ref(ApiType.grpc)
-    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id == props.nodeID)[0])
+    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
 
     const { loading, connect } = useNodeControls(nodeData, root.$nuxt.context)
 
     const connectPayload = ref<Connect|null>(null)
-    
 
     watch([macaroon, apiType], async () => {
       if (macaroon.value) {
         console.log('posting')
-        const res = await connect(macaroon.value, apiType.value) 
+        const res = await connect(macaroon.value, apiType.value)
         if (res && res.data) {
           connectPayload.value = res.data
         }

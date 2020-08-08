@@ -22,26 +22,26 @@ import { defineComponent, computed } from '@vue/composition-api'
 import { layoutStore, nodeStore } from '~/store'
 
 export default defineComponent({
-    middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-    components: {
-        AvailableNode: () => import('~/components/AvailableNode.vue'),
-        NodeControls: () => import('~/components/viewnode/NodeControls.vue')
-    },
-    setup () {
-      layoutStore.SET_TITLE('Dashboard')
-      layoutStore.DRAWER(null)
+  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
+  components: {
+    AvailableNode: () => import('~/components/AvailableNode.vue'),
+    NodeControls: () => import('~/components/viewnode/NodeControls.vue')
+  },
+  setup () {
+    layoutStore.SET_TITLE('Dashboard')
+    layoutStore.DRAWER(null)
 
-      const nodes = computed(() => nodeStore.IDNames)
+    const nodes = computed(() => nodeStore.IDNames)
 
-      const display = computed(() => !!nodeStore.user)
+    const display = computed(() => !!nodeStore.user)
 
-      const noNodes = computed(() => nodes.value.length == 0 && display.value)
+    const noNodes = computed(() => nodes.value.length === 0 && display.value)
 
-      return {
-        nodes,
-        display,
-        noNodes
-      }
+    return {
+      nodes,
+      display,
+      noNodes
     }
+  }
 })
 </script>

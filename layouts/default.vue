@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from '@vue/composition-api'
+import { defineComponent, reactive, computed } from '@vue/composition-api'
 import useAuthentication from '~/compositions/useAuthentication'
 import { layoutStore, nodeStore } from '~/store'
 
@@ -68,14 +68,13 @@ export default defineComponent({
     CoreFooter: () => import('~/components/core/Footer.vue'),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue')
   },
-  setup (_, { root: { $router }}) {
+  setup (_, { root: { $router } }) {
     const { logout } = useAuthentication()
 
     const showDrawer = computed({
       get: () => layoutStore.showDrawer,
       set: (v: boolean | null) => layoutStore.DRAWER(v)
     })
-
 
     const bottomItems = reactive([
       {

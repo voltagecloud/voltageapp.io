@@ -4,7 +4,7 @@
     v-card-actions
       v-container
         v-row(justify='center' no-gutters)
-          v-col(cols='12') 
+          v-col(cols='12')
             v-select(
               v-model='chosenExport'
               :items='exportTypes'
@@ -38,9 +38,8 @@ export default defineComponent({
     const { startExport, loading } = useNodeApi(root.$nuxt.context)
 
     async function handleExport () {
-      if (props.nodeStatus !== "stopped" && chosenExport.value === "full") {
+      if (props.nodeStatus !== 'stopped' && chosenExport.value === 'full') {
         errorMessage.value = 'Node must be stopped for a full export'
-        return
       } else {
         errorMessage.value = ''
         const res = await startExport(props.nodeID, chosenExport.value)
@@ -54,7 +53,7 @@ export default defineComponent({
       loading,
       handleExport,
       exportTypes
-    }    
+    }
   }
 })
 </script>

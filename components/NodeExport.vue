@@ -33,8 +33,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { NodeExportStatus, NodeExport } from '~/types/apiResponse'
 import { exportsStore } from '../store'
+import { NodeExportStatus } from '~/types/apiResponse'
 
 export default defineComponent({
   props: {
@@ -47,14 +47,14 @@ export default defineComponent({
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   setup ({ exportID }) {
-    const exportData = computed(() => exportsStore.exports.filter((elem) => elem.export_id === exportID)[0])
+    const exportData = computed(() => exportsStore.exports.filter(elem => elem.export_id === exportID)[0])
     const isPending = computed(() => exportData.value.status === NodeExportStatus.pending)
 
     const exportInfo = computed(() => ({
       Type: exportData.value.type,
-      "Node ID": exportData.value.node_id,
-      "Export ID": exportData.value.export_id,
-      "Expire Date": exportData.value.expires
+      'Node ID': exportData.value.node_id,
+      'Export ID': exportData.value.export_id,
+      'Expire Date': exportData.value.expires
     }))
 
     return {

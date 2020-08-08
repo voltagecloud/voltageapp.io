@@ -9,7 +9,7 @@
               :key='i' :disabled='i > currentStep'
               :class='{ "v-btn--active": i == currentStep }'
               @click="currentStep=i"
-              outlined 
+              outlined
               fab
             ).mx-3 {{i + 1}}
       v-col(cols='12' xl='8')
@@ -18,9 +18,7 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from '@vue/composition-api'
-import useNodeApi from '~/compositions/useNodeApi'
-import useAnimation from '~/compositions/useAnimation'
+import { defineComponent, ref, computed } from '@vue/composition-api'
 import { createStore, layoutStore } from '~/store'
 
 export default defineComponent({
@@ -30,11 +28,10 @@ export default defineComponent({
     // ConfirmSeed: () => import('~/components/ConfirmSeed.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  setup (_, {root}) {
-    
+  setup () {
     layoutStore.DRAWER(false)
     layoutStore.SET_TITLE('Create Node')
-    const steps = ref([0,1])
+    const steps = ref([0, 1])
     const currentStep = computed({
       get: () => createStore.currentStep,
       set: (v: number) => createStore.STEP(v)
@@ -42,9 +39,9 @@ export default defineComponent({
     currentStep.value = 0
     createStore.SEED([])
     const currentComponent = computed(() => {
-      if (currentStep.value == 0) {
+      if (currentStep.value === 0) {
         return 'create-type'
-      } else if (currentStep.value == 1) {
+      } else if (currentStep.value === 1) {
         return 'create-node'
       }
     })
@@ -57,5 +54,3 @@ export default defineComponent({
   }
 })
 </script>
-
-

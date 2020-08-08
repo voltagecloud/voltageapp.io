@@ -65,14 +65,14 @@ export default defineComponent({
       required: true
     }
   },
-  setup ({node}, {root}) {
+  setup ({ node }, { root }) {
     const showSettings = ref(false)
     const { valid, form, validIP, remove } = useFormValidation()
 
     const settings = ref(Object.assign({}, node.settings || {}))
     const backupMacaroon = ref(!!node.macaroon_backup)
 
-    const { updateSettings, loading  } = useNodeApi(root.$nuxt.context)
+    const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -89,7 +89,6 @@ export default defineComponent({
         showSettings.value = false
       }
     }
-
 
     return {
       form,

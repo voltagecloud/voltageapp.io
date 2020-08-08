@@ -37,7 +37,7 @@ export default defineComponent({
   },
   setup () {
     // @ts-ignore
-    const MFAState = computed(() => !!authStore.user && authStore.user.preferredMFA != 'NOMFA')
+    const MFAState = computed(() => !!authStore.user && authStore.user.preferredMFA !== 'NOMFA')
     const open = ref(false)
     // @ts-ignore
     const emailAddr = authStore.user.attributes.email

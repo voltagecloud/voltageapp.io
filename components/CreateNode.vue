@@ -39,7 +39,7 @@
                     show-swatches
                     hide-inputs
                     flat
-                    :width="colWidth.clientWidth" 
+                    :width="colWidth.clientWidth"
                   )
           v-col(cols='12').pb-0.pt-1
             v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
@@ -52,15 +52,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
-import { createStore, layoutStore } from '~/store'
+import { createStore } from '~/store'
 
 export default defineComponent({
   name: 'CreateNode',
-  setup (_ , {root}) {
-    const { 
+  setup (_, { root }) {
+    const {
       valid,
       settings,
       required,
@@ -68,7 +68,7 @@ export default defineComponent({
       validIP,
       remove,
       showPalette,
-      invertColor,
+      invertColor
     } = useFormValidation()
     const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
 
@@ -77,6 +77,7 @@ export default defineComponent({
     async function handlePopulate () {
       createStore.SETTINGS(settings)
       const res = await populateNode()
+      console.log({ res })
       root.$router.push(`/node/${createStore.newNodeID}`)
     }
 
@@ -88,7 +89,7 @@ export default defineComponent({
     const errorMessage = ref('')
 
     async function validateName () {
-      if (!nodeName.value) return
+      if (!nodeName.value) { return }
       const res = await checkNodeName(nodeName.value, createStore.network)
       if (res.data.taken) {
         errorMessage.value = 'Node name is already taken'
@@ -101,7 +102,7 @@ export default defineComponent({
 
     const displayNetwork = computed(() => {
       const n = createStore.network
-      return n.charAt(0).toUpperCase() + n.slice(1) 
+      return n.charAt(0).toUpperCase() + n.slice(1)
     })
 
     const isTrial = computed(() => createStore.trial ? '(trial)' : '')

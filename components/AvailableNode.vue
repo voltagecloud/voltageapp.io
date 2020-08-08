@@ -16,9 +16,9 @@
               | Create New Node
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import { Network } from '~/types/api'
-import { createStore, nodeStore } from '~/store'
+import { nodeStore } from '~/store'
 
 export default defineComponent({
   props: {
@@ -27,12 +27,12 @@ export default defineComponent({
       required: true
     }
   },
-  setup ({ network }, { root }) {
-    const capitalized = computed(() => network.charAt(0).toUpperCase() + network.slice(1))
+  setup (props) {
+    const capitalized = computed(() => props.network.charAt(0).toUpperCase() + props.network.slice(1))
     const available = computed(() => {
-      return (network === 'testnet') ? nodeStore.testnetAvailable : nodeStore.mainnetAvailable
+      return (props.network === 'testnet') ? nodeStore.testnetAvailable : nodeStore.mainnetAvailable
     })
-    
+
     // function setupNode () {
     //   createStore.SEED([])
     //   createStore.NETWORK(network)
@@ -42,7 +42,7 @@ export default defineComponent({
     return {
       capitalized,
       // setupNode,
-      available,
+      available
     }
   }
 })

@@ -26,13 +26,13 @@ export default defineComponent({
   components: {
     BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
   },
-  setup (_, { root: { $router, $nuxt }}) {
+  setup (_, { root: { $router, $nuxt } }) {
     const { invite, char6, valid } = useFormValidation()
     const { checkInvite: tryInvite, loading, error } = useInvite($nuxt.context)
 
     async function checkInvite () {
       try {
-        const user = await tryInvite(invite.value)
+        await tryInvite(invite.value)
         $router.push('/login')
       } catch (error) {
         console.log({ error })

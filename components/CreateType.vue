@@ -26,8 +26,8 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   setup (_, { root }) {
-    const stdMsg =  'Coming soon.' //'You dont have any available nodes. Purchase one to create this node type.'
-    const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes == 0)
+    const stdMsg = 'Coming soon.' // 'You dont have any available nodes. Purchase one to create this node type.'
+    const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes === 0)
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
@@ -39,7 +39,7 @@ export default defineComponent({
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
           clickedButton.value = 0
-          createStore.NODE_TYPE({network: Network.mainnet, trial: false})
+          createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
           await createNode()
           createStore.STEP(1)
         },
@@ -51,7 +51,7 @@ export default defineComponent({
         desc: 'Create a trial testnet lightning node. Experiment with test Bitcoins. This node will expire after one week.',
         selectFn: async () => {
           clickedButton.value = 1
-          createStore.NODE_TYPE({network: Network.testnet, trial: true})
+          createStore.NODE_TYPE({ network: Network.testnet, trial: true })
           await createNode()
           createStore.STEP(1)
         },
@@ -63,7 +63,7 @@ export default defineComponent({
         desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
         selectFn: async () => {
           clickedButton.value = 2
-          createStore.NODE_TYPE({network: Network.testnet, trial:false})
+          createStore.NODE_TYPE({ network: Network.testnet, trial: false })
           await createNode()
           createStore.STEP(1)
         },
@@ -85,7 +85,7 @@ export default defineComponent({
   bottom: 0;
   width: 100%;
   position: absolute;
-  
+
   div {
     width: 100%;
   }

@@ -12,12 +12,10 @@
           v-text-field(v-model='newCode' label='Code' outlined).mt-3
           v-btn(:disabled='newCode.length < 6' @click='confirmMFA' block).mb-3 Confirm MFA
 
-          
 </template>
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from '@vue/composition-api'
-import Auth, { CognitoUser } from '@aws-amplify/auth'
-import useFormValidation from '~/compositions/useFormValidation'
+import { defineComponent, ref, computed } from '@vue/composition-api'
+import Auth from '@aws-amplify/auth'
 import { authStore } from '~/store'
 
 export default defineComponent({
@@ -27,33 +25,33 @@ export default defineComponent({
   },
   async fetch () {
     const res = await Auth.setupTOTP(authStore.user)
-    console.log({res})
+    console.log({ res })
     // @ts-ignore
     this.authCode = res
   },
   setup (_, { emit }) {
     const tab = ref(null)
-    const phoneNumber = ref('')
     const authCode = ref('')
     const step = ref(0)
     const newCode = ref('')
 
-
     const encodedSecret = computed(() => {
-      if (!authCode.value) return ''
+      if (!authCode.value) { return '' }
       // @ts-ignore
       const email = authStore.user.attributes.email
       return `otpauth://totp/Voltage:${email}?secret=${authCode.value}&issuer=Voltage&algorithm=SHA1&digits=6&period=30`
     })
 
     async function confirmMFA () {
-      const res = await Auth.verifyTotpToken(authStore.user, newCode.value)
-      authStore.user?.setUserMfaPreference(null, {
-        Enabled: true,
-        PreferredMfa: true
-      }, (err) => console.error(err))
-      console.log({ res })
-      emit('done')
+      if (authStore.user) {
+        const res = await Auth.verifyTotpToken(authStore.user, newCode.value)
+        authStore.user.setUserMfaPreference(null, {
+          Enabled: true,
+          PreferredMfa: true
+        }, err => console.error(err))
+        console.log({ res })
+        emit('done')
+      }
     }
 
     return {
