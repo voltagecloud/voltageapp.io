@@ -7,11 +7,11 @@ interface NodeTypePayload {
 }
 
 const defaultSettings = {
-  autopilot: true,
+  autopilot: false,
   grpc: true,
   rest: false,
   tor: false,
-  keysend: false,
+  keysend: true,
   alias: '',
   color: '#EF820D',
   whitelist: []
