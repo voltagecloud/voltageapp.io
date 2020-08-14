@@ -49,6 +49,8 @@ v-container
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
           v-col(cols='12').pt-0
+            v-p.warning--text
+              | Updating settings will restart your node.
             v-btn.px-4.warning--text(block type='submit' color='secondary' :loading='loading' :disabled='!valid')
               | Save Settings
 </template>
