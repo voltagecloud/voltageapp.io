@@ -38,17 +38,9 @@ export default defineComponent({
     const { canInit, canUnlock, status } = useNodeStatus(nodeData)
 
     async function initialize () {
-      const res = await root.$axios.get(
-        `/tls/${nodeStore.user?.user_id}/${nodeID.value}`
-      )
-      console.log({ res })
-      console.log(nodeData.value)
       const seed = await root.$axios({
-        url: `http://${nodeData.value.api_endpoint}:8080/v1/genseed`,
+        url: `https://${nodeData.value.api_endpoint}:8080/v1/genseed`,
         method: 'get',
-        data: {
-          stateless_init: true
-        },
         baseURL: ''
       }
       )

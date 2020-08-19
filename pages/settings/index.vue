@@ -15,16 +15,16 @@
                   v-row(align='center')
                     v-col(cols='auto') Password
                     v-spacer
-                    v-dialog(max-width='800' v-model='open')
+                    v-dialog(max-width='800' v-model='openPW')
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on').warning--text Change Password
-                      component(@done='open = false')
+                      change-password(@done='open = false')
                   v-divider
                   v-row(align='center')
                     v-col(cols='auto') {{ MFAText }}
                     v-spacer
                     template(v-if='!MFAEnabled')
-                      v-dialog(max-width='800' v-model='open')
+                      v-dialog(max-width='800' v-model='openMFA')
                         template(v-slot:activator='{ on }')
                           v-btn(color='secondary' v-on='on' :loading='loading').warning--text Enable MFA
                         enable-mfa(@done='handleComplete')
@@ -39,7 +39,8 @@ import { authStore } from '~/store'
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   components: {
-    EnableMfa: () => import('~/components/EnableMfa.vue')
+    EnableMfa: () => import('~/components/EnableMfa.vue'),
+    ChangePassword: () => import('~/components/ChangePassword.vue')
   },
   setup () {
     const loading = ref(true)
@@ -60,7 +61,8 @@ export default defineComponent({
 
     onMounted(loadMFAState)
 
-    const open = ref(false)
+    const openPW = ref(false)
+    const openMFA = ref(false)
     // @ts-ignore
     const emailAddr = authStore.user.attributes.email
 
@@ -75,7 +77,7 @@ export default defineComponent({
     })
 
     async function handleComplete () {
-      open.value = false
+      openMFA.value = false
       await loadMFAState()
     }
 
@@ -89,7 +91,8 @@ export default defineComponent({
 
     return {
       MFAState,
-      open,
+      openPW,
+      openMFA,
       emailAddr,
       MFAText,
       handleComplete,
