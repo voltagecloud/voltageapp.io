@@ -5,11 +5,11 @@ module.exports = {
     node: true
   },
   extends: [
-    '@nuxtjs/eslint-config-typescript',
-    'plugin:nuxt/recommended'
+    '@nuxtjs/eslint-config-typescript'
   ],
   // add your custom rules here
   rules: {
-    camelcase: ['error', { properties: 'never' }]
+    '@typescript/eslint-camelcase': 'off', 
+    camelcase: 'off'
   }
 }
