@@ -21,7 +21,7 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import axios from 'axios'
+// import axios from 'axios'
 import { nodeStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 

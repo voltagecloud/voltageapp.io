@@ -1,11 +1,17 @@
 import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
+const dev = process.env.NODE_ENV !== 'production'
+
 export default {
   mode: 'spa',
   server: {
     host: '0.0.0.0',
     port: '3000'
+  },
+  env: {
+    poolId: (dev) ? 'us-west-1_QBaQFtzDy' : 'us-west-2_n7m64jCzU',
+    webClientId: (dev) ? '4n1knfj0o7c473ult1qeqtv9u2' : '16hidm6n73l20ses41ruukko6t',
   },
   /*
   ** Headers of the page
@@ -72,7 +78,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com',
+    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://api.voltageapp.io',
     https: true,
     progress: true,
     debug: true
