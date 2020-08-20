@@ -21,6 +21,7 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
+import axios from 'axios'
 import { nodeStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 
@@ -38,13 +39,26 @@ export default defineComponent({
     const { canInit, canUnlock, status } = useNodeStatus(nodeData)
 
     async function initialize () {
-      const seed = await root.$axios({
-        url: `https://${nodeData.value.api_endpoint}:8080/v1/genseed`,
-        method: 'get',
-        baseURL: ''
-      }
-      )
+      // const seed = await axios({
+      //   url: `https://${nodeData.value.api_endpoint}:8080/v1/genseed`,
+      //   method: 'GET',
+      //   data: {},
+      //   headers: {
+      //     'Content-Type': 'text/plain',
+      //     Accept: 'application/json'
+      //   }
+      // })
+      const seed = await fetch(`https://${nodeData.value.api_endpoint}:8080/v1/genseed`, {
+        method: 'GET',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: {
+          Accept: 'application/json'
+        }
+      })
       console.log({ seed })
+      const json = await seed.text()
+      console.log({ json })
     }
 
     return {

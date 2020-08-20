@@ -19,6 +19,7 @@
     "@nuxtjs/pwa": "^3.0.0-0",
     "@types/ip-address": "^5.8.2",
     "@vue/composition-api": "^0.5.0",
+    "axios": "^0.19.2",
     "ip-address": "^6.3.0",
     "nuxt": "^2.0.0",
     "qrcode.vue": "^1.7.0",
