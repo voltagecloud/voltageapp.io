@@ -10,7 +10,7 @@ export default {
     port: '3000'
   },
   env: {
-    poolId: (dev) ? 'us-west-1_QBaQFtzDy' : 'us-west-2_n7m64jCzU',
+    poolId: (dev) ? 'us-west-2_QBaQFtzDy' : 'us-west-2_n7m64jCzU',
     webClientId: (dev) ? '4n1knfj0o7c473ult1qeqtv9u2' : '16hidm6n73l20ses41ruukko6t',
   },
   /*
