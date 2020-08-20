@@ -79,6 +79,21 @@ export default function useNodeApi ({ $axios }: Context) {
     return res
   }
 
+  async function updateNode(id: string) {
+    loading.value = true
+    try {
+      const res = await $axios.post('/node/update', {
+        node_id: id
+      })
+      loading.value = false
+      return res
+    } catch (e) {
+      layoutStore.SET_ERROR(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function startExport (id: string, exportData: ExportData) {
     loading.value = true
     const res = await $axios.post<NodeExport>('/export', {
@@ -105,6 +120,7 @@ export default function useNodeApi ({ $axios }: Context) {
     createNode,
     populateNode,
     postNode,
+    updateNode,
     updateSettings,
     loading,
     startExport,

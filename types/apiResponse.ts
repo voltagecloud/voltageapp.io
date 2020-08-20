@@ -28,6 +28,7 @@ export interface PopulateNode extends CreateNode {
     node_name: string
     api_endpoint: string
     status: NodeStatus
+    update_available: boolean
     lnd_version: string
     tls_cert: string
     macaroon_backup: boolean
@@ -65,6 +66,7 @@ export interface NodeStatusUpdate {
     onion_address: string
     api_endpoint: string
     status: NodeStatus
+    update_available: boolean
     network: Network
 }
 

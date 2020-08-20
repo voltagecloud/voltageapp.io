@@ -35,6 +35,10 @@ export default function useNodeStatus (node: Ref<Node>) {
         return node.value.status === NodeStatus.waiting_unlock
     })
 
+    const canUpdate = computed(() => {
+        return node.value.update_available === true
+    })
+
     const status = computed(() => {
         return node.value.status
     })
@@ -46,6 +50,7 @@ export default function useNodeStatus (node: Ref<Node>) {
         canConnect,
         canInit,
         canUnlock,
+        canUpdate,
         status
     }
 }

@@ -9,9 +9,11 @@ v-container
             data-table(:node='nodeData')
             v-divider
             v-container(v-if='canInit')
-              v-btn(color='secondary' block @click='initialize').warning--text Initialize
+              v-btn(color='highlight' block @click='initialize').info--text Initialize
             v-container(v-if='canUnlock')
-              v-btn(color='secondary' block).warning--text Unlock
+              v-btn(color='highlight' block).info--text Unlock
+            v-container(v-if='canUpdate' @click='update')
+              v-btn(color='highlight' block).info--text Update
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -24,6 +26,8 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 // import axios from 'axios'
 import { nodeStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
+import useNodeApi from '~/compositions/useNodeApi'
+import { Node } from '~/types/apiResponse'
 
 export default defineComponent({
   components: {
@@ -36,7 +40,8 @@ export default defineComponent({
   setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
-    const { canInit, canUnlock, status } = useNodeStatus(nodeData)
+    const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
+    const { updateNode, loading } = useNodeApi(root.$nuxt.context)
 
     async function initialize () {
       // const seed = await axios({
@@ -61,13 +66,19 @@ export default defineComponent({
       console.log({ json })
     }
 
+    async function update () {
+      await updateNode(nodeData.value.node_id)
+    }
+
     return {
       nodeData,
       nodeID,
       status,
       canInit,
       canUnlock,
-      initialize
+      canUpdate,
+      initialize,
+      update
     }
   }
 })
