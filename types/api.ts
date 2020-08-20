@@ -29,6 +29,7 @@ export interface Settings {
     rest: boolean
     tor: boolean
     keysend: boolean
+    wumbo: boolean
     alias: string
     color: string
     whitelist: Array<Address4|Address6>

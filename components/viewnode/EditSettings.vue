@@ -23,7 +23,8 @@ v-container
                 v-switch(v-model='settings.rest' label='REST' inset color='highlight')
                 //- v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
                 v-switch(v-model='settings.keysend' label='Keysend' inset color='highlight')
-                v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
+                v-switch(v-model='settings.wumbo' label='Wumbo' inset color='highlight')
+                //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12' sm='8' md='6')
             v-color-picker(
               v-if='!!colWidth'

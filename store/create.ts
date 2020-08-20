@@ -12,6 +12,7 @@ const defaultSettings = {
   rest: false,
   tor: false,
   keysend: true,
+  wumbo: false,
   alias: '',
   color: '#EF820D',
   whitelist: []

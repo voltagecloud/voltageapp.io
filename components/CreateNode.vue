@@ -25,6 +25,7 @@
               v-switch(v-model='settings.rest' label='REST' color='highlight' inset)
               //- v-switch(v-model='settings.tor' label='Tor' color='highlight' inset)
               v-switch(v-model="settings.keysend" label="Keysend" color="highlight" inset)
+              v-switch(v-model="settings.wumbo" label="Wumbo" color="highlight" inset)
           v-col(cols='12')
             v-row(justify='center')
               v-col(cols='12' ref='colWidth')
