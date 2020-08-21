@@ -22,12 +22,14 @@ v-container
                 export-data(:nodeID='nodeID' :nodeStatus='status')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, SetupContext, computed, ref } from '@vue/composition-api'
 // import axios from 'axios'
 import { nodeStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import { Node } from '~/types/apiResponse'
+
+let timerID: NodeJS.Timeout
 
 export default defineComponent({
   components: {
@@ -37,6 +39,48 @@ export default defineComponent({
     ExportData: () => import('~/components/ExportData.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
+  async fetch () {
+    // Logic for auto-refreshing
+    // @ts-ignore
+    if (!timerID) {
+      // make sure interval is clean
+      // set new interval
+      const timerID = setInterval(async () => {
+        // @ts-ignore
+        let previousStatus = this.status
+        // If the node was running or stopped on load don't try to refresh
+        if (previousStatus === "running" || previousStatus == "stopped") {
+          clearInterval(timerID)
+          return
+        }
+        // @ts-ignore
+        let res = await this.$nuxt.context.$axios.post('/node', {
+          // @ts-ignore
+          node_id: this.nodeID
+        })
+        // @ts-ignore
+        let shouldRefresh = previousStatus === res.data.status
+        // @ts-ignore
+        previousStatus = res.data.status
+
+        // If the user leaves the node's page stop checking
+        // @ts-ignore
+        if (this.$route.params.id !== res.data.node_id) {
+          clearInterval(timerID)
+          return
+        }
+        if (!shouldRefresh) {
+          // @ts-ignore
+          this.$router.go()
+          // If the node is in a running or stopped state we want to stop checking
+          if (previousStatus === "running" || previousStatus === "stopped") {
+            clearInterval(timerID)
+            return
+          }
+        }
+      }, 5000)
+    }
+  },
   setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
@@ -78,7 +122,8 @@ export default defineComponent({
       canUnlock,
       canUpdate,
       initialize,
-      update
+      update,
+      loading
     }
   }
 })

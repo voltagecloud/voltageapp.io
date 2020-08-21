@@ -85,12 +85,9 @@ export default function useNodeApi ({ $axios }: Context) {
       const res = await $axios.post('/node/update', {
         node_id: id
       })
-      loading.value = false
       return res
     } catch (e) {
       layoutStore.SET_ERROR(e)
-    } finally {
-      loading.value = false
     }
   }
 
