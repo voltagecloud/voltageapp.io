@@ -112,6 +112,8 @@ export default defineComponent({
 
     async function update () {
       await updateNode(nodeData.value.node_id)
+      // @ts-ignore
+      root.$nuxt.$router.go()
     }
 
     return {
