@@ -15,7 +15,8 @@ export enum NodeStatus {
     waiting_init = 'waiting_init',
     waiting_unlock = 'waiting_unlock',
     deleted = 'deleted',
-    expired = 'expired'
+    expired = 'expired',
+    restarting = 'restarting'
 }
 
 export enum Network {

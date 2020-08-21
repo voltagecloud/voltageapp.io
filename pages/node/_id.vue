@@ -13,7 +13,7 @@ v-container
             v-container(v-if='canUnlock')
               v-btn(color='highlight' block).info--text Unlock
             v-container(v-if='canUpdate' @click='update')
-              v-btn(color='highlight' block).info--text Update
+              v-btn(color='highlight' block).info--text Update Available
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
