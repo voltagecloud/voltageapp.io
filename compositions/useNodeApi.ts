@@ -4,7 +4,7 @@ import { createStore, nodeStore, layoutStore, exportsStore } from '~/store'
 import { NodeSeed, Node, CreateNode, PopulateNode, NodeExport, NodeNameResponse } from '~/types/apiResponse'
 import { Settings, Network, ExportData } from '~/types/api'
 
-export default function useNodeApi ({ $axios }: Context) {
+export default function useNodeApi ({ $axios, error }: Context) {
   const loading = ref(false)
 
   async function generateSeed (name: string, network: Network, purchased: boolean) {
@@ -30,16 +30,23 @@ export default function useNodeApi ({ $axios }: Context) {
 
   async function createNode () {
     loading.value = true
-    const node = await $axios.post<CreateNode>(
-      '/node/create',
-      {
-        network: createStore.network,
-        purchased_type: createStore.trial ? 'trial' : 'paid'
-      }
-    )
-    createStore.NEW_NODE_ID(node.data?.['node_id'])
-    loading.value = false
-    return node
+    try {
+      const node = await $axios.post<CreateNode>(
+        '/node/create',
+        {
+          network: createStore.network,
+          purchased_type: createStore.trial ? 'trial' : 'paid'
+        }
+      )
+      createStore.NEW_NODE_ID(node.data?.['node_id'])
+      loading.value = false
+      return node
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 });
+    } finally {
+      loading.value = false
+    }
   }
 
   async function populateNode () {
