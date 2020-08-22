@@ -22,7 +22,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       createStore.SEED(seed.data?.seed)
       return seed
     } catch (e) {
-      layoutStore.SET_ERROR(e)
+      error({ statusCode: 500 });
     } finally {
       loading.value = false
     }
@@ -51,16 +51,23 @@ export default function useNodeApi ({ $axios, error }: Context) {
 
   async function populateNode () {
     loading.value = true
-    const node = await $axios.post<PopulateNode>(
-      '/node/populate',
-      {
-        node_id: createStore.newNodeID,
-        name: createStore.nodeName,
-        settings: createStore.settings
-      }
-    )
-    loading.value = false
-    return node
+    try {
+      const node = await $axios.post<PopulateNode>(
+        '/node/populate',
+        {
+          node_id: createStore.newNodeID,
+          name: createStore.nodeName,
+          settings: createStore.settings
+        }
+      )
+      loading.value = false
+      return node
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 });
+    } finally {
+      loading.value = false
+    }
   }
 
   async function postNode (id:string) {
@@ -76,14 +83,21 @@ export default function useNodeApi ({ $axios, error }: Context) {
 
   async function updateSettings (id: string, backup: boolean, settings: Settings) {
     loading.value = true
-    const res = await $axios.post('/node/settings', {
-      node_id: id,
-      macaroon_backup: backup,
-      settings
-    })
-    nodeStore.ADD_NODE(res.data)
-    loading.value = false
-    return res
+    try {
+      const res = await $axios.post('/node/settings', {
+        node_id: id,
+        macaroon_backup: backup,
+        settings
+      })
+      nodeStore.ADD_NODE(res.data)
+      loading.value = false
+      return res
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 });
+    } finally {
+      loading.value = false
+    }
   }
 
   async function updateNode(id: string) {
@@ -95,7 +109,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
       loading.value = false
       return res
     } catch (e) {
-      layoutStore.SET_ERROR(e)
+      loading.value = false
+      error({ statusCode: 500 });
     } finally {
       loading.value = false
     }
@@ -110,7 +125,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
       loading.value = false
       return res
     } catch (e) {
-      layoutStore.SET_ERROR(e)
+      loading.value = false
+      error({ statusCode: 500 });
     } finally {
       loading.value = false
     }
@@ -118,13 +134,20 @@ export default function useNodeApi ({ $axios, error }: Context) {
 
   async function startExport (id: string, exportData: ExportData) {
     loading.value = true
-    const res = await $axios.post<NodeExport>('/export', {
-      node_id: id,
-      type: exportData
-    })
-    loading.value = false
-    exportsStore.ADD_EXPORT(res.data)
-    return res
+    try {
+      const res = await $axios.post<NodeExport>('/export', {
+        node_id: id,
+        type: exportData
+      })
+      loading.value = false
+      exportsStore.ADD_EXPORT(res.data)
+      return res
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 });
+    } finally {
+      loading.value = false
+    }
   }
 
   async function nodeName (node_name: string, network: Network) {
