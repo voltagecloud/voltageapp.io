@@ -7,7 +7,16 @@ v-container
       template(v-for='(v, k) in nodeInfo')
         tr(v-if='!!v' :key='k')
           td {{ k }}
-          td.text-end
+          td.text-end(v-if='k === "TLS Cert" && v !== "pending"')
+            v-chip(
+              color='accent'
+              text-color='warning'
+              :href='"data:application/pdf;base64,"+v',
+              download='tls.cert',
+              title='tls.cert'
+            )
+              | Download
+          td.text-end(v-else)
             copy-pill(
               color='accent'
               text-color='warning'
