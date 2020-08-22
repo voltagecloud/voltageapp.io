@@ -14,7 +14,7 @@ v-container
               :href='"data:application/pdf;base64,"+v',
               download='tls.cert',
               title='tls.cert'
-            )
+            ).mr-3
               | Download
           td.text-end(v-else)
             copy-pill(
