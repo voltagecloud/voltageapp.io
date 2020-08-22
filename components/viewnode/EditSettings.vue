@@ -37,6 +37,9 @@ v-container
               flat
               :width='computedWidth'
             ).mx-auto
+          v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
+            v-btn.px-4.warning--text(block color='secondary' :error-messages='errorMessage' :disabled='!canUpdateTls' :loading='loading' @click='updateCert')
+              | {{ tlsMessage }}
           v-col(cols='12').pb-0
             v-text-field(
               v-model='settings.alias'
@@ -75,7 +78,7 @@ export default defineComponent({
     const settings = ref(Object.assign({}, props.node.settings || {}))
     const backupMacaroon = ref(!!props.node.macaroon_backup)
 
-    const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
+    const { updateSettings, updateTls, loading } = useNodeApi(root.$nuxt.context)
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -93,6 +96,28 @@ export default defineComponent({
       }
     }
 
+    const tlsMessage = computed(() => {
+      if (props.node.status !== "stopped") {
+        return "Stop node to update certificate"
+      } else{
+        return "Update TLS Certificate"
+      }
+    })
+
+    const canUpdateTls = computed(() => {
+      if (props.node.status !== "stopped") {
+        return false
+      } else{
+        return true
+      }
+    })
+
+    async function updateCert () {
+      await updateTls(props.node.node_id)
+      // @ts-ignore
+      root.$nuxt.$router.go()
+    }
+
     return {
       form,
       valid,
@@ -103,7 +128,10 @@ export default defineComponent({
       colWidth,
       computedWidth,
       confirmSettings,
+      updateCert,
       loading,
+      tlsMessage,
+      canUpdateTls,
       remove
     }
   }
