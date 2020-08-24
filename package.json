@@ -1,8 +1,8 @@
 {
-  "name": "voltage_typescript",
+  "name": "voltage",
   "version": "1.0.0",
-  "description": "My amazing Nuxt.js project",
-  "author": "Sean Aye",
+  "description": "Seize the Lightning",
+  "author": "Voltage",
   "private": true,
   "scripts": {
     "dev": "nuxt-ts",

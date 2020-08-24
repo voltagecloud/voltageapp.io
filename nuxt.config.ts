@@ -72,10 +72,8 @@ export default {
     '@nuxtjs/vuetify',
     '@nuxtjs/google-analytics'
   ],
-  publicRuntimeConfig: {
-    googleAnalytics: {
-      id: 'UA-176155335-1'
-    }
+  googleAnalytics: {
+    id: 'UA-176155335-1'
   },
   /*
   ** Nuxt.js modules
