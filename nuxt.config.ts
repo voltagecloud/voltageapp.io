@@ -33,6 +33,12 @@ export default {
         innerHTML: 'window.$crisp=[];window.CRISP_WEBSITE_ID="726634f1-0f0d-43b1-a98f-59e24f1ffa45";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();',
         type: 'text/javascript',
         charset: 'utf-8'
+      },
+      {
+        hid: 'ga',
+        innerHTML: 'window.$crisp=[];window.CRISP_WEBSITE_ID="726634f1-0f0d-43b1-a98f-59e24f1ffa45";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();',
+        type: 'text/javascript',
+        charset: 'utf-8'
       }
     ]
   },
@@ -63,8 +69,14 @@ export default {
   */
   buildModules: [
     '@nuxt/typescript-build',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxtjs/google-analytics'
   ],
+  publicRuntimeConfig: {
+    googleAnalytics: {
+      id: 'UA-176155335-1'
+    }
+  },
   /*
   ** Nuxt.js modules
   */
