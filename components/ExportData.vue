@@ -43,6 +43,7 @@ export default defineComponent({
       } else {
         errorMessage.value = ''
         const res = await startExport(props.nodeID, chosenExport.value)
+        // @ts-ignore
         root.$router.push(`/exports?filter=${res.data.export_id}`)
       }
     }
