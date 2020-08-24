@@ -8,7 +8,7 @@ v-card(color='info')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               span {{ nodeData.node_name }}
-              span.hidden-xs-only.caption.warning--text.ml-2 {{ nodeData.status }}
+              span.caption.warning--text.ml-2 {{ nodeData.status }}
             v-col(cols='12').overline
               | {{ nodeData.purchased_type=='trial' ? 'Testnet (trial)' : nodeData.network }}
         v-col(cols='auto')
