@@ -7,15 +7,25 @@
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               span {{ exportData.name }}
-              span.hidden-xs-only.caption.warning--text.ml-2 {{ exportData.status }}
+              span.caption.warning--text.ml-2 {{ exportData.status }}
             //- v-col(cols='12').overline
             //-   | {{ nodeData.purchased_type=='trial' ? 'Testnet (trial)' : nodeData.network }}
         v-col(cols='auto')
           v-row(justify='end')
-            v-btn(icon :to='`/node/${exportData.node_id}`').mx-1
-              v-icon mdi-forward
-            v-btn(icon :href='exportData.url' target='_blank' :disabled='isPending').ml-1.mr-3
-              v-icon mdi-download
+
+
+            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-btn(icon v-bind="attrs" v-on="on" :to='`/node/${exportData.node_id}`').mx-1
+                  v-icon mdi-forward
+              v-span
+                | Go to Node
+            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-btn(icon v-bind="attrs" v-on="on" :href='exportData.url' target='_blank' :disabled='isPending').ml-1.mr-3
+                  v-icon mdi-download
+              v-span
+                | Download Export
     v-container
       v-simple-table(
         :style='{"background-color": $vuetify.theme.currentTheme.secondary}'

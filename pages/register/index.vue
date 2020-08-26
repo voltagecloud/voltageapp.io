@@ -18,7 +18,7 @@
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
                   a(@click='currentStep += 1') Use Existing Code
-                  a   |
+                  a   | 
                   a(@click='$router.push("/login")') Login
                 v-form(v-else='' key='2' ref='confirmForm' v-model='valid' @submit.prevent='confirm')
                   v-text-field(v-model='email' label='Email' :rules='[required, validEmail]' required='')
@@ -28,7 +28,7 @@
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Confirm
                   a(@click='resend(email)') Resend Code
-                  a   |
+                  a   | 
                   a(@click='currentStep = 0') Register
 </template>
 <script lang="ts">
