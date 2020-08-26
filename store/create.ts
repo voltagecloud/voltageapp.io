@@ -75,9 +75,8 @@ export default class CreateModule extends VuexModule {
     }
 
     @Mutation
-    AUTOFILL_WHITELIST(ip: string) {
-        // @ts-ignore
-        this.settings.whitelist = [ip]
+    AUTOFILL_WHITELIST (ip: string) {
+      this.settings.whitelist = [ip as unknown as Address4]
     }
 
     @Mutation
