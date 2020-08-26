@@ -37,7 +37,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return node
     } catch (e) {
       loading.value = false
-      error({ statusCode: 500 });
+      error({ statusCode: 500 })
     } finally {
       loading.value = false
     }
@@ -98,7 +98,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return res
     } catch (e) {
       loading.value = false
-      error({ statusCode: 500 });
+      error({ statusCode: 500 })
     } finally {
       loading.value = false
     }
@@ -116,7 +116,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return res
     } catch (e) {
       loading.value = false
-      error({ statusCode: 500 });
+      error({ statusCode: 500 })
     } finally {
       loading.value = false
     }
