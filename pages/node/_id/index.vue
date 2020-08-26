@@ -38,7 +38,7 @@ export default defineComponent({
     ExportData: () => import('~/components/ExportData.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  async fetch () {
+  fetch () {
     // Logic for auto-refreshing
     // @ts-ignore
     if (!timerID) {
@@ -48,17 +48,17 @@ export default defineComponent({
         // @ts-ignore
         let previousStatus = this.status
         // If the node was running or stopped on load don't try to refresh
-        if (previousStatus === "running" || previousStatus == "stopped") {
+        if (previousStatus === 'running' || previousStatus === 'stopped') {
           clearInterval(timerID)
           return
         }
         // @ts-ignore
-        let res = await this.$nuxt.context.$axios.post('/node', {
+        const res = await this.$nuxt.context.$axios.post('/node', {
           // @ts-ignore
           node_id: this.nodeID
         })
         // @ts-ignore
-        let shouldRefresh = previousStatus === res.data.status
+        const shouldRefresh = previousStatus === res.data.status
         // @ts-ignore
         previousStatus = res.data.status
 
@@ -72,9 +72,8 @@ export default defineComponent({
           // @ts-ignore
           this.$router.go()
           // If the node is in a running or stopped state we want to stop checking
-          if (previousStatus === "running" || previousStatus === "stopped") {
+          if (previousStatus === 'running' || previousStatus === 'stopped') {
             clearInterval(timerID)
-            return
           }
         }
       }, 5000)
