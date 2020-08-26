@@ -2,7 +2,7 @@
   v-card(color='info')
     v-card-title.font-weight-light.warning--text.text--darken-1
       | Creating {{ displayNetwork }} Node {{ isTrial }}
-    v-form(ref='form' v-model='valid' lazy-validation='' @submit.prevent='handlePopulate')
+    v-form(ref='form' v-model='valid' lazy-validation @submit.prevent='handlePopulate')
       v-container
         v-row(justify='center')
           v-col(cols='12').pb-0
@@ -20,35 +20,35 @@
             v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
           v-col(cols='12' md='10').px-10.py-0
             v-row(justify='space-between')
-              v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
-                v-span
+                span
                   | Autopilot automatically manages channels for you
-              v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.grpc' v-on="on" label='gRPC' inset color='highlight')
-                v-span
+                span
                   | Enable the gRPC API in LND
-              v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.rest' v-on="on" label='REST' inset color='highlight')
-                v-span
+                span
                   | Enable the REST API in LND
-              //- v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              //- v-tooltip(top :open-on-click="true" :open-on-hover="true")
               //-   template(v-slot:activator="{ on }")
               //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
               //-   v-span
               //-     | Enable the Tor for LND APIs
-              v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
-                v-span
+                span
                   | Keysend allows for accepting payments without generating an invoice
-              v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
-                v-span
+                span
                   | Allows LND to create channels larger than 0.1677 BTC
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')

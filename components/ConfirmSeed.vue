@@ -4,34 +4,29 @@
       | Your seed phrase is
     v-divider.mx-12.mb-6
     v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
-      span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in createStore.seed' :key='i' :data-index='i') {{ word }}
+      span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in lndStore.cipher_seed_mnemonic' :key='i' :data-index='i') {{ word }}
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12
       | Write down your seed phrase in a safe place. You will need it to recover your node.
-    v-btn.warning--text(block color='accent' depressed :loading='loading' @click='confirmSeed')
+    v-btn.warning--text(block color='accent' depressed @click='confirmSeed')
       | I have written down my seed phrase
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import { createStore } from '~/store'
-import useNodeApi from '~/compositions/useNodeApi'
+import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
 
 export default defineComponent({
-  setup (_, { root }) {
-    const { loading, createNode } = useNodeApi(root.$nuxt.context)
-
-    async function confirmSeed () {
-      await createNode()
-      root.$router.push(`/node/${createStore.newNodeID}`)
+  setup (_, { emit }) {
+    function confirmSeed () {
+      emit('next')
     }
 
     const { beforeEnter, enter } = useAnimation()
 
     return {
-      createStore,
+      lndStore,
       confirmSeed,
-      loading,
       beforeEnter,
       enter
     }

@@ -26,6 +26,7 @@ export default function useFormValidation () {
   // generic validation
   const required = (v: string) => !!v || 'Value is required'
   const char6 = (v: string) => v.length >= 6 || 'Must be at least 6 characters'
+  const char8 = (v: string) => v.length >= 8 || 'Must be at least 8 characters'
   const validIP = (v: string[]) => v.length === 0 || v.every((e) => {
     console.log({ e })
     const ip4 = new Address4(e)
@@ -80,6 +81,7 @@ export default function useFormValidation () {
     password,
     confirmPassword,
     char6,
+    char8,
     matchPassword,
     showPassword,
     valid,

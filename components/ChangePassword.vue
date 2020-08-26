@@ -14,9 +14,9 @@
         v-text-field(
           v-model='password'
           :rules='[char6, required]'
+          label='New Password'
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
-          label='New Password'
           required
           @click:append='showPassword = !showPassword'
           :error-messages='error'
