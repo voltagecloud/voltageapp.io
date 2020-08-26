@@ -22,6 +22,7 @@ export interface CreateNode {
     expires: string
     created: string
     purchased_type: PurchasedType
+    user_ip: string
 }
 
 export interface PopulateNode extends CreateNode {

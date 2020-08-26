@@ -9,7 +9,7 @@ v-container
             data-table(:node='nodeData')
             v-divider
             v-container(v-if='canInit')
-              v-btn(color='highlight' block @click='initialize').info--text Initialize
+              v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
             v-container(v-if='canUnlock')
               v-btn(color='highlight' block).info--text Unlock
             v-container(v-if='canUpdate' @click='update')
@@ -22,12 +22,11 @@ v-container
                 export-data(:nodeID='nodeID' :nodeStatus='status')
 </template>
 <script lang="ts">
-import { defineComponent, SetupContext, computed, ref } from '@vue/composition-api'
-// import axios from 'axios'
-import { nodeStore } from '~/store'
+import { defineComponent, computed, ref } from '@vue/composition-api'
+import axios from 'axios'
+import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
-import { Node } from '~/types/apiResponse'
 
 let timerID: NodeJS.Timeout
 
@@ -85,29 +84,21 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
-    const { updateNode, loading } = useNodeApi(root.$nuxt.context)
+    const { updateNode } = useNodeApi(root.$nuxt.context)
 
+    const initializing = ref(false)
     async function initialize () {
-      // const seed = await axios({
-      //   url: `https://${nodeData.value.api_endpoint}:8080/v1/genseed`,
-      //   method: 'GET',
-      //   data: {},
-      //   headers: {
-      //     'Content-Type': 'text/plain',
-      //     Accept: 'application/json'
-      //   }
-      // })
-      const seed = await fetch(`https://${nodeData.value.api_endpoint}:8080/v1/genseed`, {
-        method: 'GET',
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers: {
-          Accept: 'application/json'
-        }
+      console.log('requesting')
+      lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
+      initializing.value = true
+      const seed = await axios({
+        url: lndStore.currentNode + '/v1/genseed',
+        method: 'GET'
       })
       console.log({ seed })
-      const json = await seed.text()
-      console.log({ json })
+      initializing.value = false
+      lndStore.SEED(seed.data)
+      root.$router.push('/confirm')
     }
 
     async function update () {
@@ -125,7 +116,7 @@ export default defineComponent({
       canUpdate,
       initialize,
       update,
-      loading
+      initializing
     }
   }
 })

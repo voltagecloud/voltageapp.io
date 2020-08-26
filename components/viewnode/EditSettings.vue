@@ -18,12 +18,36 @@ v-container
           v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
             v-row(justify='center' align='center' style='height: 100%')
               div
-                v-switch(v-model='settings.autopilot' label='Autopilot' inset color='highlight')
-                v-switch(v-model='settings.grpc' label='GRPC' inset color='highlight')
-                v-switch(v-model='settings.rest' label='REST' inset color='highlight')
-                //- v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
-                v-switch(v-model='settings.keysend' label='Keysend' inset color='highlight')
-                v-switch(v-model='settings.wumbo' label='Wumbo' inset color='highlight')
+                v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                  template(v-slot:activator="{ on }")
+                    v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
+                  v-span
+                    | Autopilot automatically manages channels for you
+                v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                  template(v-slot:activator="{ on }")
+                    v-switch(v-model='settings.grpc' v-on="on" label='gRPC' inset color='highlight')
+                  v-span
+                    | Enable the gRPC API in LND
+                v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                  template(v-slot:activator="{ on }")
+                    v-switch(v-model='settings.rest' v-on="on" label='REST' inset color='highlight')
+                  v-span
+                    | Enable the REST API in LND
+                //- v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+                //-   template(v-slot:activator="{ on }")
+                //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
+                //-   v-span
+                //-     | Enable the Tor for LND APIs
+                v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                  template(v-slot:activator="{ on }")
+                    v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
+                  v-span
+                    | Keysend allows for accepting payments without generating an invoice
+                v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                  template(v-slot:activator="{ on }")
+                    v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
+                  v-span
+                    | Allows LND to create channels larger than 0.1677 BTC
                 //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12' sm='8' md='6')
             v-color-picker(
@@ -37,6 +61,9 @@ v-container
               flat
               :width='computedWidth'
             ).mx-auto
+          v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
+            v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='loading' @click='updateCert')
+              | {{ tlsMessage }}
           v-col(cols='12').pb-0
             v-text-field(
               v-model='settings.alias'
@@ -45,7 +72,7 @@ v-container
               background-color='secondary'
             )
           v-col(cols='12').pb-0
-            v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
+            v-combobox(v-model='settings.whitelist' chips='' label='IP Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
@@ -75,7 +102,7 @@ export default defineComponent({
     const settings = ref(Object.assign({}, props.node.settings || {}))
     const backupMacaroon = ref(!!props.node.macaroon_backup)
 
-    const { updateSettings, loading } = useNodeApi(root.$nuxt.context)
+    const { updateSettings, updateTls, loading } = useNodeApi(root.$nuxt.context)
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -93,6 +120,28 @@ export default defineComponent({
       }
     }
 
+    const tlsMessage = computed(() => {
+      if (props.node.status !== "stopped") {
+        return "Stop node to update certificate"
+      } else{
+        return "Update TLS Certificate"
+      }
+    })
+
+    const canUpdateTls = computed(() => {
+      if (props.node.status !== "stopped") {
+        return false
+      } else{
+        return true
+      }
+    })
+
+    async function updateCert () {
+      await updateTls(props.node.node_id)
+      // @ts-ignore
+      root.$nuxt.$router.go()
+    }
+
     return {
       form,
       valid,
@@ -103,7 +152,10 @@ export default defineComponent({
       colWidth,
       computedWidth,
       confirmSettings,
+      updateCert,
       loading,
+      tlsMessage,
+      canUpdateTls,
       remove
     }
   }
