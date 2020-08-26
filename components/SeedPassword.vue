@@ -16,7 +16,7 @@
       label='Confirm New Password'
       required
     )
-    v-btn(type='submit' :disabled='!valid' block).warning--text Create Macaroon
+    v-btn(type='submit' :disabled='!valid' block :loading='loading').warning--text Create Macaroon
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
@@ -39,6 +39,7 @@ export default defineComponent({
         }
       })
       console.log({ res })
+      loading.value = false
       lndStore.MACAROON(res.data.admin_macaroon)
       context.emit('next')
     }
@@ -47,6 +48,7 @@ export default defineComponent({
 
     return {
       getMacaroon,
+      loading,
       ...formState
     }
   }

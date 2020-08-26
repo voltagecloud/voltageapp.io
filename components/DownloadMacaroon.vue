@@ -12,18 +12,8 @@ import { lndStore } from '~/store'
 export default defineComponent({
   setup (_, context) {
     function downloadMacaroon () {
-      const base64str = lndStore.macaroon
-      // convert hex to byte array
-      const binary = atob(base64str.replace(/\s/g, ''))
-      const len = binary.length
-      const buffer = new ArrayBuffer(len)
-      const view = new Uint8Array(buffer)
-      for (let i = 0; i < len; i++) {
-        view[i] = binary.charCodeAt(i)
-      }
-      const blob = new Blob([view], { type: 'application/octet-stream' })
       const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
+      link.href = `data:application/octet-stream;,${atob(lndStore.macaroon)}`
       link.download = 'output.macaroon'
       link.click()
       context.emit('done')
