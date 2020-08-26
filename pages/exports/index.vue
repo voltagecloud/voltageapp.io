@@ -20,25 +20,6 @@ import { exportsStore } from '~/store'
 
 let timerID: NodeJS.Timeout
 
-function checkStartRefresh (root: SetupContext['root']) {
-  const anchor = root
-  console.log({ anchor })
-  console.log({ exportsStore })
-  if (exportsStore.shouldRefresh && !timerID) {
-    // make suer interval is clean
-    // set new interval
-    const timerID = setInterval(async () => {
-      console.log({ anchor })
-      await anchor.$fetch()
-      if (!exportsStore.shouldRefresh) {
-        clearInterval(timerID)
-      }
-    }, 5000)
-    console.log('set interval')
-    console.log(timerID)
-  }
-}
-
 export default defineComponent({
   components: {
     NodeExport: () => import('~/components/NodeExport.vue')
@@ -49,14 +30,27 @@ export default defineComponent({
     this.loading = true
     // @ts-ignore
     const axios = this.$nuxt.context.$axios
-    console.log(this)
     // @ts-ignore
     const res = await axios.get('/export')
     exportsStore.EXPORTS(res.data.exports)
     // @ts-ignore
     this.loading = false
-    // @ts-ignore
-    checkStartRefresh(this)
+    if (exportsStore.shouldRefresh && !timerID) {
+      // make suer interval is clean
+      // set new interval
+      const timerID = setInterval(async () => {
+        // If the user leaves the page stop checking
+        // @ts-ignore
+        if (this.$route.name !== "exports") {
+          clearInterval(timerID)
+        }
+        const res = await axios.get('/export')
+        exportsStore.EXPORTS(res.data.exports)
+        if (!exportsStore.shouldRefresh) {
+          clearInterval(timerID)
+        }
+      }, 5000)
+    }
   },
   setup (_, { root }) {
     const loading = ref(false)
