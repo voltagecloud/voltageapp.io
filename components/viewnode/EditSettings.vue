@@ -15,55 +15,56 @@ v-container
     )
       v-container
         v-row(justify='center')
-          v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
-            v-row(justify='center' align='center' style='height: 100%')
-              div
-                v-tooltip(top :open-on-click="true" :open-on-hover="true")
-                  template(v-slot:activator="{ on }")
-                    v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
-                  v-span
-                    | Autopilot automatically manages channels for you
-                v-tooltip(top :open-on-click="true" :open-on-hover="true")
-                  template(v-slot:activator="{ on }")
-                    v-switch(v-model='settings.grpc' v-on="on" label='gRPC' inset color='highlight')
-                  v-span
-                    | Enable the gRPC API in LND
-                v-tooltip(top :open-on-click="true" :open-on-hover="true")
-                  template(v-slot:activator="{ on }")
-                    v-switch(v-model='settings.rest' v-on="on" label='REST' inset color='highlight')
-                  v-span
-                    | Enable the REST API in LND
-                //- v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
-                //-   template(v-slot:activator="{ on }")
-                //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
-                //-   v-span
-                //-     | Enable the Tor for LND APIs
-                v-tooltip(top :open-on-click="true" :open-on-hover="true")
-                  template(v-slot:activator="{ on }")
-                    v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
-                  v-span
-                    | Keysend allows for accepting payments without generating an invoice
-                v-tooltip(top :open-on-click="true" :open-on-hover="true")
-                  template(v-slot:activator="{ on }")
-                    v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
-                  v-span
-                    | Allows LND to create channels larger than 0.1677 BTC
-                //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
-          v-col(cols='12' sm='8' md='6')
-            v-color-picker(
-              v-if='!!colWidth'
-              v-model='settings.color'
-              mode='hexa'
-              hide-mode-switch
-              hide-canvas
-              show-swatches
-              hide-inputs
-              flat
-              :width='computedWidth'
-            ).mx-auto
-          v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
-            v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='loading' @click='updateCert')
-              | {{ tlsMessage }}
+          //- v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
+          v-col(cols='12' md='10').px-10.py-0
+            v-row(justify='space-between')
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
+                v-span
+                  | Autopilot automatically manages channels for you
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.grpc' v-on="on" label='gRPC' inset color='highlight')
+                v-span
+                  | Enable the gRPC API in LND
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.rest' v-on="on" label='REST' inset color='highlight')
+                v-span
+                  | Enable the REST API in LND
+              //- v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+              //-   template(v-slot:activator="{ on }")
+              //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
+              //-   v-span
+              //-     | Enable the Tor for LND APIs
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
+                v-span
+                  | Keysend allows for accepting payments without generating an invoice
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
+                v-span
+                  | Allows LND to create channels larger than 0.1677 BTC
+              //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
+          v-col(cols='12')
+            v-row(justify='center')
+              v-col(cols='12' ref='colWidth')
+                v-btn(block @click='showPalette = !showPalette' :color='settings.color' :style='{color: oppositeColor}') Color: {{settings.color}}
+              v-expand-transition
+                v-col(cols='12' v-if='showPalette').justify-center.align-center.text-center
+                  v-color-picker(
+                    v-model='settings.color'
+                    mode='hexa'
+                    hide-mode-switch
+                    hide-canvas
+                    show-swatches
+                    hide-inputs
+                    flat
+                    :width="colWidth.clientWidth"
+                  )
           v-col(cols='12').pb-0
             v-text-field(
               v-model='settings.alias'
@@ -71,11 +72,14 @@ v-container
               color='highlight'
               background-color='secondary'
             )
-          v-col(cols='12').pb-0
+          v-col(cols='12').pb-01
             v-combobox(v-model='settings.whitelist' chips='' label='IP Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
+          v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
+            v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='loading' @click='updateCert')
+              | {{ tlsMessage }}
           v-col(cols='12').pt-0
             p.warning--text
               | Updating settings will restart your node.
@@ -97,7 +101,7 @@ export default defineComponent({
   },
   setup (props, { root }) {
     const showSettings = ref(false)
-    const { valid, form, validIP, remove } = useFormValidation()
+    const { valid, form, invertColor, validIP, showPalette, remove } = useFormValidation()
 
     const settings = ref(Object.assign({}, props.node.settings || {}))
     const backupMacaroon = ref(!!props.node.macaroon_backup)
@@ -128,6 +132,8 @@ export default defineComponent({
       }
     })
 
+    const oppositeColor = computed(() => invertColor(props.node.settings.color))
+
     const canUpdateTls = computed(() => {
       if (props.node.status !== "stopped") {
         return false
@@ -156,7 +162,9 @@ export default defineComponent({
       loading,
       tlsMessage,
       canUpdateTls,
-      remove
+      remove,
+      oppositeColor,
+      showPalette
     }
   }
 })
