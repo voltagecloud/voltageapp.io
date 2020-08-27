@@ -17,8 +17,13 @@ div(style='padding: 20px;')
       label='Confirm New Password'
       required
     )
+    br
     div.text-center.warning--text.mb-6
-      | This can take up to 30 seconds
+      | It's important to write down this password as well because it's used to encrypt macaroons. Losing this password means losing access to macaroon backups.
+    v-divider.mx-12.mt-6
+    br
+    div.text-center.warning--text.mb-6
+      | This can take up to 30 seconds. Do not close your browser.
     v-btn(type='submit' color='highlight' :disabled='!valid' block :loading='loading').info--text Initialize Node
 </template>
 <script lang="ts">

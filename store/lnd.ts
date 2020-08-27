@@ -9,6 +9,7 @@ export default class ExportsModule extends VuexModule {
     cipher_seed_mnemonic: string[] = []
     enciphered_seed: string = ''
     currentNode = ''
+    currentNodeId = ''
     macaroon = ''
 
     @Mutation
@@ -20,6 +21,13 @@ export default class ExportsModule extends VuexModule {
     @Mutation
     CURRENT_NODE (v: string) {
       this.currentNode = `https://${v}:8080`
+    }
+
+    @Mutation
+    CURRENT_NODE_ID(v: string) {
+      console.log("HEERERERER")
+      console.log(v)
+      this.currentNodeId = v
     }
 
     @Mutation

@@ -92,18 +92,18 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
-    const { updateNode } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus } = useNodeApi(root.$nuxt.context)
 
     const initializing = ref(false)
     async function initialize () {
-      console.log('requesting')
+      console.log(nodeData.value.node_id)
       lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
+      lndStore.CURRENT_NODE_ID(nodeData.value.node_id)
       initializing.value = true
       const seed = await axios({
         url: lndStore.currentNode + '/v1/genseed',
         method: 'GET'
       })
-      console.log({ seed })
       initializing.value = false
       lndStore.SEED(seed.data)
       root.$router.push('/confirm')
@@ -111,10 +111,10 @@ export default defineComponent({
 
     const { char8, valid, form, password: nodePassword } = useFormValidation()
 
-    const unlocking = ref(false)
+    let unlocking = ref(false)
     async function unlockNode () {
-      console.log('unlocking')
       lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
+      lndStore.CURRENT_NODE_ID(nodeData.value.node_id)
       unlocking.value = true
       const unlock = await axios({
         url: lndStore.currentNode + '/v1/unlockwallet',
@@ -124,8 +124,10 @@ export default defineComponent({
           stateless_init: true
         }
       })
-      console.log({ unlock })
+      await updateStatus(nodeData.value.node_id, "unlocking")
       unlocking.value = false
+      // @ts-ignore
+      root.$nuxt.$router.go()
     }
 
     async function update () {
