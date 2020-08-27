@@ -11,7 +11,15 @@ v-container
             v-container(v-if='canInit')
               v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
             v-container(v-if='canUnlock')
-              v-btn(color='highlight' block).info--text Unlock
+              v-dialog(max-width='800')
+                template(v-slot:activator='{ on }')
+                  v-btn(v-on='on' color='highlight' block).info--text Unlock
+                v-card
+                  v-card-text Enter your node password
+                  v-card-actions
+                    v-form(ref='form' v-model='valid' @submit.prevent='unlockNode')
+                      v-text-field(v-model='nodePassword' :rules='[char8]')
+                      v-btn(type='submit' :disabled='!valid' :loading='unlocking' block).warning--text Unlock Node
             v-container(v-if='canUpdate' @click='update')
               v-btn(color='highlight' block).info--text Update Available
             edit-settings(:node='nodeData')
@@ -27,6 +35,7 @@ import axios from 'axios'
 import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
+import useFormValidation from '~/compositions/useFormValidation'
 
 let timerID: NodeJS.Timeout
 
@@ -100,6 +109,25 @@ export default defineComponent({
       root.$router.push('/confirm')
     }
 
+    const { char8, valid, form, password: nodePassword } = useFormValidation()
+
+    const unlocking = ref(false)
+    async function unlockNode () {
+      console.log('unlocking')
+      lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
+      unlocking.value = true
+      const unlock = await axios({
+        url: lndStore.currentNode + '/v1/unlockwallet',
+        method: 'POST',
+        data: {
+          wallet_password: btoa(nodePassword.value),
+          stateless_init: true
+        }
+      })
+      console.log({ unlock })
+      unlocking.value = false
+    }
+
     async function update () {
       await updateNode(nodeData.value.node_id)
       // @ts-ignore
@@ -115,7 +143,13 @@ export default defineComponent({
       canUpdate,
       initialize,
       update,
-      initializing
+      initializing,
+      unlocking,
+      unlockNode,
+      char8,
+      valid,
+      form,
+      nodePassword
     }
   }
 })
