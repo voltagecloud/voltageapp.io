@@ -10,16 +10,16 @@ v-container
             v-divider
             v-container(v-if='canInit')
               v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
-            v-container(v-if='canUnlock')
+            v-container.align-center.justify-center(v-if='canUnlock')
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
                   v-btn(v-on='on' color='highlight' block).info--text Unlock
-                v-card
-                  v-card-text Enter your node password
+                v-card.text-center(style='padding: 20px;')
+                  v-card-text.display-1 Enter your node's password
                   v-card-actions
-                    v-form(ref='form' v-model='valid' @submit.prevent='unlockNode')
-                      v-text-field(v-model='nodePassword' :rules='[char8]')
-                      v-btn(type='submit' :disabled='!valid' :loading='unlocking' block).warning--text Unlock Node
+                    v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
+                      v-text-field(v-model='nodePassword' type='password' :rules='[char8]')
+                      v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
             v-container(v-if='canUpdate' @click='update')
               v-btn(color='highlight' block).info--text Update Available
             edit-settings(:node='nodeData')
