@@ -11,7 +11,7 @@ v-container
             v-chip(
               color='accent'
               text-color='warning'
-              :href='"data:application/pdf;base64,"+v',
+              :href='"data:application/text-plain;base64,"+v',
               download='tls.cert',
               title='tls.cert'
             ).mr-3

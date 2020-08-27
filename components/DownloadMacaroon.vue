@@ -13,8 +13,8 @@ export default defineComponent({
   setup (_, context) {
     function downloadMacaroon () {
       const link = document.createElement('a')
-      link.href = `data:application/octet-stream;,${atob(lndStore.macaroon)}`
-      link.download = 'output.macaroon'
+      link.href = `data:application/octet-stream;base64,${lndStore.macaroon}`
+      link.download = 'admin.macaroon'
       link.click()
       context.emit('done')
     }

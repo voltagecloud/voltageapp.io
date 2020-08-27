@@ -1,4 +1,5 @@
 <template lang="pug">
+div(style='padding: 20px;')
   v-form(v-model='valid' @submit.prevent='getMacaroon' ref='form')
     v-text-field(
       v-model='password'
@@ -16,7 +17,9 @@
       label='Confirm New Password'
       required
     )
-    v-btn(type='submit' :disabled='!valid' block :loading='loading').warning--text Create Macaroon
+    div.text-center.warning--text.mb-6
+      | This can take up to 30 seconds
+    v-btn(type='submit' color='highlight' :disabled='!valid' block :loading='loading').info--text Initialize Node
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
