@@ -3,7 +3,7 @@ v-container
   v-row
     v-col
       v-fade-transition
-        node-controls(:nodeID='nodeID')
+        node-controls(:nodeID='nodeID' @event='$fetch')
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
             data-table(:node='nodeData')
@@ -11,14 +11,14 @@ v-container
             v-container(v-if='canInit')
               v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
             v-container.align-center.justify-center(v-if='canUnlock')
-              v-dialog(max-width='800')
+              v-dialog(max-width='800' v-model='unlockDialog')
                 template(v-slot:activator='{ on }')
                   v-btn(v-on='on' color='highlight' block).info--text Unlock
                 v-card.text-center(style='padding: 20px;')
                   v-card-text.display-1 Enter your node's password
                   v-card-actions
                     v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
-                      v-text-field(v-model='nodePassword' type='password' :rules='[char8]')
+                      v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
                       v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
             v-container(v-if='canUpdate' @click='update')
               v-btn(color='highlight' block).info--text Update Available
@@ -30,7 +30,7 @@ v-container
                 export-data(:nodeID='nodeID' :nodeStatus='status')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
 import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
@@ -50,10 +50,11 @@ export default defineComponent({
   fetch () {
     // Logic for auto-refreshing
     // @ts-ignore
-    if (!timerID) {
+    if (!this.timer) {
       // make sure interval is clean
       // set new interval
-      const timerID = setInterval(async () => {
+      // @ts-ignore
+      this.timer = setInterval(async () => {
         // @ts-ignore
         let previousStatus = this.status
         // If the node was running or stopped on load don't try to refresh
@@ -62,27 +63,25 @@ export default defineComponent({
           return
         }
         // @ts-ignore
-        const res = await this.$nuxt.context.$axios.post('/node', {
-          // @ts-ignore
-          node_id: this.nodeID
-        })
+        const { postNode } = useNodeApi(this.$nuxt.context)
         // @ts-ignore
-        const shouldRefresh = previousStatus === res.data.status
+        const res = await postNode(this.nodeID)
         // @ts-ignore
-        previousStatus = res.data.status
-
+        const shouldRefresh = previousStatus === res.status
+        // @ts-ignore
+        previousStatus = res.status
         // If the user leaves the node's page stop checking
         // @ts-ignore
-        if (this.$route.params.id !== res.data.node_id) {
-          clearInterval(timerID)
+        if (this.$route.params.id !== res.node_id) {
+          // @ts-ignore
+          clearInterval(this.timer)
           return
         }
         if (!shouldRefresh) {
-          // @ts-ignore
-          this.$router.go()
           // If the node is in a running or stopped state we want to stop checking
           if (previousStatus === 'running' || previousStatus === 'stopped') {
-            clearInterval(timerID)
+            // @ts-ignore
+            clearInterval(this.timer)
           }
         }
       }, 5000)
@@ -92,7 +91,9 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus, postNode } = useNodeApi(root.$nuxt.context)
+
+    const timer = ref<NodeJS.Timeout|null>(null)
 
     const initializing = ref(false)
     async function initialize () {
@@ -111,24 +112,35 @@ export default defineComponent({
 
     const { char8, valid, form, password: nodePassword } = useFormValidation()
 
-    let unlocking = ref(false)
+    const unlockDialog = ref(false)
+    const unlocking = ref(false)
+    const error = ref('')
     async function unlockNode () {
       lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
       lndStore.CURRENT_NODE_ID(nodeData.value.node_id)
       unlocking.value = true
-      const unlock = await axios({
-        url: lndStore.currentNode + '/v1/unlockwallet',
-        method: 'POST',
-        data: {
-          wallet_password: btoa(nodePassword.value),
-          stateless_init: true
-        }
-      })
-      await updateStatus(nodeData.value.node_id, "unlocking")
-      unlocking.value = false
-      // @ts-ignore
-      root.$nuxt.$router.go()
+      try {
+        await axios({
+          url: lndStore.currentNode + '/v1/unlockwallet',
+          method: 'POST',
+          data: {
+            wallet_password: btoa(nodePassword.value),
+            stateless_init: true
+          },
+          timeout: 30000
+        })
+        await updateStatus(nodeData.value.node_id, 'unlocking')
+        postNode(nodeID.value)
+        unlockDialog.value = false
+      } catch (err) {
+        error.value = `${err}`
+      } finally {
+        unlocking.value = false
+      }
     }
+
+    // clear errors on typing in password field
+    watch(nodePassword, () => { error.value = '' })
 
     async function update () {
       await updateNode(nodeData.value.node_id)
@@ -151,7 +163,10 @@ export default defineComponent({
       char8,
       valid,
       form,
-      nodePassword
+      nodePassword,
+      unlockDialog,
+      timer,
+      error
     }
   }
 })

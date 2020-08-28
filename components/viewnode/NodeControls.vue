@@ -18,9 +18,9 @@ v-card(color='info')
                 v-btn(icon v-on='on' :disabled='!canConnect').mx-1
                   v-icon mdi-qrcode-scan
               choose-macaroon(:nodeID='nodeData.node_id')
-            v-btn(:disabled='!canStart' icon @click='startNode').mx-1
+            v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
               v-icon mdi-play
-            v-btn(:disabled='!canStop' icon @click='stopNode').mx-1
+            v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
               v-icon mdi-stop
             v-btn(:disabled='!canDelete' icon @click='deleteModal = true').ml-1.mr-3
               v-icon mdi-delete
@@ -60,7 +60,7 @@ export default defineComponent({
   components: {
     ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
   },
-  setup (props, { root }) {
+  setup (props, { root, emit }) {
     const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
 
     function navigate () {
