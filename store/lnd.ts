@@ -24,7 +24,7 @@ export default class ExportsModule extends VuexModule {
     }
 
     @Mutation
-    CURRENT_NODE_ID(v: string) {
+    CURRENT_NODE_ID (v: string) {
       console.log("HEERERERER")
       console.log(v)
       this.currentNodeId = v
