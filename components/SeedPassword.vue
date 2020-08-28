@@ -44,7 +44,7 @@ export default defineComponent({
       loading.value = true
       const res = await axios({
         method: 'POST',
-        url: 'https://' + node.api_endpoint + ':8080/v1/initwallet',
+        url: `https://${node.api_endpoint}:8080/v1/initwallet`,
         data: {
           wallet_password: btoa(formState.password.value), // b64 encode password string
           cipher_seed_mnemonic: lndStore.cipher_seed_mnemonic,
