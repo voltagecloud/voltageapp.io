@@ -21,14 +21,30 @@
 import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
 import { nodeStore, createStore } from '~/store'
 import { Network } from '~/types/api'
+import axios from 'axios'
 import useNodeApi from '~/compositions/useNodeApi'
+import { loadStripe } from '@stripe/stripe-js';
 
 export default defineComponent({
   setup (_, { root }) {
-    const { getPurchaseSession } = useNodeApi(root.$nuxt.context)
+    const { getPurchaseSession, loading } = useNodeApi(root.$nuxt.context)
+    const stripeKey = process.env.stripeKey
+    // @ts-ignore
+    const stripePromise = loadStripe(stripeKey)
     async function selectPlan() {
-      console.log(root.$nuxt.context)
+      loading.value = true
+      const resp = await axios.post('/stripe/session', {
+        plan: 'node_monthly',
+        quantity: 1
+      })
+      console.log(resp)
+      const stripe = await stripePromise;
+      // @ts-ignore
+      const { error } = await stripe.redirectToCheckout({
+        resp.data.session_id,
+      });
     }
+    
 
     return {
       selectPlan
