@@ -1,4 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
+import { Node } from '~/types/apiResponse'
 
 @Module({
   name: 'lnd',
@@ -8,8 +9,7 @@ import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 export default class ExportsModule extends VuexModule {
     cipher_seed_mnemonic: string[] = []
     enciphered_seed: string = ''
-    currentNode = ''
-    currentNodeId = ''
+    currentNode: Node|null = null
     macaroon = ''
 
     @Mutation
@@ -19,15 +19,8 @@ export default class ExportsModule extends VuexModule {
     }
 
     @Mutation
-    CURRENT_NODE (v: string) {
-      this.currentNode = `https://${v}:8080`
-    }
-
-    @Mutation
-    CURRENT_NODE_ID (v: string) {
-      console.log("HEERERERER")
-      console.log(v)
-      this.currentNodeId = v
+    CURRENT_NODE (v: Node) {
+      this.currentNode = v
     }
 
     @Mutation
