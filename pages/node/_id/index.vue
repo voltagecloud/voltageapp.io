@@ -102,8 +102,9 @@ export default defineComponent({
       lndStore.CURRENT_NODE(nodeData.value)
       initializing.value = true
       const node = lndStore.currentNode as Node
+      console.log(node)
       const seed = await axios({
-        url: node.api_endpoint + '/v1/genseed',
+        url: 'https://' + node.api_endpoint + ':8080/v1/genseed',
         method: 'GET'
       })
       initializing.value = false
@@ -122,7 +123,7 @@ export default defineComponent({
       try {
         const node = lndStore.currentNode as Node
         await axios({
-          url: node.api_endpoint + '/v1/unlockwallet',
+          url: 'https://' + node.api_endpoint + ':8080/v1/unlockwallet',
           method: 'POST',
           data: {
             wallet_password: btoa(nodePassword.value),
