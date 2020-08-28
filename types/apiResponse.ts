@@ -97,3 +97,8 @@ export interface NodeNameResponse {
     valid: boolean
     node_name: string
 }
+
+
+export interface PaymentSession {
+    session_id: string
+}

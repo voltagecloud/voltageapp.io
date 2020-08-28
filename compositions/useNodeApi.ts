@@ -201,6 +201,22 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function getPurchaseSession(plan: string, quantity: string, email: string) {
+    try {
+      const res = await $axios.post('/stripe/session', {
+        plan: plan,
+        quantity: quantity,
+        email: email
+      })
+      return res
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 })
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -214,6 +230,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     updateStatus,
     postMacaroon,
     connectNode,
-    getCert
+    getCert,
+    getPurchaseSession
   }
 }
