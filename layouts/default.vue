@@ -25,32 +25,15 @@
         v-icon mdi-menu
       v-img(:src='require("~/assets/logo/name-white.svg")' max-height='18' max-width='100' contain )
       v-spacer
-        //- v-btn.mx-2(icon='' @click='$vuetify.theme.dark = !$vuetify.theme.dark')
-        //-   v-icon
-        //-     | mdi-theme-light-dark
       v-btn(text to='/')
         span(v-if='$vuetify.breakpoint.mdAndUp') Home&nbsp;
         v-icon mdi-home
       v-btn(text to='/create')
         span(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
         v-icon mdi-plus
-      //- v-btn(text to='/purchase')
-      //-   span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
-      //-   v-icon mdi-cash-plus
-        //- v-menu(bottom='' left='' offset-y='' origin='top right' transition='scale-transition')
-        //-   template(v-slot:activator='{ on, attrs }')
-        //-     v-btn.mx-2(v-bind='attrs' icon='' v-on='on')
-        //-       v-badge(color='primary' overlap='')
-        //-         template(v-slot:badge='' v-if='notifications.length')
-        //-           span {{ notifications.length }}
-        //-         v-icon mdi-bell
-        //-   v-list
-        //-     v-list-item(v-for='(notif, i) in notifications' :key='`${i}${notif.title}`' @click='$router.push(notif.to)')
-        //-       v-list-item-title
-        //-         | {{ notif.title }}
-      //- v-btn.mx-2(icon='' @click="$router.push('user')")
-      //-   v-icon
-      //-     | mdi-account
+      v-btn(text to='/purchase')
+        span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
+        v-icon mdi-currency-usd-circle-outline
     v-content(:class='{background: $route.path != "/settings"}')
       nuxt
     error-snackbar

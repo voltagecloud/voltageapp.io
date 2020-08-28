@@ -25,7 +25,6 @@ export default defineComponent({
   components: {
     CreateType: () => import('~/components/CreateType.vue'),
     CreateNode: () => import('~/components/CreateNode.vue')
-    // ConfirmSeed: () => import('~/components/ConfirmSeed.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup () {

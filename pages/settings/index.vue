@@ -1,6 +1,6 @@
 <template lang="pug">
   v-container
-    v-row(justify='center')
+    v-row
       v-col(cols='12' xl='8')
         v-card(color='info')
           v-container.py-0

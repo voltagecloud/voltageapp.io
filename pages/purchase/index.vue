@@ -1,22 +1,20 @@
 <template lang="pug">
-  v-container(style='height: 100%;')
-    v-row(style='height: 100%;' justify='center')
-      v-col(cols='12' lg='4' v-for='(card, i) in cards' :key='i')
-        v-card(color='info' height='100%' hover).pad-bottom
-          v-card-title.font-weight-light.warning--text.text--darken-1 {{ card.nodeType }}
-          v-card-text(style='line-height: 1.7em;') {{ card.desc }}
-          v-card-actions.make-bottom
-            v-tooltip(top :disabled='!card.disabled')
-              template(v-slot:activator='{ on }')
-                div(v-on='on')
-                  v-btn(
-                    @click='card.selectFn'
-                    :disabled='card.disabled || (loading && clickedButton !== i)'
-                    color='secondary'
-                    block
-                    :loading='loading && clickedButton === i'
-                  ).warning--text Create
-              span {{ card.disabledMsg }}
+    v-container
+        v-card(color='info')
+            div(style='padding: 20px;').text-center
+                v-card-text.highlight--text.display-1 Lightning Node
+                div.text-center.warning--text.mb-6
+                  | Create your own Lightning Node for Mainnet or Testnet that never expires. Provision and connect to your node in less than two minutes.
+                v-container
+                  v-row.no-gutters
+                    v-col(cols='12' md='6')
+                      v-card(class='pa-2').outlined
+                        | node 1
+                  v-row.no-gutters
+                    v-col(cols='12' md='6')
+                      v-card(class='pa-2').outlined
+                        | node 2
+
 </template>
 <script lang="ts">
 import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
@@ -36,7 +34,6 @@ export default defineComponent({
     const cards = reactive([
       {
         nodeType: 'Mainnet',
-        buttonText: '',
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
           clickedButton.value = 0
@@ -59,7 +56,7 @@ export default defineComponent({
           createStore.STEP(1)
         },
         disabled: !nodeStore.user || !nodeStore.user.trial_available,
-        disabledMsg: 'You have already used your trial. Please purchase a node.'
+        disabledMsg: 'You already have a trial node active'
       },
       {
         nodeType: 'Testnet (persistent)',
@@ -75,6 +72,7 @@ export default defineComponent({
         disabledMsg: stdMsg
       }
     ])
+
 
     return {
       cards,
