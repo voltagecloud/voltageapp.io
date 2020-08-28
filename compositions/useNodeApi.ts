@@ -135,14 +135,30 @@ export default function useNodeApi ({ $axios, error }: Context) {
   async function updateStatus (node_id: string, status: string) {
     try {
       console.log(node_id)
+      loading.value = true
       const res = await $axios.post('/node/status', {
         node_id,
         status
       })
       return res
     } catch (e) {
-      loading.value = false
       console.log(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function postMacaroon (node_id: string, name: string, macaroon: string) {
+    try {
+      loading.value = true
+      const res = await $axios.post('/node/macaroon', {
+        node_id,
+        name,
+        macaroon
+      })
+      return res
+    } catch (e) {
+      console.error(e)
     } finally {
       loading.value = false
     }
@@ -158,6 +174,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     loading,
     startExport,
     nodeName,
-    updateStatus
+    updateStatus,
+    postMacaroon
   }
 }

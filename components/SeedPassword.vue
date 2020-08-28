@@ -28,18 +28,22 @@ div(style='padding: 20px;')
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
+import { AES } from 'crypto-js'
 import axios from 'axios'
 import useFormValidation from '~/compositions/useFormValidation'
+import useNodeApi from '~/compositions/useNodeApi'
 import { lndStore } from '~/store'
+import { Node } from '~/types/apiResponse'
 
 export default defineComponent({
   setup (_, context) {
     const loading = ref(false)
     async function getMacaroon () {
+      const node = lndStore.currentNode as Node
       loading.value = true
       const res = await axios({
         method: 'POST',
-        url: lndStore.currentNode + '/v1/initwallet',
+        url: node.api_endpoint + '/v1/initwallet',
         data: {
           wallet_password: btoa(formState.password.value), // b64 encode password string
           cipher_seed_mnemonic: lndStore.cipher_seed_mnemonic,
@@ -49,6 +53,13 @@ export default defineComponent({
       console.log({ res })
       loading.value = false
       lndStore.MACAROON(res.data.admin_macaroon)
+      // check the current nodes macaroon backup is true
+      if (node.macaroon_backup) {
+        const encrypted = AES.encrypt(res.data.admin.admin_macaroon, formState.password.value).toString()
+        const { postMacaroon } = useNodeApi(context.root.$nuxt.context)
+        await postMacaroon(node.node_id, 'mylittlemacararoon', encrypted)
+      }
+
       context.emit('next')
     }
 
