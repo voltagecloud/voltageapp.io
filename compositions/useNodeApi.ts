@@ -132,12 +132,12 @@ export default function useNodeApi ({ $axios, error }: Context) {
     return res
   }
 
-  async function updateStatus(node_id: string, status: string) {
+  async function updateStatus (node_id: string, status: string) {
     try {
       console.log(node_id)
       const res = await $axios.post('/node/status', {
-        node_id: node_id,
-        status: status
+        node_id,
+        status
       })
       return res
     } catch (e) {
