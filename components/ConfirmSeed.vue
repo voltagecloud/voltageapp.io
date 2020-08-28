@@ -16,6 +16,7 @@ import { defineComponent } from '@vue/composition-api'
 import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
 import useNodeApi from '~/compositions/useNodeApi'
+import { Node } from '~/types/apiResponse'
 
 
 export default defineComponent({
@@ -23,7 +24,8 @@ export default defineComponent({
     const { updateStatus } = useNodeApi(root.$nuxt.context)
     function confirmSeed () {
       console.log(lndStore)
-      updateStatus(lndStore.currentNodeId, "initializing")
+      const node = lndStore.currentNode as Node
+      updateStatus(node.node_id, 'initializing')
       emit('next')
     }
 

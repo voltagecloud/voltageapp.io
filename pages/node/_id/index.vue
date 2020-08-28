@@ -36,6 +36,7 @@ import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
+import { Node } from '~/types/apiResponse'
 
 let timerID: NodeJS.Timeout
 
@@ -101,8 +102,9 @@ export default defineComponent({
       lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
       lndStore.CURRENT_NODE_ID(nodeData.value.node_id)
       initializing.value = true
+      const node = lndStore.currentNode as Node
       const seed = await axios({
-        url: lndStore.currentNode + '/v1/genseed',
+        url: node.api_endpoint + '/v1/genseed',
         method: 'GET'
       })
       initializing.value = false
@@ -116,12 +118,12 @@ export default defineComponent({
     const unlocking = ref(false)
     const error = ref('')
     async function unlockNode () {
-      lndStore.CURRENT_NODE(nodeData.value.api_endpoint)
-      lndStore.CURRENT_NODE_ID(nodeData.value.node_id)
+      lndStore.CURRENT_NODE(nodeData.value)
       unlocking.value = true
       try {
+        const node = lndStore.currentNode as Node
         await axios({
-          url: lndStore.currentNode + '/v1/unlockwallet',
+          url: node.api_endpoint + '/v1/unlockwallet',
           method: 'POST',
           data: {
             wallet_password: btoa(nodePassword.value),
