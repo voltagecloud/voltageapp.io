@@ -18,13 +18,13 @@
               template(v-slot:activator="{ on }")
                 v-btn(icon v-bind="attrs" v-on="on" :to='`/node/${exportData.node_id}`').mx-1
                   v-icon mdi-forward
-              v-span
+              span
                 | Go to Node
             v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-btn(icon v-bind="attrs" v-on="on" :href='exportData.url' target='_blank' :disabled='isPending').ml-1.mr-3
                   v-icon mdi-download
-              v-span
+              span
                 | Download Export
     v-container
       v-simple-table(

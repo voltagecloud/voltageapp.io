@@ -21,32 +21,32 @@ v-container
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
-                v-span
+                span
                   | Autopilot automatically manages channels for you
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.grpc' v-on="on" label='gRPC' inset color='highlight')
-                v-span
+                span
                   | Enable the gRPC API in LND
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.rest' v-on="on" label='REST' inset color='highlight')
-                v-span
+                span
                   | Enable the REST API in LND
               //- v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
               //-   template(v-slot:activator="{ on }")
               //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
-              //-   v-span
+              //-   span
               //-     | Enable the Tor for LND APIs
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
-                v-span
+                span
                   | Keysend allows for accepting payments without generating an invoice
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
                   v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
-                v-span
+                span
                   | Allows LND to create channels larger than 0.1677 BTC
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')

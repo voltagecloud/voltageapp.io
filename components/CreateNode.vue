@@ -38,7 +38,7 @@
               //- v-tooltip(top :open-on-click="true" :open-on-hover="true")
               //-   template(v-slot:activator="{ on }")
               //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
-              //-   v-span
+              //-   span
               //-     | Enable the Tor for LND APIs
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
