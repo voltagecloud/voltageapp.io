@@ -9,12 +9,18 @@
                   v-row.no-gutters
                     v-col(cols='12' md='6')
                       v-card(class='pa-2').outlined
-                        v-btn.px-4.info--text(block='' @click='selectPlan' color='highlight' large='' :loading='loading')
+                        v-btn.px-4.info--text(block='' @click='selectPlan' color='highlight' large='')
                           | Buy Node
                   v-row.no-gutters
                     v-col(cols='12' md='6')
                       v-card(class='pa-2').outlined
                         | node 2
+                  v-row.no-gutters
+                    v-col(cols='12' md='6')
+                      v-card(class='pa-2').outlined
+                        v-btn.px-4.info--text(block='' @click='portal' color='highlight' large='')
+                          | Portal
+
 
 </template>
 <script lang="ts">
@@ -27,27 +33,44 @@ import { loadStripe } from '@stripe/stripe-js';
 
 export default defineComponent({
   setup (_, { root }) {
+    console.log("ROOOOTTT")
+    console.log(root)
+    console.log(root.$route.query)
+    if ('session_id' in root.$route.query && root.$route.query.session_id != "") {
+      console.log("It's set!!")
+    } else {
+      console.log("nope")
+    }
     const { getPurchaseSession, loading } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
     // @ts-ignore
     const stripePromise = loadStripe(stripeKey)
     async function selectPlan() {
       loading.value = true
-      const resp = await axios.post('/stripe/session', {
+      const res = await root.$nuxt.context.$axios.post('/stripe/session', {
         plan: 'node_monthly',
         quantity: 1
       })
-      console.log(resp)
+      console.log(res)
+      const sessionId = res.data.session_id
       const stripe = await stripePromise;
       // @ts-ignore
       const { error } = await stripe.redirectToCheckout({
-        resp.data.session_id,
+        sessionId
       });
     }
-    
+
+    async function portal() {
+      loading.value = true
+      const res = await root.$nuxt.context.$axios.post('/stripe/portal', {})
+      console.log(res)
+      const portalUrl = res.data.portal_url
+      window.location.replace(portalUrl)
+    }
 
     return {
-      selectPlan
+      selectPlan,
+      portal
     }
   }
 })
