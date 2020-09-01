@@ -10,9 +10,9 @@
       v-col(cols='12' sm='6' v-else-if='noNodes')
         v-card(color='info' key='no-nodes')
           v-card-text.text-center
-            | You dont have any nodes yet :(
+            | You dont have any nodes yet.
             br
-            | Nodes you create will appear here
+            | Nodes you create will appear here.
           v-card-actions
             v-btn(to='/create' color='secondary').warning--text.px-6.mx-auto Create Node
 

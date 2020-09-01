@@ -7,7 +7,7 @@
       span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in lndStore.cipher_seed_mnemonic' :key='i' :data-index='i') {{ word }}
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12
-      | Write down your seed phrase in a safe place. You will need it to recover your node. We do not save this and you will lose access to your funds if lost.
+      | Write down your seed phrase in a safe place. You will need it to recover your node and funds. Voltage is not responsible for lost seeds.
     v-btn.info--text(block color='highlight' depressed @click='confirmSeed')
       | I have written down my seed phrase
 </template>
