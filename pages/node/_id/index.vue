@@ -17,6 +17,7 @@ v-container
                 useActivator
                 activatorText='Unlock'
                 text='Unlock Node'
+                :error='error'
               )
               //- v-dialog(max-width='800' v-model='unlockDialog')
               //-   template(v-slot:activator='{ on }')
@@ -31,10 +32,9 @@ v-container
               v-btn(color='highlight' block).info--text Update Available
             v-container(v-if='status === "running"')
               v-btn(color='highlight' block @click='connect').info--text Connect
-            password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' text='Connect to Node')
-            v-dialog(v-model='showConnectURI')
-              qrcode-vue(v-model='connectURI' size='300' ).mb-3
-              copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
+            password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
+            v-container(v-if='showQrDialog === true')
+              show-qr(v-model='showQrDialog' :connectURI='connectURI' @clear='clearQr')
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -61,6 +61,7 @@ export default defineComponent({
     EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     PasswordDialog: () => import('~/components/PasswordDialog.vue'),
+    ShowQr: () => import('~/components/ShowQr.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
@@ -164,9 +165,6 @@ export default defineComponent({
       }
     }
 
-    // clear errors on typing in password field
-    watch(nodePassword, () => { error.value = '' })
-
     async function update () {
       await updateNode(nodeData.value.node_id)
       // @ts-ignore
@@ -176,37 +174,59 @@ export default defineComponent({
     const encrypted = ref('')
     const cert = ref('')
     const showPasswordDialog = ref(false)
+    const showQrDialog = ref(false)
     async function connect () {
-      const res = await connectNode(nodeData.value.node_id, 'admin')
-      console.log({ res })
-      const { macaroon, tls_cert } = res
-      cert.value = tls_cert
-      if (macaroon) {
-        showPasswordDialog.value = true
-        encrypted.value = macaroon
-      } else {
-        // IMPLEMENT MACAROON UPLOAD
+      showPasswordDialog.value = true
+      try {
+        const res = await connectNode(nodeData.value.node_id, 'admin')
+        var { macaroon, tls_cert } = res
+        cert.value = tls_cert
+        if (macaroon) {
+          encrypted.value = macaroon
+        } else {
+          // IMPLEMENT MACAROON UPLOAD
+        }
+      } catch (e) {
+        error.value = e.toString()
       }
     }
 
-    const connectURI = ref('')
-    const showConnectURI = computed({
-      get: () => !!connectURI.value,
-      set: (v) => {
-        if (!v) {
-          connectURI.value = ''
+    // @ts-ignore
+    function isBase64 (str) {
+        if (str ==='' || str.trim() ===''){ return false; }
+        try {
+            return btoa(atob(str)) == str;
+        } catch (err) {
+            return false;
         }
-      }
-    })
+    }
+    const connectURI = ref('')
+
     function handleConnectNode (password: string) {
+      // @ts-ignore
       try {
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
-        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?macaroon=${atob(decrypted)}`
+        const decryptResult = atob(decrypted)
+        if (isBase64(decryptResult)) {
+          connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?macaroon=${decryptResult}`
+          showQrDialog.value = true
+          showPasswordDialog.value = false
+        } else {
+          error.value = 'Incorrect password'
+        }
       } catch (e) {
         console.error('cipher mismatch, macaroon decryption failed')
         console.error(e)
+        error.value = e.toString()
       }
     }
+
+    async function clearQr () {
+      showQrDialog.value = false
+    }
+
+    // clear errors on typing in password field
+    watch(nodePassword, () => { error.value = '' })
 
     return {
       nodeData,
@@ -229,9 +249,10 @@ export default defineComponent({
       error,
       connect,
       showPasswordDialog,
+      showQrDialog,
       handleConnectNode,
       connectURI,
-      showConnectURI
+      clearQr
     }
   }
 })

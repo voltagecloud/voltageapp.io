@@ -4,9 +4,9 @@ v-card(color='info')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
       v-row(align='center' justify='space-between' no-gutters)
-        v-col(@click='navigate' cols='4' style='cursor: pointer;')
+        v-col(@click='navigate' cols='7' style='cursor: pointer;')
           v-row(no-gutters)
-            v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
+            v-col(cols='16').font-weight-light.warning--text.text--darken-1.v-card__title
               span {{ nodeData.node_name }}
               span.caption.warning--text.ml-2 {{ nodeData.status }}
             v-col(cols='12').overline
@@ -15,9 +15,6 @@ v-card(color='info')
           v-row(justify='end')
             v-dialog(max-width='800')
               template(v-slot:activator='{ on }')
-                v-btn(icon v-on='on' :disabled='!canConnect').mx-1
-                  v-icon mdi-qrcode-scan
-              choose-macaroon(:nodeID='nodeData.node_id')
             v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
               v-icon mdi-play
             v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
