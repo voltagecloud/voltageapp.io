@@ -1,17 +1,27 @@
 <template lang="pug">
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-card.text-center.align-center(style='padding: 20px;')
-      qrcode-vue(v-model='connectURI' size='300' ).mb-3
+      qrcode-vue(v-if='showQr' v-model='connectURI' size='300' ).mb-3
+      p(v-if='!showQr').font-weight-light.text--darken-1.v-card__title.justify-center.align-center
+        | Can't generate QR code
+      div(v-if='!showQr' max-width='800' style='padding: 20px;')
+        | Voltage uses TLS Certificates that are signed by a trusted Certificate Authority. These Certificates
+        | are much larger than a self-signed certificate. Therefore, they are too big to fit into a QR code.
+        p
+        | If your application still requires a TLS Certificate, you can either download your certificate from your 
+        | node's dashboard or copy and paste the lndconnect URI below.
       div(style='width: 100px').text-center
         v-radio-group(@change='changeApi' v-model='apiDefault')
           v-radio(label='GRPC' value='grpc')
           v-radio(label='REST' value='rest')
+      v-checkbox(@change='changeApi' label="Include TLS Certificate" v-model='certDefault')
       copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
-      p.ml-3
-      | These codes contain sensitive data used to connect to your node. Guard them carefully.
+      p
+      p
+        | These codes contain sensitive data used to connect to your node. Guard them carefully.
 </template>
 <script lang="ts">
-import { defineComponent, watch, ref } from '@vue/composition-api'
+import { defineComponent, watch, ref, computed } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
@@ -42,21 +52,36 @@ export default defineComponent({
     }
 
     const apiDefault = ref('grpc')
+    const certDefault = ref(false)
+    const dynamicPort = ref('10009')
+    const dynamicCert = ref('')
 
     // @ts-ignore
     function changeApi (event) {
       if (event === 'rest') {
-        var port = '8080'
-      } else {
-        var port = '10009'
+        dynamicPort.value = '8080'
+      } else if (event === 'grpc') {
+        dynamicPort.value = '10009'
+      } else if (event === true) {
+        dynamicCert.value = props.cert
+      } else if (event === false) {
+        dynamicCert.value = ''
       }
-      emit('changeApi', props.api, port, '', props.macaroon)
+      emit('changeApi', props.api, dynamicPort.value, dynamicCert.value, props.macaroon)
     }
+
+    const showQr = computed(() => {
+      return (dynamicCert.value === '') ? true : false
+    })
 
     return {
       apiDefault,
+      certDefault,
       clear,
-      changeApi
+      changeApi,
+      dynamicCert,
+      dynamicPort,
+      showQr
     }
   }
 })
