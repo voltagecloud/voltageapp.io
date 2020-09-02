@@ -30,7 +30,7 @@ div(style='padding: 20px;')
 <script lang="ts">
 import { defineComponent, ref, watch } from '@vue/composition-api'
 // @ts-ignore
-import { AES } from 'crypto-js'
+import { AES, format } from 'crypto-js'
 import axios from 'axios'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -46,7 +46,7 @@ export default defineComponent({
       const node = lndStore.currentNode as Node
       loading.value = true
       try {
-        var res = await axios({
+        const res = await axios({
           method: 'POST',
           url: `https://${node.api_endpoint}:8080/v1/initwallet`,
           data: {

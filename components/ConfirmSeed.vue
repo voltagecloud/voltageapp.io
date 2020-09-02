@@ -21,7 +21,7 @@ import { Node } from '~/types/apiResponse'
 
 export default defineComponent({
   setup (_, { root, emit }) {
-    const { updateStatus } = useNodeApi(root.$nuxt.context)
+    // const { updateStatus } = useNodeApi(root.$nuxt.context)
     function confirmSeed () {
       emit('next')
     }

@@ -45,7 +45,7 @@ v-container
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
-import { AES } from 'crypto-js'
+import crypto from 'crypto-js'
 import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -200,8 +200,8 @@ export default defineComponent({
     })
     function handleConnectNode (password: string) {
       try {
-        const decrypted = AES.decrypt(encrypted.value || '', password).toString()
-        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?cert=${cert.value}&macaroon=${decrypted}`
+        const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
+        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?macaroon=${atob(decrypted)}`
       } catch (e) {
         console.error('cipher mismatch, macaroon decryption failed')
         console.error(e)
