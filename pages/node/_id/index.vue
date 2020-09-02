@@ -11,17 +11,30 @@ v-container
             v-container(v-if='canInit')
               v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
             v-container.align-center.justify-center(v-if='canUnlock')
-              v-dialog(max-width='800' v-model='unlockDialog')
-                template(v-slot:activator='{ on }')
-                  v-btn(v-on='on' color='highlight' block).info--text Unlock
-                v-card.text-center(style='padding: 20px;')
-                  v-card-text.display-1 Enter your node's password
-                  v-card-actions
-                    v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
-                      v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
-                      v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
+              password-dialog(
+                v-model='unlockDialog'
+                @done='unlockNode'
+                useActivator
+                activatorText='Unlock'
+                text='Unlock Node'
+              )
+              //- v-dialog(max-width='800' v-model='unlockDialog')
+              //-   template(v-slot:activator='{ on }')
+              //-     v-btn(v-on='on' color='highlight' block).info--text Unlock
+              //-   v-card.text-center(style='padding: 20px;')
+              //-     v-card-text.display-1 Enter your node's password
+              //-     v-card-actions
+              //-       v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
+              //-         v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
+              //-         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
             v-container(v-if='canUpdate' @click='update')
               v-btn(color='highlight' block).info--text Update Available
+            v-container(v-if='status === "running"')
+              v-btn(color='highlight' block @click='connect').info--text Connect
+            password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' text='Connect to Node')
+            v-dialog(v-model='showConnectURI')
+              qrcode-vue(v-model='connectURI' size='300' ).mb-3
+              copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -32,6 +45,7 @@ v-container
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
+import { AES } from 'crypto-js'
 import { nodeStore, lndStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -45,7 +59,10 @@ export default defineComponent({
     NodeControls: () => import('~/components/viewnode/NodeControls.vue'),
     DataTable: () => import('~/components/viewnode/DataTable.vue'),
     EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
-    ExportData: () => import('~/components/ExportData.vue')
+    ExportData: () => import('~/components/ExportData.vue'),
+    PasswordDialog: () => import('~/components/PasswordDialog.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    QrcodeVue: () => import('qrcode.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   fetch () {
@@ -92,7 +109,7 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus, postNode } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus, postNode, connectNode } = useNodeApi(root.$nuxt.context)
 
     const timer = ref<NodeJS.Timeout|null>(null)
 
@@ -104,7 +121,7 @@ export default defineComponent({
       const node = lndStore.currentNode as Node
       console.log(node)
       const seed = await axios({
-        url: `https://${node.api_endpoint}:8080/v1/genseed`
+        url: `https://${node.api_endpoint}:8080/v1/genseed`,
         method: 'GET'
       })
       initializing.value = false
@@ -117,7 +134,7 @@ export default defineComponent({
     const unlockDialog = ref(false)
     const unlocking = ref(false)
     const error = ref('')
-    async function unlockNode () {
+    async function unlockNode (password: string) {
       lndStore.CURRENT_NODE(nodeData.value)
       unlocking.value = true
       try {
@@ -126,7 +143,7 @@ export default defineComponent({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
           data: {
-            wallet_password: btoa(nodePassword.value),
+            wallet_password: btoa(password),
             stateless_init: true
           },
           timeout: 30000
@@ -150,6 +167,41 @@ export default defineComponent({
       root.$nuxt.$router.go()
     }
 
+    const encrypted = ref('')
+    const cert = ref('')
+    const showPasswordDialog = ref(false)
+    async function connect () {
+      const res = await connectNode(nodeData.value.node_id, 'admin')
+      console.log({ res })
+      const { macaroon, tls_cert } = res
+      cert.value = tls_cert
+      if (macaroon) {
+        showPasswordDialog.value = true
+        encrypted.value = macaroon
+      } else {
+        // IMPLEMENT MACAROON UPLOAD
+      }
+    }
+
+    const connectURI = ref('')
+    const showConnectURI = computed({
+      get: () => !!connectURI.value,
+      set: (v) => {
+        if (!v) {
+          connectURI.value = ''
+        }
+      }
+    })
+    function handleConnectNode (password: string) {
+      try {
+        const decrypted = AES.decrypt(encrypted.value || '', password)
+        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?cert=&macaroon=${decrypted}`
+      } catch (e) {
+        console.error('cipher mismatch, macaroon decryption failed')
+        console.error(e)
+      }
+    }
+
     return {
       nodeData,
       nodeID,
@@ -168,7 +220,12 @@ export default defineComponent({
       nodePassword,
       unlockDialog,
       timer,
-      error
+      error,
+      connect,
+      showPasswordDialog,
+      handleConnectNode,
+      connectURI,
+      showConnectURI
     }
   }
 })

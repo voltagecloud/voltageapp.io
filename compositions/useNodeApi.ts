@@ -164,6 +164,21 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function connectNode (node_id: string, name: string) {
+    try {
+      loading.value = true
+      const res = await $axios.post('/node/connect', {
+        node_id,
+        name
+      })
+      return res.data
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -175,6 +190,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     startExport,
     nodeName,
     updateStatus,
-    postMacaroon
+    postMacaroon,
+    connectNode
   }
 }
