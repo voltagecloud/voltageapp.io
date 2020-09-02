@@ -54,6 +54,7 @@ export default defineComponent({
     }
 
     const cacheError = ref('')
+    // @ts-ignore
     watch(() => props.error, (val) => { cacheError.value = val })
     watch(nodePassword, () => { cacheError.value = '' })
     return {
