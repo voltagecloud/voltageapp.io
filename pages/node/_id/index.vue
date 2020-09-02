@@ -33,7 +33,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' text='Connect to Node')
             v-dialog(v-model='showConnectURI')
-              //- qrcode-vue(v-model='connectURI' size='300' ).mb-3
+              qrcode-vue(v-model='connectURI' size='300' ).mb-3
               copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
             edit-settings(:node='nodeData')
             v-container
