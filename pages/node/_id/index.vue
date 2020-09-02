@@ -33,7 +33,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' text='Connect to Node')
             v-dialog(v-model='showConnectURI')
-              qrcode-vue(v-model='connectURI' size='300' ).mb-3
+              //- qrcode-vue(v-model='connectURI' size='300' ).mb-3
               copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
             edit-settings(:node='nodeData')
             v-container
@@ -200,8 +200,8 @@ export default defineComponent({
     })
     function handleConnectNode (password: string) {
       try {
-        const decrypted = AES.decrypt(encrypted.value || '', password)
-        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?cert=&macaroon=${decrypted}`
+        const decrypted = AES.decrypt(encrypted.value || '', password).toString()
+        connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?cert=${cert.value}&macaroon=${decrypted}`
       } catch (e) {
         console.error('cipher mismatch, macaroon decryption failed')
         console.error(e)
