@@ -34,7 +34,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' @clear='clearQr')
+              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' @clear='clearQr' @changeApi='buildUri')
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -173,13 +173,16 @@ export default defineComponent({
 
     const encrypted = ref('')
     const cert = ref('')
+    const apiEndpoint = ref('')
+    const macaroon = ref('')
     const showPasswordDialog = ref(false)
     const showQrDialog = ref(false)
     async function connect () {
       showPasswordDialog.value = true
       try {
         const res = await connectNode(nodeData.value.node_id, 'admin')
-        var { macaroon, tls_cert } = res
+        var { endpoint, macaroon, tls_cert } = res
+        apiEndpoint.value = endpoint
         cert.value = tls_cert
         if (macaroon) {
           encrypted.value = macaroon
@@ -201,14 +204,28 @@ export default defineComponent({
         }
     }
     const connectURI = ref('')
+    
+    function buildUri(api: string, port: string, tls_cert: string, macaroon: string) {
+      var connectionString = `lndconnect://${api}:${port}?macaroon=${macaroon}`
+      if (tls_cert !== '') {
+        connectionString = `${connectionString}&tls_cert=${tls_cert}`
+      }
+      connectURI.value = connectionString
+    }
 
-    function handleConnectNode (password: string) {
+    function handleConnectNode (password: string, api: string) {
+      if (api === 'rest') {
+        var port = '8080'
+      } else {
+        var port = '10009'
+      }
       // @ts-ignore
       try {
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
         if (isBase64(decryptResult)) {
-          connectURI.value = `lndconnect://${nodeData.value.api_endpoint}:8080?macaroon=${decryptResult}`
+          macaroon.value = decryptResult
+          buildUri(nodeData.value.api_endpoint, port, '', decryptResult)
           showQrDialog.value = true
           showPasswordDialog.value = false
         } else {
@@ -252,7 +269,12 @@ export default defineComponent({
       showQrDialog,
       handleConnectNode,
       connectURI,
-      clearQr
+      clearQr,
+      encrypted,
+      cert,
+      apiEndpoint,
+      macaroon,
+      buildUri
     }
   }
 })
