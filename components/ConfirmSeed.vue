@@ -23,9 +23,6 @@ export default defineComponent({
   setup (_, { root, emit }) {
     const { updateStatus } = useNodeApi(root.$nuxt.context)
     function confirmSeed () {
-      console.log(lndStore)
-      const node = lndStore.currentNode as Node
-      updateStatus(node.node_id, 'initializing')
       emit('next')
     }
 

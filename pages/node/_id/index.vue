@@ -119,14 +119,20 @@ export default defineComponent({
       lndStore.CURRENT_NODE(nodeData.value)
       initializing.value = true
       const node = lndStore.currentNode as Node
-      console.log(node)
-      const seed = await axios({
-        url: `https://${node.api_endpoint}:8080/v1/genseed`,
-        method: 'GET'
-      })
-      initializing.value = false
-      lndStore.SEED(seed.data)
-      root.$router.push('/confirm')
+      try {
+        const seed = await axios({
+          url: `https://${node.api_endpoint}:8080/v1/genseed`,
+          method: 'GET'
+        })
+        initializing.value = false
+        lndStore.SEED(seed.data)
+        root.$router.push('/confirm')
+      } catch (err) {
+        console.log(err)
+        initializing.value = false
+      } finally {
+        initializing.value = false
+      }
     }
 
     const { char8, valid, form, password: nodePassword } = useFormValidation()
@@ -146,7 +152,7 @@ export default defineComponent({
             wallet_password: btoa(password),
             stateless_init: true
           },
-          timeout: 30000
+          timeout: 45000
         })
         await updateStatus(nodeData.value.node_id, 'unlocking')
         postNode(nodeID.value)
