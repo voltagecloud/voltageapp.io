@@ -1,7 +1,7 @@
 {
   "name": "voltage",
   "version": "1.0.0",
-  "description": "Seize the Lightning",
+  "description": "We make Lightning easy.",
   "author": "Voltage",
   "private": true,
   "scripts": {
