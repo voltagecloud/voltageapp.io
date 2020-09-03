@@ -31,7 +31,7 @@
         v-btn(type='submit' :disabled='!valid' block color='highlight').info--text Change Password
 </template>
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import Auth from '@aws-amplify/auth'
 import useFormValidation from '~/compositions/useFormValidation'
 import { authStore } from '~/store'
@@ -47,6 +47,8 @@ export default defineComponent({
         const user = await Auth.currentAuthenticatedUser()
         try {
           const res = await Auth.changePassword(user, oldPassword.value, password.value)
+          oldPassword.value = ''
+          password.value = ''
           emit('done')
         } catch (err) {
           console.error({ err })
@@ -54,6 +56,10 @@ export default defineComponent({
         }
       }
     }
+
+    watch(oldPassword, () => { error.value = '' })
+    watch(password, () => { error.value = '' })
+
     return {
       oldPassword,
       password,

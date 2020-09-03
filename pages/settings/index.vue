@@ -18,7 +18,7 @@
                     v-dialog(max-width='800' v-model='openPW')
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on').warning--text Change Password
-                      change-password(@done='open = false')
+                      change-password(@done='openPW = false')
                   v-divider
                   v-row(align='center')
                     v-col(cols='auto') {{ MFAText }}
