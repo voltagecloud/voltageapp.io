@@ -20,7 +20,7 @@ div(style='padding: 20px;')
     )
     br
     div.text-center.warning--text.mb-6
-      | It's important to write down this password as well because it's used to encrypt macaroons. Losing this password means losing access to macaroon backups.
+      | Write this password down too. This is the password to your node and also used for client-side macaroon encryption. Losing this password means losing access to macaroon backups.
     v-divider.mx-12.mt-6
     br
     div.text-center.warning--text.mb-6
