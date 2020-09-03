@@ -2,7 +2,7 @@
   v-card(color='secondary')
     v-card-title Change Password
     v-card-actions.text-center
-      v-form(v-model='valid' @submit.prevent='changePassword')
+      v-form(v-model='valid' style='width: 100%; padding: 20px;' ref='form' @submit.prevent='changePassword')
         v-text-field(
           v-model='oldPassword'
           :rules='[required]'
@@ -28,7 +28,7 @@
           label='Confirm New Password'
           required
         )
-        v-btn(type='submit' :disabled='!valid' block color='secondary').warning--text Change Password
+        v-btn(type='submit' :disabled='!valid' block color='highlight').info--text Change Password
 </template>
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
