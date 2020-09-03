@@ -18,6 +18,7 @@ v-container
                 activatorText='Unlock'
                 text='Unlock Node'
                 :error='error'
+                :loading='unlocking'
               )
               //- v-dialog(max-width='800' v-model='unlockDialog')
               //-   template(v-slot:activator='{ on }')
