@@ -205,9 +205,12 @@ export default defineComponent({
     const connectURI = ref('')
 
     function buildUri(api: string, port: string, tls_cert: string, macaroon: string) {
-      var connectionString = `lndconnect://${api}:${port}?macaroon=${macaroon}`
       if (tls_cert !== '') {
-        connectionString = `${connectionString}&cert=${tls_cert}`
+        // @ts-ignore
+        var connectionString = `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
+      } else {
+        // @ts-ignore
+        var connectionString = `lndconnect://${api}:${port}?macaroon=${macaroon}`
       }
       connectURI.value = connectionString
     }
