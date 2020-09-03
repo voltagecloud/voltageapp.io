@@ -46,7 +46,6 @@ export default class NodeModule extends VuexModule {
     SET_NODE_IDS ({ network, idName }: NodeIDPayload) {
         if (network === 'testnet') {
             const a = [...this.testnetNodeIDName, ...idName]
-            console.log({ a })
             this.testnetNodeIDName = [...new Set(a.map(o => JSON.stringify(o)))].map(s => JSON.parse(s))
         } else if (network === 'mainnet') {
             const a = [...this.mainnetNodeIDName, ...idName]

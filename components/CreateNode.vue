@@ -103,7 +103,6 @@ export default defineComponent({
     async function handlePopulate () {
       createStore.SETTINGS(settings)
       const res = await populateNode()
-      console.log({ res })
       root.$router.push(`/node/${createStore.newNodeID}`)
     }
 

@@ -54,7 +54,6 @@ export default defineComponent({
     async function login () {
       try {
         await dispatchLogin(email.value, password.value)
-        console.log('show value')
         if (!showMFA.value) {
           $router.push('/')
         }

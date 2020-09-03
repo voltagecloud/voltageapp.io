@@ -116,7 +116,6 @@ export default defineComponent({
 
     const initializing = ref(false)
     async function initialize () {
-      console.log(nodeData.value.node_id)
       lndStore.CURRENT_NODE(nodeData.value)
       initializing.value = true
       const node = lndStore.currentNode as Node

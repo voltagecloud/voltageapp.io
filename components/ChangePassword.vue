@@ -47,7 +47,6 @@ export default defineComponent({
         const user = await Auth.currentAuthenticatedUser()
         try {
           const res = await Auth.changePassword(user, oldPassword.value, password.value)
-          console.log({ res })
           emit('done')
         } catch (err) {
           console.error({ err })

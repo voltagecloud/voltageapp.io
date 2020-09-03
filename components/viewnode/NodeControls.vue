@@ -45,9 +45,6 @@ export default defineComponent({
     }
   },
   async fetch () {
-    console.log('fetching')
-    // @ts-ignore
-    console.log(this.nodeID)
     // @ts-ignore
     const ctx = this.$nuxt.context
     const { postNode } = useNodeApi(ctx)

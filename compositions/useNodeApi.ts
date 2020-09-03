@@ -134,7 +134,6 @@ export default function useNodeApi ({ $axios, error }: Context) {
 
   async function updateStatus (node_id: string, status: string) {
     try {
-      console.log(node_id)
       loading.value = true
       const res = await $axios.post('/node/status', {
         node_id,

@@ -25,7 +25,6 @@ export default defineComponent({
   },
   async fetch () {
     const res = await Auth.setupTOTP(authStore.user)
-    console.log({ res })
     // @ts-ignore
     this.authCode = res
   },
@@ -49,7 +48,6 @@ export default defineComponent({
           Enabled: true,
           PreferredMfa: true
         }, err => console.error(err))
-        console.log({ res })
         emit('done')
       }
     }

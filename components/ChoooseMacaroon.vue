@@ -41,7 +41,6 @@ export default defineComponent({
 
     watch([macaroon, apiType], async () => {
       if (macaroon.value) {
-        console.log('posting')
         const res = await connect(macaroon.value, apiType.value)
         if (res && res.data) {
           connectPayload.value = res.data

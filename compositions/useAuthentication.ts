@@ -12,9 +12,7 @@ export default function useAuthentication () {
     loading.value = true
     try {
       const user = await Auth.signIn(email, password)
-      console.log(user.challengeName)
       if (user.challengeName) {
-        console.log('complete MFA')
         showMFA.value = true
         tmpUser.value = user
       } else {
@@ -36,7 +34,6 @@ export default function useAuthentication () {
   async function confirmLogin (token: string) {
     if (tmpUser.value) {
       try {
-        console.log({ user: tmpUser.value, token })
         const user = await Auth.confirmSignIn(tmpUser.value, token, 'SOFTWARE_TOKEN_MFA')
         authStore.SET_USER(user)
         return user
