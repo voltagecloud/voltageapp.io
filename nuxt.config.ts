@@ -1,7 +1,7 @@
 import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
-const dev = process.env.NODE_ENV !== 'production' || process.env.NETLIFY
+const dev = process.env.NODE_ENV !== 'prod' || process.env.NETLIFY
 
 export default {
   mode: 'spa',
