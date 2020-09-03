@@ -39,7 +39,7 @@ v-container
             v-container
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
-                  v-btn(v-on='on' color='secondary' block).warning--text Export Data
+                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Export Data
                 export-data(:nodeID='nodeID' :nodeStatus='status')
 </template>
 <script lang="ts">
