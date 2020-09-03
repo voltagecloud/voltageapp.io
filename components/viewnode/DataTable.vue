@@ -29,7 +29,7 @@ v-container
               title='tls.cert'
             ).mr-3
               | Download
-          td.text-end(v-else-if='k === "Macaroon"')
+          td.text-end(v-else-if='k === "Macaroon" && !disabledStatus.includes(nodeInfo.Status)')
             v-chip(
               color='accent'
               text-color='warning'
@@ -66,7 +66,7 @@ export default defineComponent({
       'LND Version': props.node.lnd_version,
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
-      'Macaroon': 'Download',
+      'Macaroon': 'pending',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
@@ -119,6 +119,8 @@ export default defineComponent({
       }
     }
 
+    const disabledStatus = ['provisioning', 'waiting_init']
+
     async function clear () {
       downloadReady.value = false
     }
@@ -131,7 +133,8 @@ export default defineComponent({
       showPasswordDialog,
       error,
       macaroon,
-      clear
+      clear,
+      disabledStatus
     }
   }
 })
