@@ -24,9 +24,10 @@ export default defineComponent({
   setup ({ text }) {
     const show = ref(false)
 
-    function copy () {
+    // @ts-ignore
+    function copy (event) {
       const el = document.createElement('textarea')
-      el.value = text
+      el.value = event.target.innerText
       el.setAttribute('readonly', '')
       el.style.position = 'absolute'
       el.style.left = '-9999px'
