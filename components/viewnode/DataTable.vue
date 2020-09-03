@@ -1,10 +1,18 @@
 <template lang="pug">
 v-container
-  password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' text='Download Macaroon')
-  v-dialog(v-if='downloadReady' max-width='800')
-    v-card.text-center(style='padding: 20px;')
-      v-card-actions
-          v-btn(type='submit' color='highlight' block).info--text Download Macaroon
+  password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' text='Decrypt Macaroon')
+  v-container(v-if='downloadReady')
+    v-dialog(max-width='800' :value='downloadReady' @click:outside='clear')
+      v-card.text-center(style='padding: 20px;')
+        v-card-actions
+          v-btn(
+            color='highlight'
+            block
+            :href='"data:application/text-plain;base64,"+macaroon'
+            download='admin.macaroon'
+            title='admin.macaroon'
+          ).info--text
+            | Download Macaroon
   v-simple-table(
     :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
   )
@@ -68,6 +76,7 @@ export default defineComponent({
     const showPasswordDialog = ref(false)
     const downloadReady = ref(false)
     const encrypted = ref('')
+    const macaroon = ref('')
     const error = ref('')
 
     async function downloadMacaroon () {
@@ -91,13 +100,13 @@ export default defineComponent({
         }
     }
 
-    async function handleDownload (password: string) {
+    function handleDownload (password: string) {
       // @ts-ignore
       try {
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
         if (isBase64(decryptResult)) {
-          //macaroon.value = decryptResult
+          macaroon.value = decryptResult
           downloadReady.value = true
           showPasswordDialog.value = false
         } else {
@@ -110,13 +119,19 @@ export default defineComponent({
       }
     }
 
+    async function clear () {
+      downloadReady.value = false
+    }
+
     return {
       nodeInfo,
       downloadMacaroon,
       handleDownload,
       downloadReady,
       showPasswordDialog,
-      error
+      error,
+      macaroon,
+      clear
     }
   }
 })
