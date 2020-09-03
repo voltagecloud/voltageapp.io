@@ -87,7 +87,7 @@ export default {
     browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://api.voltageapp.io',
     https: true,
     progress: true,
-    debug: true
+    debug: (dev) ? true : false
   },
   /*
   ** vuetify module configuration
