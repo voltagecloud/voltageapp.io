@@ -7,7 +7,9 @@
       style='height: 100%;'
     )
       v-col(col='12').text-center
-        v-card You have not created any node exports
+        v-card
+        v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
+          | You have no exports
     v-row(v-else justify='center')
       v-col(cols='12')
         v-fade-transition(group)
