@@ -22,10 +22,11 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup (props, context) {
     const { isCopied, copy } = useClipboard(1000)
 
     function copyText () {
+      context.emit('click')
       console.log({ copying: props.text })
       copy(props.text)
     }

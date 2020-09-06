@@ -8,10 +8,9 @@ export default function useClipboard (timeout?: number) {
     el.value = val
     el.setAttribute('readonly', '')
     el.style.position = 'absolute'
-    el.style.left = '-9999px'
+    el.style.left = '-99999px'
     document.body.appendChild(el)
     el.select()
-    document.execCommand('copy')
     document.execCommand('copy')
     isCopied.value = true
     document.body.removeChild(el)

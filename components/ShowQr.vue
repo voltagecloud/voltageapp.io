@@ -1,32 +1,31 @@
 <template lang="pug">
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
   v-card.text-center.align-center(style='padding: 20px;')
+    p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
+      | LNDConnect
+    copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
+    p.font-weight-light
+      | click to copy
+    br
+    qrcode-vue(v-if='showQr' v-model='connectURI' size='300')
+    p(v-if='!showQr').font-weight-light.text--darken-1.v-card__title.justify-center.align-center
+      | Can't generate QR code
+    div(v-if='!showQr' max-width='800' style='padding: 20px;')
+      | Voltage uses TLS Certificates that are signed by a trusted Certificate Authority. These Certificates
+      | are much larger than a self-signed certificate. Therefore, they are too big to fit into a QR code.
+      p
+      | If your application still requires a TLS Certificate, you can either download your certificate from your 
+      | node's dashboard or copy and paste the lndconnect URI above.
     v-container
-      p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-        | LNDConnect
-      copy-pill(:text='connectURI' color='accent' text-color='warning' @click.prevent='').text-break
-      p.font-weight-light
-        | click to copy
-      br
-      qrcode-vue(v-if='showQr' v-model='connectURI' size='300')
-      p(v-if='!showQr').font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-        | Can't generate QR code
-      div(v-if='!showQr' max-width='800' style='padding: 20px;')
-        | Voltage uses TLS Certificates that are signed by a trusted Certificate Authority. These Certificates
-        | are much larger than a self-signed certificate. Therefore, they are too big to fit into a QR code.
-        p
-        | If your application still requires a TLS Certificate, you can either download your certificate from your 
-        | node's dashboard or copy and paste the lndconnect URI above.
-      v-container
-        v-row(align='center' justify='space-between')
-          v-col(cols='1' style='padding-left: 10%;')
-            v-radio-group(v-model='apiDefault')
-              v-radio(label='GRPC' value='grpc' key='grpc')
-              v-radio(label='REST' value='rest' key='rest')
-          v-spacer
-          v-col(cols='6')
-            v-checkbox(@change='changeApi' label="Include TLS Certificate" v-model='certDefault')
-      p These codes contain sensitive data used to connect to your node. Guard them carefully.
+      v-row(align='center' justify='space-between')
+        v-col(cols='1' style='padding-left: 10%;')
+          v-radio-group(v-model='apiDefault')
+            v-radio(label='GRPC' value='grpc' key='grpc').no-select
+            v-radio(label='REST' value='rest' key='rest')
+        v-spacer
+        v-col(cols='6')
+          v-checkbox(label="Include TLS Certificate" v-model='certDefault')
+    p These codes contain sensitive data used to connect to your node. Guard them carefully.
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'
@@ -78,6 +77,7 @@ export default defineComponent({
       emit('changeApi', props.api, dynamicPort.value, dynamicCert.value, props.macaroon)
     }
     watch(apiDefault, changeApi)
+    watch(certDefault, changeApi)
 
     const showQr = computed(() => !dynamicCert.value)
 
@@ -85,7 +85,6 @@ export default defineComponent({
       apiDefault,
       certDefault,
       clear,
-      changeApi,
       dynamicCert,
       dynamicPort,
       showQr
