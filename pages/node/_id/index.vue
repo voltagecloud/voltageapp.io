@@ -181,7 +181,7 @@ export default defineComponent({
       showPasswordDialog.value = true
       try {
         const res = await connectNode(nodeData.value.node_id, 'admin')
-        var { endpoint, macaroon, tls_cert } = res
+        const { endpoint, macaroon, tls_cert } = res
         apiEndpoint.value = endpoint
         cert.value = tls_cert
         if (macaroon) {
@@ -196,33 +196,23 @@ export default defineComponent({
 
     // @ts-ignore
     function isBase64 (str) {
-        if (str ==='' || str.trim() ===''){ return false; }
-        try {
-            return btoa(atob(str)) == str;
-        } catch (err) {
-            return false;
-        }
+      if (str === '' || str.trim() === '') { return false }
+      try {
+        return btoa(atob(str)) === str
+      } catch (err) {
+        return false
+      }
     }
     const connectURI = ref('')
 
-    function buildUri(api: string, port: string, tls_cert: string, macaroon: string) {
-      if (tls_cert !== '') {
-        // @ts-ignore
-        var connectionString = `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
-      } else {
-        // @ts-ignore
-        var connectionString = `lndconnect://${api}:${port}?macaroon=${macaroon}`
-      }
-      connectURI.value = connectionString
+    function buildUri (api: string, port: string, tls_cert: string, macaroon: string) {
+      connectURI.value = (tls_cert)
+        ? `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
+        : `lndconnect://${api}:${port}?macaroon=${macaroon}`
     }
 
     function handleConnectNode (password: string, api: string) {
-      if (api === 'rest') {
-        var port = '8080'
-      } else {
-        var port = '10009'
-      }
-      // @ts-ignore
+      const port = (api === 'rest') ? '8080' : '10009'
       try {
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
@@ -241,7 +231,7 @@ export default defineComponent({
       }
     }
 
-    async function clearQr () {
+    function clearQr () {
       showQrDialog.value = false
     }
 
