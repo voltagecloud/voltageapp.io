@@ -1,17 +1,18 @@
 <template lang="pug">
   v-tooltip(
     top
-    v-model="show"
+    v-model="isCopied"
     :open-on-click="true"
     :open-on-hover="false"
   )
     template(v-slot:activator="{ on }")
-      v-chip(@click="copy" v-on="on" v-bind="$attrs")
+      v-chip(@click="copyText" v-on="on" v-bind="$attrs")
         | {{ text }}
     | Copied to clipboard!
 </template>
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
+import useClipboard from '~/compositions/useClipboard'
 
 export default defineComponent({
   inheritAttrs: false,
@@ -21,28 +22,17 @@ export default defineComponent({
       required: true
     }
   },
-  setup ({ text }) {
-    const show = ref(false)
+  setup (props) {
+    const { isCopied, copy } = useClipboard(1000)
 
-    // @ts-ignore
-    function copy (event) {
-      const el = document.createElement('textarea')
-      el.value = event.target.innerText
-      el.setAttribute('readonly', '')
-      el.style.position = 'absolute'
-      el.style.left = '-9999px'
-      document.body.appendChild(el)
-      el.select()
-      document.execCommand('copy')
-      document.body.removeChild(el)
-      setTimeout(() => {
-        show.value = false
-      }, 1000)
+    function copyText () {
+      console.log({ copying: props.text })
+      copy(props.text)
     }
 
     return {
-      copy,
-      show
+      isCopied,
+      copyText
     }
   }
 })
