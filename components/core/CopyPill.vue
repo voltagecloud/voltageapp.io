@@ -27,7 +27,6 @@ export default defineComponent({
 
     function copyText () {
       context.emit('click')
-      console.log({ copying: props.text })
       copy(props.text)
     }
 
