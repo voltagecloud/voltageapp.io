@@ -1,12 +1,12 @@
 <template lang="pug">
-v-dialog(max-width='800' :value='value' @input='update' @click:outside='clear')
+v-dialog(max-width='800' :value='value' @input='update')
   template(v-if='useActivator' v-slot:activator='{ on }')
     v-btn(v-on='on' color='highlight' block).info--text {{activatorText}}
   v-card.text-center(style='padding: 20px;')
     v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
       | Enter the node's password
     v-card-actions
-      v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done')
+      v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done' :key='key')
         v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='newError')
         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
 </template>
@@ -46,27 +46,29 @@ export default defineComponent({
   setup (props, { emit }) {
     const { char8, valid, form, password: nodePassword } = useFormValidation()
 
+    const key = ref(0)
     function done () {
       emit('done', nodePassword.value)
       // we clear the password after 3 seconds so the incorrect password
       // message still displays but we clear the password for next time.
-      setTimeout(function () {
-        nodePassword.value = ''
-      }, 3000);
+      // nodePassword.value = ''
+      // key.value++
     }
 
     function update (v: boolean) {
       emit('input', v)
     }
 
-    function clear () {
-      nodePassword.value = ''
-    }
-
     const newError = ref(props.error)
-    // @ts-ignore
+
     watch(() => props.error, (val) => { newError.value = val })
     watch(nodePassword, () => { newError.value = '' })
+    watch(() => props.value, (cur) => {
+      if (!cur) {
+        nodePassword.value = ''
+        key.value++
+      }
+    })
     return {
       char8,
       valid,
@@ -74,8 +76,8 @@ export default defineComponent({
       nodePassword,
       done,
       update,
-      clear,
-      newError
+      newError,
+      key
     }
   }
 })
