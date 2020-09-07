@@ -53,6 +53,7 @@ export default defineComponent({
       // message still displays but we clear the password for next time.
       // nodePassword.value = ''
       // key.value++
+      newError.value = props.error
     }
 
     function update (v: boolean) {
