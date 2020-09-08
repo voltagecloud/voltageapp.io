@@ -5,6 +5,7 @@ export default function useClipboard (timeout?: number) {
   const isCopied = ref(false)
 
   function copy (val: string) {
+    // @ts-ignore
     cp(val)
     isCopied.value = true
     setTimeout(() => {
