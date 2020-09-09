@@ -71,7 +71,7 @@ export default defineComponent({
       return prefix + data.match(/.{0,64}/g).join('\n') + postfix
     }
     
-    const b64Cert = btoa(createCert(props.node.tls_cert))
+    const b64Cert = (props.node.tls_cert === 'pending') ? 'pending' : btoa(createCert(props.node.tls_cert))
     const nodeInfo = computed(() => ({
       Status: props.node.status,
       'LND Version': props.node.lnd_version,
