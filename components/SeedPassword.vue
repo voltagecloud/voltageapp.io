@@ -1,31 +1,34 @@
 <template lang="pug">
-div(style='padding: 20px;')
-  v-form(v-model='valid' @submit.prevent='getMacaroon' ref='form')
-    v-text-field(
-      v-model='password'
-      :rules='[required]'
-      label='Password'
-      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-      :type="showPassword ? 'text' : 'password'"
-      required
-      @click:append='showPassword = !showPassword'
-    )
-    v-text-field(
-      v-model='confirmPassword'
-      :rules='[char8, matchPassword, required]'
-      :type="showPassword ? 'text' : 'password'"
-      label='Confirm New Password'
-      :error-messages='error'
-      required
-    )
-    br
-    div.text-center.warning--text.mb-6
-      | Write this password down too. This is the password to your node and also used for client-side macaroon encryption. Losing this password means losing access to macaroon backups.
-    v-divider.mx-12.mt-6
-    br
-    div.text-center.warning--text.mb-6
-      | This can take up to 30 seconds. Do not close your browser.
-    v-btn(type='submit' color='highlight' :disabled='!valid' block :loading='loading').info--text Initialize Node
+div
+  div.text-center.warning--text.display-1(style='padding: 20px;')
+    | Create a password for your node
+  div(style='padding: 20px;')
+    v-form(v-model='valid' @submit.prevent='getMacaroon' ref='form')
+      v-text-field(
+        v-model='password'
+        :rules='[required]'
+        label='Password'
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        :type="showPassword ? 'text' : 'password'"
+        required
+        @click:append='showPassword = !showPassword'
+      )
+      v-text-field(
+        v-model='confirmPassword'
+        :rules='[char8, matchPassword, required]'
+        :type="showPassword ? 'text' : 'password'"
+        label='Confirm New Password'
+        :error-messages='error'
+        required
+      )
+      br
+      div.text-center.warning--text.mb-6
+        | Write this password down too. This is the password to your node and also used for client-side macaroon encryption. Losing this password means losing access to macaroon backups.
+      v-divider.mx-12.mt-6
+      br
+      div.text-center.warning--text.mb-6
+        | This can take up to 30 seconds. Do not close your browser.
+      v-btn(type='submit' color='highlight' :disabled='!valid' block :loading='loading').info--text Initialize Node
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch } from '@vue/composition-api'
