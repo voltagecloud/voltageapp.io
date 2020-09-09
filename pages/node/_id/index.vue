@@ -205,7 +205,16 @@ export default defineComponent({
     }
     const connectURI = ref('')
 
+    //convert b64 to b64url
+    function safeUrl(data: string) {
+      data = data.replace(/\+/g, "-")
+      data = data.replace(/\//g, "_")
+      data = data.replace(/=/g, "")
+      return data
+    }
+
     function buildUri (api: string, port: string, tls_cert: string, macaroon: string) {
+      macaroon = safeUrl(macaroon)
       connectURI.value = (tls_cert)
         ? `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
         : `lndconnect://${api}:${port}?macaroon=${macaroon}`

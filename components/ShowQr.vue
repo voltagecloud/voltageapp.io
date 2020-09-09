@@ -7,15 +7,10 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     p.font-weight-light
       | click to copy
     br
-    qrcode-vue(v-if='showQr' v-model='connectURI' size='300')
-    p(v-if='!showQr').font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-      | Can't generate QR code
-    div(v-if='!showQr' max-width='800' style='padding: 20px;')
-      | Voltage uses TLS Certificates that are signed by a trusted Certificate Authority. These Certificates
-      | are much larger than a self-signed certificate. Therefore, they are too big to fit into a QR code.
-      p
-      | If your application still requires a TLS Certificate, you can either download your certificate from your 
-      | node's dashboard or copy and paste the lndconnect URI above.
+    qrcode-vue(v-model='connectURI' size='300')
+    div.font-weight-light.text--darken-1.justify-center.align-center(v-if='!showQr' max-width='800' style='padding: 20px;')
+      | Voltage uses TLS Certificates that are signed by a trusted Certificate Authority.
+      | You should only include the certificate if your application explicitly requires it.
     v-container
       v-row(align='center' justify='space-between')
         v-col(cols='1' style='padding-left: 10%;')
@@ -25,7 +20,15 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
         v-spacer
         v-col(cols='6')
           v-checkbox(label="Include TLS Certificate" v-model='certDefault')
-    p These codes contain sensitive data used to connect to your node. Guard them carefully.
+    p.font-weight-light.text--darken-1.justify-center.align-center
+      | These codes contain sensitive data used to connect to your node. Guard them carefully.
+    p
+    p.font-weight-light.text--darken-1.justify-center.align-center
+      | Helpful FAQ Links
+    a(href="https://getvoltage.io/faq.html#collapseFive" target="_blank") How to connect to your node.
+    p
+    a(href="https://getvoltage.io/faq.html#collapseFour" target="_blank") Popular apps to connect to your node.
+
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'

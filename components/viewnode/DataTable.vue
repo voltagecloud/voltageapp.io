@@ -61,11 +61,22 @@ export default defineComponent({
     PasswordDialog: () => import('~/components/PasswordDialog.vue')
   },
   setup (props, { root }) {
+
+    function createCert(data: string) {
+      data = data.replace(/-/g, "+")
+      data = data.replace(/_/g, "/")
+      var prefix = '-----BEGIN CERTIFICATE-----\n'
+      var postfix = '-----END CERTIFICATE-----'
+      // @ts-ignore
+      return prefix + data.match(/.{0,64}/g).join('\n') + postfix
+    }
+    
+    const b64Cert = btoa(createCert(props.node.tls_cert))
     const nodeInfo = computed(() => ({
       Status: props.node.status,
       'LND Version': props.node.lnd_version,
       'Voltage Version': props.node.volt_version,
-      'TLS Cert': props.node.tls_cert,
+      'TLS Cert': b64Cert,
       'Macaroon': 'pending',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
