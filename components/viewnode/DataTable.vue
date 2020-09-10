@@ -13,6 +13,18 @@ v-container
             title='admin.macaroon'
           ).info--text
             | Download Macaroon
+  v-container(v-if='certReady')
+    v-dialog(max-width='800' :value='certReady' @click:outside='clearCert')
+      v-card.text-center(style='padding: 20px;')
+        v-card-actions
+          v-btn(
+            color='highlight'
+            block
+            :href='"data:application/text-plain;base64,"+cert'
+            download='tls.cert'
+            title='tls.cert'
+          ).info--text
+            | Download Certificate
   v-simple-table(
     :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
   )
@@ -24,9 +36,7 @@ v-container
             v-chip(
               color='accent'
               text-color='warning'
-              :href='"data:application/text-plain;base64,"+v',
-              download='tls.cert',
-              title='tls.cert'
+              @click='downloadCert'
             ).mr-3
               | Download
           td.text-end(v-else-if='k === "Macaroon" && !disabledStatus.includes(nodeInfo.Status)')
@@ -61,34 +71,25 @@ export default defineComponent({
     PasswordDialog: () => import('~/components/PasswordDialog.vue')
   },
   setup (props, { root }) {
+    const { connectNode, getCert } = useNodeApi(root.$nuxt.context)
+    const showPasswordDialog = ref(false)
+    const downloadReady = ref(false)
+    const certReady = ref(false)
+    const encrypted = ref('')
+    const macaroon = ref('')
+    const cert = ref('')
+    const error = ref('')
 
-    function createCert(data: string) {
-      data = data.replace(/-/g, "+")
-      data = data.replace(/_/g, "/")
-      var prefix = '-----BEGIN CERTIFICATE-----\n'
-      var postfix = '-----END CERTIFICATE-----'
-      // @ts-ignore
-      return prefix + data.match(/.{0,64}/g).join('\n') + postfix
-    }
-    
-    const b64Cert = (props.node.tls_cert === 'pending') ? 'pending' : btoa(createCert(props.node.tls_cert))
     const nodeInfo = computed(() => ({
       Status: props.node.status,
       'LND Version': props.node.lnd_version,
       'Voltage Version': props.node.volt_version,
-      'TLS Cert': b64Cert,
+      'TLS Cert': props.node.tls_cert,
       'Macaroon': 'pending',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
     }))
-
-    const { connectNode } = useNodeApi(root.$nuxt.context)
-    const showPasswordDialog = ref(false)
-    const downloadReady = ref(false)
-    const encrypted = ref('')
-    const macaroon = ref('')
-    const error = ref('')
 
     async function downloadMacaroon () {
       showPasswordDialog.value = true
@@ -96,6 +97,17 @@ export default defineComponent({
         const res = await connectNode(props.node.node_id, 'admin')
         var { macaroon } = res
         encrypted.value = macaroon
+      } catch (e) {
+        error.value = e.toString()
+      }
+    }
+
+    async function downloadCert () {
+      try {
+        const res = await getCert(props.node.node_id)
+        var { tls_cert } = res
+        cert.value = tls_cert
+        certReady.value = true
       } catch (e) {
         error.value = e.toString()
       }
@@ -136,6 +148,10 @@ export default defineComponent({
       downloadReady.value = false
     }
 
+    async function clearCert () {
+      certReady.value = false
+    }
+
     return {
       nodeInfo,
       downloadMacaroon,
@@ -145,7 +161,11 @@ export default defineComponent({
       error,
       macaroon,
       clear,
-      disabledStatus
+      disabledStatus,
+      certReady,
+      clearCert,
+      downloadCert,
+      cert
     }
   }
 })

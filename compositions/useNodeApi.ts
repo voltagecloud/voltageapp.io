@@ -178,6 +178,20 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function getCert(node_id: string) {
+    try {
+      loading.value = true
+      const res = await $axios.post('/node/cert', {
+        node_id
+      })
+      return res.data
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -190,6 +204,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     nodeName,
     updateStatus,
     postMacaroon,
-    connectNode
+    connectNode,
+    getCert
   }
 }
