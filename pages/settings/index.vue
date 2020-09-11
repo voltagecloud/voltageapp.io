@@ -30,6 +30,13 @@
                         enable-mfa(@done='handleComplete')
                     template(v-else)
                       v-btn(color='secondary' @click='disableMfa' :loading='loading').warning--text Disable MFA
+                  v-divider
+                  v-row(align='center')
+                    v-col(cols='auto') Card Billing
+                    v-spacer
+                    v-dialog(max-width='800')
+                      template(v-slot:activator='{ on }')
+                        v-btn(color='secondary' v-on='on' @click='portal' :loading='billingLoading').warning--text Open Dashboard
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
@@ -42,8 +49,9 @@ export default defineComponent({
     EnableMfa: () => import('~/components/EnableMfa.vue'),
     ChangePassword: () => import('~/components/ChangePassword.vue')
   },
-  setup () {
+  setup (_, { root }) {
     const loading = ref(true)
+    const billingLoading = ref(false)
     const MFAState = ref('NOMFA')
     const MFAEnabled = computed(() => MFAState.value === 'SOFTWARE_TOKEN_MFA')
 
@@ -89,6 +97,13 @@ export default defineComponent({
       loading.value = false
     }
 
+    async function portal() {
+      billingLoading.value = true
+      const res = await root.$nuxt.context.$axios.post('/stripe/portal', {})
+      const portalUrl = res.data.portal_url
+      window.location.replace(portalUrl)
+    }
+
     return {
       MFAState,
       openPW,
@@ -98,7 +113,9 @@ export default defineComponent({
       handleComplete,
       disableMfa,
       MFAEnabled,
-      loading
+      loading,
+      billingLoading,
+      portal
     }
   }
 })
