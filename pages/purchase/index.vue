@@ -1,57 +1,55 @@
 <template lang="pug">
-    v-container
-        v-card(color='info')
-            div(style='padding: 20px;').text-center
-                v-card-text.highlight--text.display-1 Lightning Node
-                div.text-center.warning--text.mb-6
-                  | Create your own Lightning Node for Mainnet or Testnet that never expires. Provision and connect to your node in less than two minutes.
-                v-container
-                  v-row.no-gutters
-                    v-col(cols='12' md='6')
-                      v-card(class='pa-2').outlined
-                        v-btn.px-4.info--text(block='' @click='selectPlan' color='highlight' large='')
-                          | Buy Node
-                  v-row.no-gutters
-                    v-col(cols='12' md='6')
-                      v-card(class='pa-2').outlined
-                        | node 2
-                  v-row.no-gutters
-                    v-col(cols='12' md='6')
-                      v-card(class='pa-2').outlined
-                        v-btn.px-4.info--text(block='' @click='portal' color='highlight' large='')
-                          | Portal
-
-
+  v-container
+    v-card
+      div(style='padding: 20px;').text-center
+        v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center.display-1
+          | Purchase Lightning Nodes
+        v-container.justify-center.align-center
+          p.text--darken-1
+            | Payment Interval
+          v-row(align='center' justify='center')
+            v-radio-group(v-model='planSelect' :column='false').text--darken-1
+              v-radio(label='Year' value='node_yearly' key='node_yearly' style="padding-right: 20px;")
+              v-radio(label='Month' value='node_monthly' key='node_monthly')
+        p.display-3
+          | ${{ monthlyBill }}
+        p
+          | per month
+        p
+        p
+          | Due Today: ${{ dueToday }}
+        v-row(align='center' justify='center')
+          v-container(style='max-width: 30%;')
+            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
+              | Purchase Node with Card
+        v-row(align='center' justify='center')
+          v-container(style='max-width: 30%;')
+            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
+              | Purchase Node with Bitcoin
 </template>
 <script lang="ts">
-import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
-import { nodeStore, createStore } from '~/store'
+import { defineComponent, SetupContext, reactive, computed, ref, watch } from '@vue/composition-api'
 import { Network } from '~/types/api'
 import axios from 'axios'
 import useNodeApi from '~/compositions/useNodeApi'
 import { loadStripe } from '@stripe/stripe-js';
 
 export default defineComponent({
+  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, { root }) {
-    console.log("ROOOOTTT")
-    console.log(root)
-    console.log(root.$route.query)
-    if ('session_id' in root.$route.query && root.$route.query.session_id != "") {
-      console.log("It's set!!")
-    } else {
-      console.log("nope")
-    }
     const { getPurchaseSession, loading } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
     // @ts-ignore
     const stripePromise = loadStripe(stripeKey)
-    async function selectPlan() {
+    const monthlyBill = ref('24.99')
+    const dueToday = ref('299.88')
+    const planSelect = ref('node_yearly')
+    async function selectPlanCard() {
       loading.value = true
       const res = await root.$nuxt.context.$axios.post('/stripe/session', {
-        plan: 'node_monthly',
+        plan: planSelect.value,
         quantity: 1
       })
-      console.log(res)
       const sessionId = res.data.session_id
       const stripe = await stripePromise;
       // @ts-ignore
@@ -60,17 +58,26 @@ export default defineComponent({
       });
     }
 
-    async function portal() {
-      loading.value = true
-      const res = await root.$nuxt.context.$axios.post('/stripe/portal', {})
-      console.log(res)
-      const portalUrl = res.data.portal_url
-      window.location.replace(portalUrl)
+    // @ts-ignore
+    function changePlan (event) {
+      if (event === 'node_monthly') {
+        planSelect.value = 'node_monthly'
+        monthlyBill.value = '29.99'
+        dueToday.value = '29.99'
+      } else if (event === 'node_yearly') {
+        planSelect.value = 'node_yearly'
+        monthlyBill.value = '24.99'
+        dueToday.value = '299.88'
+      }
     }
 
+    watch(planSelect, changePlan)
+
     return {
-      selectPlan,
-      portal
+      selectPlanCard,
+      planSelect,
+      monthlyBill,
+      dueToday
     }
   }
 })
