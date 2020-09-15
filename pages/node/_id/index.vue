@@ -29,8 +29,15 @@ v-container
               //-       v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
               //-         v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
               //-         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
-            v-container(v-if='canUpdate' @click='update')
+            v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
+            v-container(v-if='canUpdate' @click='confirmUpdate = true')
+              v-dialog(v-model='confirmUpdate' max-width='800')
+                v-card
+                  v-card-text.pt-3 Updating requires a restart of your node. Are you sure you want update this node?
+                  v-card-actions
+                    v-btn(color='info' @click='closeAndUpdate') Yes
+                    v-btn(@click='confirmUpdate = false') No
             v-container(v-if='status === "running"')
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
@@ -247,6 +254,12 @@ export default defineComponent({
     // clear errors on typing in password field
     watch(nodePassword, () => { error.value = '' })
 
+    const confirmUpdate = ref(false)
+    async function closeAndUpdate () {
+      confirmUpdate.value = false
+      await update()
+    }
+
     return {
       nodeData,
       nodeID,
@@ -276,7 +289,9 @@ export default defineComponent({
       cert,
       apiEndpoint,
       macaroon,
-      buildUri
+      buildUri,
+      confirmUpdate,
+      closeAndUpdate
     }
   }
 })
