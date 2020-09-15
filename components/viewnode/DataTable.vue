@@ -20,11 +20,12 @@ v-container
           v-btn(
             color='highlight'
             block
+            :disabled='(cert === "pending")'
             :href='"data:application/text-plain;base64,"+cert'
             download='tls.cert'
             title='tls.cert'
           ).info--text
-            | Download Certificate
+            | {{ certButtonText }}
   v-simple-table(
     :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
   )
@@ -75,6 +76,7 @@ export default defineComponent({
     const showPasswordDialog = ref(false)
     const downloadReady = ref(false)
     const certReady = ref(false)
+    const certButtonText = ref('Download Certificate')
     const encrypted = ref('')
     const macaroon = ref('')
     const cert = ref('')
@@ -107,6 +109,9 @@ export default defineComponent({
         const res = await getCert(props.node.node_id)
         var { tls_cert } = res
         cert.value = tls_cert
+        if (cert.value == "pending") {
+          certButtonText.value = 'Certificate is pending'
+        }
         certReady.value = true
       } catch (e) {
         error.value = e.toString()
@@ -165,7 +170,8 @@ export default defineComponent({
       certReady,
       clearCert,
       downloadCert,
-      cert
+      cert,
+      certButtonText
     }
   }
 })
