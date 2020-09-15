@@ -16,7 +16,9 @@ export default function useNodeStatus (node: Ref<Node>) {
         node.value.status === NodeStatus.starting ||
         node.value.status === NodeStatus.waiting_init ||
         node.value.status === NodeStatus.waiting_unlock ||
-        node.value.status === NodeStatus.restarting
+        node.value.status === NodeStatus.restarting ||
+        node.value.status === NodeStatus.unlocking ||
+        node.value.status === NodeStatus.initializing
     })
   
     const canDelete = computed(() => {

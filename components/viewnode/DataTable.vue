@@ -40,7 +40,7 @@ v-container
               @click='downloadCert'
             ).mr-3
               | Download
-          td.text-end(v-else-if='k === "Macaroon" && !disabledStatus.includes(nodeInfo.Status)')
+          td.text-end(v-else-if='k === "Macaroon" && macaroonCount > 0')
             v-chip(
               color='accent'
               text-color='warning'
@@ -81,6 +81,7 @@ export default defineComponent({
     const macaroon = ref('')
     const cert = ref('')
     const error = ref('')
+    const macaroonCount = props.node.macaroons.length
 
     const nodeInfo = computed(() => ({
       Status: props.node.status,
@@ -171,7 +172,8 @@ export default defineComponent({
       clearCert,
       downloadCert,
       cert,
-      certButtonText
+      certButtonText,
+      macaroonCount
     }
   }
 })
