@@ -7,7 +7,7 @@
         v-row(justify='center')
           v-col(cols='12').pb-0
             a(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
-              | Node Name is only used in Voltage and used to create your API endpoint.
+              | Node Name is only used in Voltage and will be part of your API endpoint.
             v-text-field(
               v-model='nodeName'
               label='Node Name'
@@ -20,7 +20,7 @@
             )
           v-col(cols='12').py-0
             a(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
-              | Node Alias is a node setting and is broadcasted to the network.
+              | Node Alias is a Lightning node setting and is broadcasted to the network.
             v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
           v-col(cols='12' md='10').px-10.py-0
             v-row(justify='space-between')
