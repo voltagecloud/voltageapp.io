@@ -24,7 +24,7 @@
               | Purchase Node with Card
         v-row(align='center' justify='center')
           v-container(style='max-width: 30%;')
-            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
+            v-btn.px-4.info--text(block='' @click='selectPlanBitcoin' color='highlight')
               | Purchase Node with Bitcoin
 </template>
 <script lang="ts">
@@ -57,6 +57,33 @@ export default defineComponent({
         sessionId
       });
     }
+    /*
+    async function selectPlanBitcoin() {
+      const opennode = require('opennode');
+      opennode.setCredentials('db10e152-e5d5-4d79-bda2-11f33009aad7', 'dev');
+
+      const charge = {
+        description: 'Voltage Node',
+        amount: 29.99,
+        currency: 'USD',
+        order_id: '823320',
+        customer_name: 'John Doe',
+        customer_email: 'me@johndoe.com',
+        notif_email: 'me@johndoe.com',
+        callback_url: "https://example.com/webhook/opennode",
+        success_url: 'https://example.com/order/abc123',
+        auto_settle: false
+      };
+
+      opennode.createCharge(charge)
+          .then(charge => {
+              console.log(charge);
+          })
+          .catch(error => {
+              console.error(`${error.status} | ${error.message}`);
+          });
+          }
+    */
 
     // @ts-ignore
     function changePlan (event) {
