@@ -80,14 +80,17 @@ export default defineComponent({
     if (!this.timer) {
       // make sure interval is clean
       // set new interval
+      let firstRun = true
       // @ts-ignore
       this.timer = setInterval(async () => {
         // @ts-ignore
         let previousStatus = this.status
-        // If the node was running or stopped on load don't try to refresh
-        if (previousStatus === 'running' || previousStatus === 'stopped') {
-          clearInterval(timerID)
-          return
+        if (!firstRun) {
+          // If the node was running or stopped on load don't try to refresh
+          if (previousStatus === 'running' || previousStatus === 'stopped') {
+            clearInterval(timerID)
+            return
+          }
         }
         // @ts-ignore
         const { postNode } = useNodeApi(this.$nuxt.context)
@@ -111,6 +114,7 @@ export default defineComponent({
             clearInterval(this.timer)
           }
         }
+        firstRun = false
       }, 5000)
     }
   },
