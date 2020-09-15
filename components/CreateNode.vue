@@ -6,6 +6,8 @@
       v-container
         v-row(justify='center')
           v-col(cols='12').pb-0
+            a(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | Node Name is only used in Voltage and used to create your API endpoint.
             v-text-field(
               v-model='nodeName'
               label='Node Name'
@@ -17,6 +19,8 @@
               @blur='validateName'
             )
           v-col(cols='12').py-0
+            a(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | Node Alias is a node setting and is broadcasted to the network.
             v-text-field(v-model='settings.alias' label='Node Alias' outlined color='highlight' background-color='secondary')
           v-col(cols='12' md='10').px-10.py-0
             v-row(justify='space-between')
@@ -68,7 +72,9 @@
                     :width="colWidth.clientWidth"
                   )
           v-col(cols='12').pb-0.pt-1
-            v-combobox(v-model='settings.whitelist' chips='' label='Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | IP Whitelist restricts access to your node's API based on IP address. (Prefilled with your current IP address)
+            v-combobox(v-model='settings.whitelist' chips='' label='IP Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
