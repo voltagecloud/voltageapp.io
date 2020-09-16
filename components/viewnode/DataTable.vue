@@ -40,7 +40,7 @@ v-container
               @click='downloadCert'
             ).mr-3
               | Download
-          td.text-end(v-else-if='k === "Macaroon" && macaroonCount > 0')
+          td.text-end(v-else-if='k === "Macaroon" && props.node.macaroons.length > 0')
             v-chip(
               color='accent'
               text-color='warning'
@@ -81,14 +81,13 @@ export default defineComponent({
     const macaroon = ref('')
     const cert = ref('')
     const error = ref('')
-    const macaroonCount = props.node.macaroons.length
 
     const nodeInfo = computed(() => ({
       Status: props.node.status,
       'LND Version': props.node.lnd_version,
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
-      'Macaroon': 'pending',
+      'Macaroon': props.node.macaroons.length > 0 ? 'Download' : 'pending',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
@@ -173,7 +172,7 @@ export default defineComponent({
       downloadCert,
       cert,
       certButtonText,
-      macaroonCount
+      props
     }
   }
 })
