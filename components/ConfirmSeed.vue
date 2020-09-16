@@ -51,7 +51,7 @@ export default defineComponent({
       confirmSeed,
       beforeEnter,
       enter,
-      copySeed
+      copySeed,
       confirmModal,
       closeAndConfirm
     }
