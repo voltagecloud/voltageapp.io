@@ -20,15 +20,6 @@ v-container
                 :error='error'
                 :loading='unlocking'
               )
-              //- v-dialog(max-width='800' v-model='unlockDialog')
-              //-   template(v-slot:activator='{ on }')
-              //-     v-btn(v-on='on' color='highlight' block).info--text Unlock
-              //-   v-card.text-center(style='padding: 20px;')
-              //-     v-card-text.display-1 Enter your node's password
-              //-     v-card-actions
-              //-       v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
-              //-         v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
-              //-         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
@@ -43,7 +34,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' @clear='clearQr' @changeApi='buildUri')
+              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -76,6 +67,10 @@ export default defineComponent({
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   fetch () {
+    // @ts-ignore
+    const { postNode } = useNodeApi(this.$nuxt.context)
+    // @ts-ignore
+    postNode(this.nodeID)
     // Logic for auto-refreshing
     // @ts-ignore
     if (!this.timer) {
@@ -124,7 +119,6 @@ export default defineComponent({
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
     const { updateNode, updateStatus, postNode, connectNode } = useNodeApi(root.$nuxt.context)
-
     const timer = ref<NodeJS.Timeout|null>(null)
 
     const initializing = ref(false)
@@ -187,9 +181,12 @@ export default defineComponent({
     const cert = ref('')
     const apiEndpoint = ref('')
     const macaroon = ref('')
+    const grpc = ref(nodeData.value.settings.grpc)
+    const rest = ref(nodeData.value.settings.rest)
     const showPasswordDialog = ref(false)
     const showQrDialog = ref(false)
     async function connect () {
+      console.log(nodeStore)
       showPasswordDialog.value = true
       try {
         const res = await connectNode(nodeData.value.node_id, 'admin')
@@ -296,7 +293,9 @@ export default defineComponent({
       macaroon,
       buildUri,
       confirmUpdate,
-      closeAndUpdate
+      closeAndUpdate,
+      grpc,
+      rest
     }
   }
 })
