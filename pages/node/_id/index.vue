@@ -87,8 +87,8 @@ export default defineComponent({
         // @ts-ignore
         let previousStatus = this.status
         if (!firstRun) {
-          // If the node was running or stopped on load don't try to refresh
-          if (previousStatus === 'running' || previousStatus === 'stopped') {
+          // If the node was running, deleted, or stopped on load don't try to refresh
+          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
             clearInterval(timerID)
             return
           }
@@ -109,8 +109,8 @@ export default defineComponent({
           return
         }
         if (!shouldRefresh) {
-          // If the node is in a running or stopped state we want to stop checking
-          if (previousStatus === 'running' || previousStatus === 'stopped') {
+          // If the node is in a running, deleted, or stopped state we want to stop checking
+          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
             // @ts-ignore
             clearInterval(this.timer)
           }
