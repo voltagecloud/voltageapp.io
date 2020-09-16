@@ -34,7 +34,8 @@ v-container
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-dialog(v-model='confirmUpdate' max-width='800')
                 v-card
-                  v-card-text.pt-3 Updating requires a restart of your node. Are you sure you want update this node?
+                  v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
+                    | Updating requires a restart of your node. Are you sure you want update this node?
                   v-card-actions
                     v-btn(color='info' @click='closeAndUpdate') Yes
                     v-btn(@click='confirmUpdate = false') No

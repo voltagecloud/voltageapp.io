@@ -23,7 +23,8 @@ v-card(color='info')
               v-icon mdi-delete
             v-dialog(v-model='deleteModal' max-width='800')
               v-card
-                v-card-text.pt-3 Are you sure you wish to delete this node?
+                v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
+                  | Are you sure you wish to delete this node?
                 v-card-actions
                   v-btn(color='info' @click='closeAndDelete') Yes
                   v-btn(@click='deleteModal = false') No
