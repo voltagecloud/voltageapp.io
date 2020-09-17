@@ -1,9 +1,9 @@
 <template lang="pug">
   div
-    div.text-center.warning--text.display-1
-      | Your seed phrase is:
+    div.text-center.warning--text
+      | Your seed phrase is (click to copy)
     v-divider.mx-12.mb-6
-    v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
+    v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter' @click='copySeed')
       span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in lndStore.cipher_seed_mnemonic' :key='i' :data-index='i') {{ word }}
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12
@@ -15,15 +15,19 @@
 import { defineComponent } from '@vue/composition-api'
 import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
-import useNodeApi from '~/compositions/useNodeApi'
-import { Node } from '~/types/apiResponse'
-
+import useClipboard from '~/compositions/useClipboard'
 
 export default defineComponent({
-  setup (_, { root, emit }) {
+  setup (_, { emit }) {
     // const { updateStatus } = useNodeApi(root.$nuxt.context)
     function confirmSeed () {
       emit('next')
+    }
+
+    const { copy } = useClipboard(2000)
+    function copySeed () {
+      const seedStr = lndStore.cipher_seed_mnemonic.join(' ')
+      copy(seedStr)
     }
 
     const { beforeEnter, enter } = useAnimation()
@@ -32,7 +36,8 @@ export default defineComponent({
       lndStore,
       confirmSeed,
       beforeEnter,
-      enter
+      enter,
+      copySeed
     }
   }
 })
