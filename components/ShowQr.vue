@@ -2,39 +2,37 @@
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
   v-tabs(:centered='true' :grow='true' show-arrows)
     v-tab(key="1")
-      | LNDConnect
-    v-tab-item(key='1')
-      lnd-connect(:connectURI='connectURI' :api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @changeApi='updateApi' keyId="1")
-    v-tab(key="2")
-      | lncli
-    v-tab-item(key="2")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | lncli
-    v-tab(key="3")
       | Zap
-    v-tab-item(key="3")
+    v-tab-item(key="1")
       v-card.text-center.align-center(style='padding: 20px;')
         p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
           | Zap
-    v-tab(key="4")
+    v-tab(key="2")
       | Zues
-    v-tab-item(key="4")
+    v-tab-item(key="2")
       v-card.text-center.align-center(style='padding: 20px;')
         p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
           | Zues
-    v-tab(key="5")
+    v-tab(key="3")
+      | LNCLI
+    v-tab-item(key="3")
+      lncli(:api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' keyId="3")
+    v-tab(key="4")
       | Thunderhub
-    v-tab-item(key="5")
+    v-tab-item(key="4")
       v-card.text-center.align-center(style='padding: 20px;')
         p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
           | Thunderhub
-    v-tab(key="6")
+    v-tab(key="5")
       | Joule
-    v-tab-item(key="6")
+    v-tab-item(key="5")
       v-card.text-center.align-center(style='padding: 20px;')
         p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
           | Joule
+    v-tab(key="6")
+      | LNDConnect
+    v-tab-item(key='6')
+      lnd-connect(:connectURI='connectURI' :api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @changeApi='updateApi' keyId="1")
     v-tab(key="7")
       | Manual
     v-tab-item(key="7")
@@ -58,11 +56,10 @@ import { defineComponent, ref, computed, watch } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
-    // @ts-ignore
-    LndConnect: () => import('~/components/connections/LndConnect.vue'),
-    QrcodeVue: () => import('qrcode.vue')
-  },
+     // @ts-ignore
+     LndConnect: () => import('~/components/connections/LndConnect.vue'),
+     Lncli: () => import('~/components/connections/Lncli.vue'),
+   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   props: {
     connectURI: {
@@ -91,19 +88,19 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    function clear () {
-      emit('clear')
-    }
+      function clear () {
+        emit('clear')
+      }
 
-    // @ts-ignore
-    function updateApi (api, port, cert, mac) {
-      emit('updateApi', api, port, cert, mac)
-    }
+      // @ts-ignore
+      function updateApi (api, port, cert, mac) {
+        emit('updateApi', api, port, cert, mac)
+      }
 
-    return {
-      clear,
-      updateApi
-    }
+      return {
+        clear,
+        updateApi
+      }
   }
 })
 </script>

@@ -73,8 +73,8 @@ export default defineComponent({
     const apiDefault = ref((props.grpc) ? 'grpc' : 'rest')
     const certDefault = ref(false)
     const certMessage = ref((props.cert === "pending") ? "Certificate is pending" : "")
-    const grpcMessage = ref((!props.grpc) ? "GRPC" : "GRPC is not enabled in your settings")
-    const restMessage = ref((!props.rest) ? "REST" : "REST is not enabled in your settings")
+    const grpcMessage = ref((props.grpc) ? "GRPC" : "GRPC is disabled")
+    const restMessage = ref((props.rest) ? "REST" : "REST is disabled")
     const dynamicPort = ref((props.grpc) ? '10009' : '8080')
     const dynamicCert = ref('')
 
