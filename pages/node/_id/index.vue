@@ -181,8 +181,8 @@ export default defineComponent({
     const cert = ref('')
     const apiEndpoint = ref('')
     const macaroon = ref('')
-    const grpc = ref(nodeData.value.settings.grpc)
-    const rest = ref(nodeData.value.settings.rest)
+    const grpc = computed(() => nodeData.value.settings.grpc)
+    const rest = computed(() => nodeData.value.settings.rest)
     const showPasswordDialog = ref(false)
     const showQrDialog = ref(false)
     async function connect () {
