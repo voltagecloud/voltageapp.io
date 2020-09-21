@@ -8,6 +8,11 @@ v-card.text-center.align-center(style='padding: 20px;')
     | You have this API disabled in your node settings.
     | Please enable it to connect with lncli.
   p
+  | Command Line:
+  p
+  v-chip(:dark='true' :label='true' :large='true' style='font-family: monospace;')
+    | {{ generatedCommand }}
+  p
   | API Endpoint
   p
   copy-pill(:text='api + ":10009"' color='accent' text-color='warning').text-break
@@ -32,7 +37,6 @@ import useNodeApi from '~/compositions/useNodeApi'
 export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue'),
-    QrcodeVue: () => import('qrcode.vue')
   },
   props: {
     api: {
@@ -59,8 +63,11 @@ export default defineComponent({
 
     const apiErrorMessage = ref((!props.grpc) ? true : false)
 
+    const generatedCommand = computed(() => `lncli --rpcserver=${props.api}:10009 --macaroonpath=/path/to/admin.macaroon --tlscertpath=/path/to/tls.cert getinfo`)
+
     return {
-      apiErrorMessage
+      apiErrorMessage,
+      generatedCommand
     }
   }
 })
