@@ -34,9 +34,7 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-tab(key="7")
       | Manual
     v-tab-item(key="7")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | Manual
+      manual(:api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' keyId="7")
 
   v-card.text-center.align-center(style='padding: 20px;')
     p.font-weight-light.text--darken-1.justify-center.align-center
@@ -58,6 +56,8 @@ export default defineComponent({
      LndConnect: () => import('~/components/connections/LndConnect.vue'),
      // @ts-ignore
      Lncli: () => import('~/components/connections/Lncli.vue'),
+     // @ts-ignore
+     Manual: () => import('~/components/connections/Manual.vue'),
      // @ts-ignore
      Zap: () => import('~/components/connections/Zap.vue')
    },

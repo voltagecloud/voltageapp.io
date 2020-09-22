@@ -8,7 +8,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     | You have this API disabled in your node settings.
     | Please enable it to connect with Zap.
   p
-    | To connect, open the Zap app and create a new wallet. Select 'Connect'. 
+    | Open the Zap app and create a new wallet. Select 'Connect'. 
     | You can connect by either scanning the QR code below or copy/pasting the LNDConnect string into the 'Connection String' box.
   p
     | LNDConnect
@@ -42,8 +42,6 @@ export default defineComponent({
     function clear () {
       emit('clear')
     }
-
-
 
     return {
       clear
