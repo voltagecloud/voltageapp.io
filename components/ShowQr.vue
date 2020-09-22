@@ -4,9 +4,7 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-tab(key="1")
       | Zap
     v-tab-item(key="1")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | Zap
+      zap(:connectURI='connectURI' :grpc='grpc' keyId="1")
     v-tab(key="2")
       | Zues
     v-tab-item(key="2")
@@ -58,7 +56,10 @@ export default defineComponent({
   components: {
      // @ts-ignore
      LndConnect: () => import('~/components/connections/LndConnect.vue'),
+     // @ts-ignore
      Lncli: () => import('~/components/connections/Lncli.vue'),
+     // @ts-ignore
+     Zap: () => import('~/components/connections/Zap.vue')
    },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   props: {
