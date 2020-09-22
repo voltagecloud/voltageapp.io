@@ -10,6 +10,8 @@ v-card.text-center.align-center(style='padding: 20px;')
   | API Endpoint
   p
   copy-pill(:text='api' color='accent' text-color='warning').text-break
+  p.font-weight-light
+    | click to copy
   p
   | Macaroon
   p
@@ -25,6 +27,8 @@ v-card.text-center.align-center(style='padding: 20px;')
   p 
     | Macaroon Hex:
     copy-pill(:text='macHex' color='accent' text-color='warning').text-break
+    p.font-weight-light
+      | click to copy
   p
   | TLS Certificate
   p

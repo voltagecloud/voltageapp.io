@@ -1,16 +1,14 @@
 <template lang="pug">
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
   v-tabs(:centered='true' :grow='true' show-arrows)
-    v-tab(key="1")
+    v-tab(key="1" @click='grpcApi')
       | Zap
     v-tab-item(key="1")
       zap(:connectURI='connectURI' :grpc='grpc' keyId="1")
-    v-tab(key="2")
+    v-tab(key="2" @click='restApi')
       | Zues
     v-tab-item(key="2")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | Zues
+      zues(:connectURI='connectURI' :rest='rest' :api='api' :macaroon='macaroon' keyId="2")
     v-tab(key="3")
       | LNCLI
     v-tab-item(key="3")
@@ -59,7 +57,9 @@ export default defineComponent({
      // @ts-ignore
      Manual: () => import('~/components/connections/Manual.vue'),
      // @ts-ignore
-     Zap: () => import('~/components/connections/Zap.vue')
+     Zap: () => import('~/components/connections/Zap.vue'),
+     // @ts-ignore
+     Zues: () => import('~/components/connections/Zues.vue')
    },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   props: {
@@ -98,9 +98,19 @@ export default defineComponent({
         emit('updateApi', api, port, cert, mac)
       }
 
+      function restApi () {
+        updateApi(props.api, "8080", "", props.macaroon)
+      }
+
+      function grpcApi () {
+        updateApi(props.api, "10009", "", props.macaroon)
+      }
+
       return {
         clear,
-        updateApi
+        updateApi,
+        restApi,
+        grpcApi
       }
   }
 })

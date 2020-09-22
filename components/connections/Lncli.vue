@@ -23,6 +23,8 @@ v-card.text-center.align-center(style='padding: 20px;')
   | API Endpoint
   p
   copy-pill(:text='api + ":10009"' color='accent' text-color='warning').text-break
+  p.font-weight-light
+    | click to copy
   p
   | Macaroon
   p
