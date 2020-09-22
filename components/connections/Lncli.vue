@@ -3,15 +3,19 @@
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | lncli
-  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='padding: 20px;')
+  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
     | lncli uses gRPC to communicate with your node.
     | You have this API disabled in your node settings.
     | Please enable it to connect with lncli.
   p
   | Command Line:
   p
-  v-chip(:dark='true' :label='true' :large='true' style='font-family: monospace;')
-    | {{ generatedCommand }}
+  div(style='text-align: left; overflow: scroll; white-space: pre; background-color: #505050; font-family: monospace; color: #ffffff; border-radius: 5px; padding: 10px; max-width: 85%; margin: auto;')
+    | $ lncli \
+    |   --rpcserver={{ api }}:10009 \
+    |   --macaroonpath=/path/to/admin.macaroon \
+    |   --tlscertpath=/path/to/tls.cert \
+    |   getinfo
   p
   | API Endpoint
   p
@@ -19,13 +23,24 @@ v-card.text-center.align-center(style='padding: 20px;')
   p
   | Macaroon
   p
-  v-chip(color='accent' text-color='warning')
-    | Download
+  v-btn(
+    color='warning'
+    text-color='highlight'
+    :href='"data:application/text-plain;base64,"+macaroon'
+    download='admin.macaroon'
+    title='admin.macaroon'
+  ).info--text
+    | Download Macaroon
   p
   | TLS Certificate
   p
-  v-chip(color='accent' text-color='warning')
-    | Download
+  v-btn(
+    color='warning'
+    :href='"data:application/text-plain;base64,"+cert'
+    download='tls.cert'
+    title='tls.cert'
+  ).info--text
+    | Download Certificate
 
 
 </template>
@@ -63,11 +78,8 @@ export default defineComponent({
 
     const apiErrorMessage = ref((!props.grpc) ? true : false)
 
-    const generatedCommand = computed(() => `lncli --rpcserver=${props.api}:10009 --macaroonpath=/path/to/admin.macaroon --tlscertpath=/path/to/tls.cert getinfo`)
-
     return {
-      apiErrorMessage,
-      generatedCommand
+      apiErrorMessage
     }
   }
 })
