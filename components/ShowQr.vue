@@ -16,9 +16,7 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-tab(key="4")
       | Thunderhub
     v-tab-item(key="4")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | Thunderhub
+      thunder-hub(:api='api' :macaroon='macaroon' :grpc='grpc' keyId="4")
     v-tab(key="5")
       | Joule
     v-tab-item(key="5")
@@ -56,6 +54,8 @@ export default defineComponent({
      Lncli: () => import('~/components/connections/Lncli.vue'),
      // @ts-ignore
      Manual: () => import('~/components/connections/Manual.vue'),
+     // @ts-ignore
+     ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
      // @ts-ignore
      Zap: () => import('~/components/connections/Zap.vue'),
      // @ts-ignore

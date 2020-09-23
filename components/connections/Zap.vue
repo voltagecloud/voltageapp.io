@@ -17,6 +17,8 @@ v-card.text-center.align-center(style='padding: 20px;')
     | click to copy
   br
   qrcode-vue(v-model='connectURI' size='300')
+  p
+  a(href="https://docs.zaphq.io/docs-desktop-lnd-connect" target="_blank") Zap Documentation.
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'

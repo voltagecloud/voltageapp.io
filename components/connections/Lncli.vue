@@ -46,8 +46,8 @@ v-card.text-center.align-center(style='padding: 20px;')
     title='tls.cert'
   ).info--text
     | Download Certificate
-
-
+  p
+  a(href="https://github.com/lightningnetwork/lnd/tree/master/docs" target="_blank") lncli Documentation.
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'

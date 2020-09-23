@@ -35,6 +35,8 @@ v-card.text-center.align-center(style='padding: 20px;')
   copy-pill(:text='macHex' color='accent' text-color='warning').text-break
   p.font-weight-light
     | click to copy
+  p
+  a(href="https://github.com/ZeusLN/zeus" target="_blank") Zap Documentation.
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'
