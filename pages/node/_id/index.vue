@@ -34,7 +34,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
+              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -178,6 +178,7 @@ export default defineComponent({
     }
 
     const encrypted = ref('')
+    const pass = ref('')
     const cert = ref('')
     const apiEndpoint = ref('')
     const macaroon = ref('')
@@ -186,14 +187,13 @@ export default defineComponent({
     const showPasswordDialog = ref(false)
     const showQrDialog = ref(false)
     async function connect () {
-      console.log(nodeStore)
       showPasswordDialog.value = true
       try {
         const res = await connectNode(nodeData.value.node_id, 'admin')
         const { endpoint, macaroon, tls_cert } = res
-        apiEndpoint.value = endpoint
-        cert.value = tls_cert
         if (macaroon) {
+          apiEndpoint.value = endpoint
+          cert.value = tls_cert
           encrypted.value = macaroon
         } else {
           // IMPLEMENT MACAROON UPLOAD
@@ -239,6 +239,7 @@ export default defineComponent({
           buildUri(nodeData.value.api_endpoint, port, '', decryptResult)
           showQrDialog.value = true
           showPasswordDialog.value = false
+          pass.value = password
         } else {
           error.value = 'Incorrect password'
         }
@@ -285,6 +286,7 @@ export default defineComponent({
       showPasswordDialog,
       showQrDialog,
       handleConnectNode,
+      pass,
       connectURI,
       clearQr,
       encrypted,

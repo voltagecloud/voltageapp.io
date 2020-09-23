@@ -83,7 +83,8 @@ export default defineComponent({
 
     const macHex = computed(() => base64ToHex(props.macaroon))
     return {
-        macHex
+      clear,
+      macHex
     }
   }
 })

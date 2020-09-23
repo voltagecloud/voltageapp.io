@@ -20,13 +20,11 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-tab(key="5")
       | Joule
     v-tab-item(key="5")
-      v-card.text-center.align-center(style='padding: 20px;')
-        p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-          | Joule
+      joule(:api='api' :macaroon='macaroon' :rest='rest' :pass='pass' keyId="5")
     v-tab(key="6")
       | LNDConnect
     v-tab-item(key='6')
-      lnd-connect(:connectURI='connectURI' :api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @changeApi='updateApi' keyId="1")
+      lnd-connect(:connectURI='connectURI' :api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @changeApi='updateApi' keyId="6")
     v-tab(key="7")
       | Manual
     v-tab-item(key="7")
@@ -53,6 +51,8 @@ export default defineComponent({
      // @ts-ignore
      Lncli: () => import('~/components/connections/Lncli.vue'),
      // @ts-ignore
+     Joule: () => import('~/components/connections/Joule.vue'),
+     // @ts-ignore
      Manual: () => import('~/components/connections/Manual.vue'),
      // @ts-ignore
      ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
@@ -72,6 +72,10 @@ export default defineComponent({
       required: true
     },
     cert: {
+      type: String,
+      required: true
+    },
+    pass: {
       type: String,
       required: true
     },
