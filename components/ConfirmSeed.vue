@@ -1,13 +1,16 @@
 <template lang="pug">
   div
-    div.text-center.warning--text
-      | Your seed phrase is (click to copy)
+    div.text-center.warning--text.display-1
+      | Your seed phrase is 
     v-divider.mx-12.mb-6
-    v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter' @click='copySeed')
+    v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
       span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in lndStore.cipher_seed_mnemonic' :key='i' :data-index='i') {{ word }}
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12
       | Write down your seed phrase in a safe place. You will need it to recover your node and funds. Voltage is not responsible for lost seeds.
+      p
+      v-chip(color='accent' text-color='warning' @click='copySeed').align-center.justify-center
+        | Click Here to Copy Seed
     v-btn.info--text(block color='highlight' depressed @click='confirmModal = true')
       | I have written down my seed phrase
     v-dialog(v-model='confirmModal' max-width='800')
