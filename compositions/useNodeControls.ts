@@ -17,7 +17,7 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
             return res
         } catch (e) {
             loading.value = false
-            error({ statusCode: 500 });
+            error({ statusCode: 500 })
         } finally {
             loading.value = false
         }
@@ -32,7 +32,7 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
             return res
         } catch (e) {
             loading.value = false
-            error({ statusCode: 500 });
+            error({ statusCode: 500 })
         } finally {
             loading.value = false
         }
@@ -47,7 +47,7 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
             return res
         } catch (e) {
             loading.value = false
-            error({ statusCode: 500 });
+            error({ statusCode: 500 })
         } finally {
             loading.value = false
         }
