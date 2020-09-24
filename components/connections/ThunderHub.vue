@@ -3,12 +3,12 @@
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | ThunderHub
-  p
-    | To connect with ThunderHub, copy and paste the follow contents into your Account Config file.
-  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
+  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='!grpc' max-width='800' style='color: #ff0000; padding: 20px;')
     | ThunderHub uses gRPC to communicate with your node.
     | You have this API disabled in your node settings.
     | Please enable it to connect with ThunderHub.
+  p
+    | To connect with ThunderHub, copy and paste the follow contents into your Account Config file.
   p
   | Account Config File:
   p

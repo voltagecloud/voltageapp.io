@@ -3,13 +3,13 @@
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | lncli
-  p
-    | To connect using lncli, you must download your macaroon and TLS certificate below. 
-    | After you have downloaded the necessary files, simply point your CLI to their location.
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
     | lncli uses gRPC to communicate with your node.
     | You have this API disabled in your node settings.
     | Please enable it to connect with lncli.
+  p
+    | To connect using lncli, you must download your macaroon and TLS certificate below. 
+    | After you have downloaded the necessary files, simply point your CLI to their location.
   p
   | Command Line:
   p
@@ -41,11 +41,11 @@ v-card.text-center.align-center(style='padding: 20px;')
   p
   v-btn(
     color='warning'
-    :href='"data:application/text-plain;base64,"+cert'
+    :href='"data:application/text-plain;base64,"+fullCert'
     download='tls.cert'
     title='tls.cert'
   ).info--text
-    | Download Certificate
+    | {{ certButtonText }}
   p
   a(href="https://github.com/lightningnetwork/lnd/tree/master/docs" target="_blank") lncli Documentation.
 </template>
@@ -76,15 +76,40 @@ export default defineComponent({
         required: true
     }
   },
-  setup (props, { emit }) {
+  setup (props, { root, emit }) {
+    const { getCert } = useNodeApi(root.$nuxt.context)
     function clear () {
       emit('clear')
     }
 
+    const fullCert = ref('')
+    const certReady = ref(false)
+    const certButtonText = ref('Download Certificate')
+    const error = ref('')
+
+    async function downloadCert () {
+      try {
+        const res = await getCert(root.$nuxt.$route.params.id)
+        var { tls_cert } = res
+        fullCert.value = tls_cert
+        if (fullCert.value == "pending") {
+          certButtonText.value = 'Certificate is pending'
+        }
+        certReady.value = true
+      } catch (e) {
+        error.value = e.toString()
+      }
+    }
+    downloadCert()
+
     const apiErrorMessage = ref((!props.grpc) ? true : false)
 
     return {
-      apiErrorMessage
+      apiErrorMessage,
+      error,
+      fullCert,
+      certButtonText,
+      certReady
     }
   }
 })

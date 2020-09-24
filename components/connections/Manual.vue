@@ -34,11 +34,11 @@ v-card.text-center.align-center(style='padding: 20px;')
   p
   v-btn(
     color='warning'
-    :href='"data:application/text-plain;base64,"+cert'
+    :href='"data:application/text-plain;base64,"+fullCert'
     download='tls.cert'
     title='tls.cert'
   ).info--text
-    | Download Certificate
+    | {{ certButtonText }}
 
 
 </template>
@@ -65,7 +65,9 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props, { emit }) {
+  setup (props, { root, emit }) {
+    const { getCert } = useNodeApi(root.$nuxt.context)
+
     function clear () {
       emit('clear')
     }
@@ -81,9 +83,34 @@ export default defineComponent({
         return result.toUpperCase();
     }
 
+
+    const fullCert = ref('')
+    const certReady = ref(false)
+    const certButtonText = ref('Download Certificate')
+    const error = ref('')
+
+    async function downloadCert () {
+      try {
+        const res = await getCert(root.$nuxt.$route.params.id)
+        var { tls_cert } = res
+        fullCert.value = tls_cert
+        if (fullCert.value == "pending") {
+          certButtonText.value = 'Certificate is pending'
+        }
+        certReady.value = true
+      } catch (e) {
+        error.value = e.toString()
+      }
+    }
+    downloadCert()
+
     const macHex = computed(() => base64ToHex(props.macaroon))
     return {
-        macHex
+        macHex,
+        error,
+        fullCert,
+        certButtonText,
+        certReady
     }
   }
 })

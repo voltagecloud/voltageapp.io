@@ -3,14 +3,14 @@
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | Joule
+  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
+    | Joule uses the REST API to communicate with your node.
+    | You have this API disabled in your node settings.
+    | Please enable it to connect with Joule.
   p
     | First click the 'Get Started' button in Joule. Then select 'Remote Node'. Copy the Node URL below (including port) and paste it into the 'Node URL' field in Joule.
     | You will be asked to then upload both an Admin macaroon and a Readonly macaroon. You can either download both below or copy the hex values for each. Upload or paste the macaroons into Joule and click 'Continue'.
     | Create a password for Joule when prompted.
-  div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
-    | lncli uses the REST API to communicate with your node.
-    | You have this API disabled in your node settings.
-    | Please enable it to connect with Joule.
   p
   | API Endpoint
   p

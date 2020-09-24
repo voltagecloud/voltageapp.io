@@ -36,7 +36,7 @@ v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light
     | click to copy
   p
-  a(href="https://github.com/ZeusLN/zeus" target="_blank") Zap Documentation.
+  a(href="https://github.com/ZeusLN/zeus" target="_blank") Zeus Documentation.
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'

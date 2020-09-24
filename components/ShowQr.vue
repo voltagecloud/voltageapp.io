@@ -35,6 +35,9 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
       | These codes contain sensitive data used to connect to your node. Guard them carefully.
     p
     p.font-weight-light.text--darken-1.justify-center.align-center
+      | If you are having trouble connecting please check your IP Whitelist and ensure your IP is allowed.
+    p
+    p.font-weight-light.text--darken-1.justify-center.align-center
       | Helpful FAQ Links
     a(href="https://getvoltage.io/faq.html#collapseFive" target="_blank") How to connect to your node.
     p

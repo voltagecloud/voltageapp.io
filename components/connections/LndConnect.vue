@@ -7,7 +7,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     | Both APIs are off. To connect, please enable at least one API in your settings.
   p
   copy-pill(v-if='!apiErrorMessage' :text='connectURI' color='accent' text-color='warning').text-break
-  p.font-weight-light
+  p(v-if='!apiErrorMessage').font-weight-light
     | click to copy
   br
   qrcode-vue(v-if='!apiErrorMessage' v-model='connectURI' size='300')
@@ -22,7 +22,7 @@ v-card.text-center.align-center(style='padding: 20px;')
             v-radio(:label='restMessage' :disabled='restMessage !== "REST"' value='rest' key='rest')
         v-spacer
         v-col(cols='6')
-          v-checkbox(label="Include TLS Certificate" :messages='certMessage' :disabled='certMessage !== ""' v-model='certDefault')
+          v-checkbox(label="Include TLS Certificate" :messages='certMessage' :disabled='certMessage !== "" || apiErrorMessage' v-model='certDefault')
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'
