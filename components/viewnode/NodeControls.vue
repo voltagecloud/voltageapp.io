@@ -15,9 +15,9 @@ v-card(color='info')
           v-row(justify='end')
             v-dialog(max-width='800')
               template(v-slot:activator='{ on }')
-            v-btn(:disabled='!canStart' icon @click='() => { $emit("event"); startNode(); }').mx-1
+            v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
               v-icon mdi-play
-            v-btn(:disabled='!canStop' icon @click='() => { $emit("event"); stopNode(); }').mx-1
+            v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
               v-icon mdi-stop
             v-btn(:disabled='!canDelete' icon @click='deleteModal = true').ml-1.mr-3
               v-icon mdi-delete

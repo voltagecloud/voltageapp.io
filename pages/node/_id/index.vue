@@ -72,47 +72,45 @@ export default defineComponent({
     // @ts-ignore
     postNode(this.nodeID)
     // Logic for auto-refreshing
+    // make sure interval is clean
+    // set new interval
+    let firstRun = true
     // @ts-ignore
-    if (!this.timer) {
-      // make sure interval is clean
-      // set new interval
-      let firstRun = true
+    this.timer = setInterval(async () => {
       // @ts-ignore
-      this.timer = setInterval(async () => {
-        // @ts-ignore
-        let previousStatus = this.status
-        if (!firstRun) {
-          // If the node was running, deleted, or stopped on load don't try to refresh
-          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
-            clearInterval(timerID)
-            return
-          }
-        }
-        // @ts-ignore
-        const { postNode } = useNodeApi(this.$nuxt.context)
-        // @ts-ignore
-        const res = await postNode(this.nodeID)
-        // @ts-ignore
-        const shouldRefresh = previousStatus === res.status
-        // @ts-ignore
-        previousStatus = res.status
-        // If the user leaves the node's page stop checking
-        // @ts-ignore
-        if (this.$route.params.id !== res.node_id) {
+      let previousStatus = this.status
+      if (!firstRun) {
+        // If the node was running, deleted, or stopped on load don't try to refresh
+        if (previousStatus == 'running' || previousStatus == 'stopped' || previousStatus == 'deleted') {
           // @ts-ignore
           clearInterval(this.timer)
           return
         }
-        if (!shouldRefresh) {
-          // If the node is in a running, deleted, or stopped state we want to stop checking
-          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
-            // @ts-ignore
-            clearInterval(this.timer)
-          }
+      }
+      // @ts-ignore
+      const { postNode } = useNodeApi(this.$nuxt.context)
+      // @ts-ignore
+      const res = await postNode(this.nodeID)
+      // @ts-ignore
+      const shouldRefresh = previousStatus === res.status
+      // @ts-ignore
+      previousStatus = res.status
+      // If the user leaves the node's page stop checking
+      // @ts-ignore
+      if (this.$route.params.id !== res.node_id) {
+        // @ts-ignore
+        clearInterval(this.timer)
+        return
+      }
+      if (!shouldRefresh) {
+        // If the node is in a running, deleted, or stopped state we want to stop checking
+        if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
+          // @ts-ignore
+          clearInterval(this.timer)
         }
-        firstRun = false
-      }, 5000)
-    }
+      }
+      firstRun = false
+    }, 5000)
   },
   setup (_, { root }) {
     const nodeID = ref(root.$nuxt.context.params.id)
