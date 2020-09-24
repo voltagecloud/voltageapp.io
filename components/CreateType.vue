@@ -26,7 +26,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   setup (_, { root }) {
-    const stdMsg = 'Coming soon.' // 'You dont have any available nodes. Purchase one to create this node type.'
+    const stdMsg = 'You dont have any available nodes. Purchase one to create this node type.'
     const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes === 0)
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
@@ -58,7 +58,7 @@ export default defineComponent({
           createStore.STEP(1)
         },
         disabled: !nodeStore.user || !nodeStore.user.trial_available,
-        disabledMsg: 'You already have a trial node active'
+        disabledMsg: 'You have already used your trial. Please purchase a node.'
       },
       {
         nodeType: 'Testnet (persistent)',

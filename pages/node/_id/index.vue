@@ -20,21 +20,13 @@ v-container
                 :error='error'
                 :loading='unlocking'
               )
-              //- v-dialog(max-width='800' v-model='unlockDialog')
-              //-   template(v-slot:activator='{ on }')
-              //-     v-btn(v-on='on' color='highlight' block).info--text Unlock
-              //-   v-card.text-center(style='padding: 20px;')
-              //-     v-card-text.display-1 Enter your node's password
-              //-     v-card-actions
-              //-       v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='unlockNode')
-              //-         v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='error')
-              //-         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='unlocking' block).info--text Unlock Node
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-dialog(v-model='confirmUpdate' max-width='800')
                 v-card
-                  v-card-text.pt-3 Updating requires a restart of your node. Are you sure you want update this node?
+                  v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
+                    | Updating requires a restart of your node. Are you sure you want update this node?
                   v-card-actions
                     v-btn(color='info' @click='closeAndUpdate') Yes
                     v-btn(@click='confirmUpdate = false') No
@@ -42,7 +34,7 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' @clear='clearQr' @changeApi='buildUri')
+              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData')
             v-container
               v-dialog(max-width='800')
@@ -75,6 +67,10 @@ export default defineComponent({
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   fetch () {
+    // @ts-ignore
+    const { postNode } = useNodeApi(this.$nuxt.context)
+    // @ts-ignore
+    postNode(this.nodeID)
     // Logic for auto-refreshing
     // @ts-ignore
     if (!this.timer) {
@@ -86,8 +82,8 @@ export default defineComponent({
         // @ts-ignore
         let previousStatus = this.status
         if (!firstRun) {
-          // If the node was running or stopped on load don't try to refresh
-          if (previousStatus === 'running' || previousStatus === 'stopped') {
+          // If the node was running, deleted, or stopped on load don't try to refresh
+          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
             clearInterval(timerID)
             return
           }
@@ -108,8 +104,8 @@ export default defineComponent({
           return
         }
         if (!shouldRefresh) {
-          // If the node is in a running or stopped state we want to stop checking
-          if (previousStatus === 'running' || previousStatus === 'stopped') {
+          // If the node is in a running, deleted, or stopped state we want to stop checking
+          if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
             // @ts-ignore
             clearInterval(this.timer)
           }
@@ -123,7 +119,6 @@ export default defineComponent({
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status } = useNodeStatus(nodeData)
     const { updateNode, updateStatus, postNode, connectNode } = useNodeApi(root.$nuxt.context)
-
     const timer = ref<NodeJS.Timeout|null>(null)
 
     const initializing = ref(false)
@@ -183,9 +178,12 @@ export default defineComponent({
     }
 
     const encrypted = ref('')
+    const pass = ref('')
     const cert = ref('')
     const apiEndpoint = ref('')
     const macaroon = ref('')
+    const grpc = computed(() => nodeData.value.settings.grpc)
+    const rest = computed(() => nodeData.value.settings.rest)
     const showPasswordDialog = ref(false)
     const showQrDialog = ref(false)
     async function connect () {
@@ -193,9 +191,9 @@ export default defineComponent({
       try {
         const res = await connectNode(nodeData.value.node_id, 'admin')
         const { endpoint, macaroon, tls_cert } = res
-        apiEndpoint.value = endpoint
-        cert.value = tls_cert
         if (macaroon) {
+          apiEndpoint.value = endpoint
+          cert.value = tls_cert
           encrypted.value = macaroon
         } else {
           // IMPLEMENT MACAROON UPLOAD
@@ -241,6 +239,7 @@ export default defineComponent({
           buildUri(nodeData.value.api_endpoint, port, '', decryptResult)
           showQrDialog.value = true
           showPasswordDialog.value = false
+          pass.value = password
         } else {
           error.value = 'Incorrect password'
         }
@@ -287,6 +286,7 @@ export default defineComponent({
       showPasswordDialog,
       showQrDialog,
       handleConnectNode,
+      pass,
       connectURI,
       clearQr,
       encrypted,
@@ -295,7 +295,9 @@ export default defineComponent({
       macaroon,
       buildUri,
       confirmUpdate,
-      closeAndUpdate
+      closeAndUpdate,
+      grpc,
+      rest
     }
   }
 })

@@ -125,7 +125,7 @@ export default defineComponent({
       if (res.data.taken) {
         errorMessage.value = 'Node name is already taken'
       } else if (!res.data.valid) {
-        errorMessage.value = 'Invalid node name'
+        errorMessage.value = 'Invalid node name. Must be only letters, numbers, and dashes with less than 42 characters.'
       } else {
         errorMessage.value = ''
       }

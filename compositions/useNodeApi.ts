@@ -172,7 +172,16 @@ export default function useNodeApi ({ $axios, error }: Context) {
       })
       return res.data
     } catch (e) {
-      console.error(e)
+      let resp = e.response
+      if (resp.status == 400 && resp.data.message == "macaroon is invalid") {
+        return {
+          endpoint: "",
+          tls_cert: "",
+          macaroon: ""
+        }
+      } else {
+        console.error(e)
+      }
     } finally {
       loading.value = false
     }

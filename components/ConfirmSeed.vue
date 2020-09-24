@@ -8,18 +8,32 @@
     v-divider.mx-12.mt-6
     div.text-center.warning--text.mb-12
       | Write down your seed phrase in a safe place. You will need it to recover your node and funds. Voltage is not responsible for lost seeds.
-    v-btn.info--text(block color='highlight' depressed @click='confirmSeed')
+    v-btn.info--text(block color='highlight' depressed @click='confirmModal = true')
       | I have written down my seed phrase
+    v-dialog(v-model='confirmModal' max-width='800')
+      v-card
+        v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
+          | Are you positive you wrote this seed down in a safe place?
+          | No one, including Voltage, will be able to recover your node if this is lost.
+        v-card-actions
+          v-btn(color='info' @click='closeAndConfirm') Yes
+          v-btn(@click='confirmModal = false') No
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, ref } from '@vue/composition-api'
 import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
 import useClipboard from '~/compositions/useClipboard'
 
 export default defineComponent({
-  setup (_, { emit }) {
-    // const { updateStatus } = useNodeApi(root.$nuxt.context)
+  setup (_, { root, emit }) {
+    const confirmModal = ref(false)
+
+    async function closeAndConfirm () {
+      confirmModal.value = false
+      await confirmSeed()
+    }
+
     function confirmSeed () {
       emit('next')
     }
@@ -37,7 +51,9 @@ export default defineComponent({
       confirmSeed,
       beforeEnter,
       enter,
-      copySeed
+      copySeed,
+      confirmModal,
+      closeAndConfirm
     }
   }
 })
