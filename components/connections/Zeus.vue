@@ -2,13 +2,13 @@
 
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | Zues
+    | Zeus
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='!rest' max-width='800' style='color: #ff0000; padding: 20px;')
-    | Zues uses the REST API to communicate with your node.
+    | Zeus uses the REST API to communicate with your node.
     | You have this API disabled in your node settings.
-    | Please enable it to connect with Zues.
+    | Please enable it to connect with Zeus.
   p
-    | Open the Zues app and go to the Settings. Select 'Add a new node'. You can connect by either scanning the QR code, copy/pasting the LNDConnect details, or copy/pasting the Endpoint and Macaroon individually.  
+    | Open the Zeus app and go to the Settings. Select 'Add a new node'. You can connect by either scanning the QR code, copy/pasting the LNDConnect details, or copy/pasting the Endpoint and Macaroon individually.  
     | After your connection information is entered, select 'Save Node Config'.
   p
     | LNDConnect

@@ -6,9 +6,9 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     v-tab-item(key="1")
       zap(:connectURI='connectURI' :grpc='grpc' keyId="1")
     v-tab(key="2" @click='restApi')
-      | Zues
+      | Zeus
     v-tab-item(key="2")
-      zues(:connectURI='connectURI' :rest='rest' :api='api' :macaroon='macaroon' keyId="2")
+      zeus(:connectURI='connectURI' :rest='rest' :api='api' :macaroon='macaroon' keyId="2")
     v-tab(key="3")
       | LNCLI
     v-tab-item(key="3")
@@ -62,7 +62,7 @@ export default defineComponent({
      // @ts-ignore
      Zap: () => import('~/components/connections/Zap.vue'),
      // @ts-ignore
-     Zues: () => import('~/components/connections/Zues.vue')
+     Zeus: () => import('~/components/connections/Zeus.vue')
    },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   props: {
