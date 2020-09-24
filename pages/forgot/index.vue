@@ -56,7 +56,7 @@ export default defineComponent({
     async function handleForm1 () {
       // set error to none so when retrying it will reset the error
       error.value = ''
-      await forgotPassword(email.value)
+      await forgotPassword(email.value.trim())
       if (error.value === '') {
         currentStep.value += 1
         valid.value = false
@@ -64,8 +64,8 @@ export default defineComponent({
     }
 
     async function handleForm2 () {
-      await confirmNewPassword(email.value, code.value, confirmPassword.value)
-      await login(email.value, confirmPassword.value)
+      await confirmNewPassword(email.value.trim(), code.value, confirmPassword.value)
+      await login(email.value.trim(), confirmPassword.value)
       root.$router.push('/')
     }
 

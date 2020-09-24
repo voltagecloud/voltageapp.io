@@ -51,7 +51,7 @@ export default defineComponent({
     async function register () {
       // set error to none so when retrying it will reset the error
       error.value = ''
-      await registerApi(logic.email.value, logic.password.value)
+      await registerApi(logic.email.value.trim(), logic.password.value)
       if (error.value === '') {
         currentStep.value += 1
         logic.valid.value = null
@@ -63,9 +63,9 @@ export default defineComponent({
     async function confirm () {
       // set error to none so when retrying it will reset the error
       error.value = ''
-      await confirmApi(logic.email.value, confirmCode.value)
+      await confirmApi(logic.email.value.trim(), confirmCode.value)
       if (error.value === '') {
-        await login(logic.email.value, logic.password.value)
+        await login(logic.email.value.trim(), logic.password.value)
         root.$router.push('/')
       }
     }
