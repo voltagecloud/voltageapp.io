@@ -16,15 +16,19 @@
         p
           | per month
         p
+        p.text--darken-1
+          | Number of Nodes
+        p.font-weight-light.text--darken-1
+          input(v-model="quantity" style='max-width: 100px; font-size: 28px; border: 2px solid #a6a6a6; border-radius: 3px;' type="number" pattern="[0-9]*" min='1' :required='true' @click='changeQuantity').text-center
         p
           | Due Today: ${{ dueToday }}
         v-row(align='center' justify='center')
-          v-container(style='max-width: 30%;')
-            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
+          v-container
+            v-btn.px-4.info--text(block='' @click='selectPlanCard' :loading='loading' color='highlight')
               | Purchase Node with Card
         v-row(align='center' justify='center')
-          v-container(style='max-width: 30%;')
-            v-btn.px-4.info--text(block='' @click='selectPlanBitcoin' color='highlight')
+          v-container
+            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
               | Purchase Node with Bitcoin
 </template>
 <script lang="ts">
@@ -32,23 +36,33 @@ import { defineComponent, SetupContext, reactive, computed, ref, watch } from '@
 import { Network } from '~/types/api'
 import axios from 'axios'
 import useNodeApi from '~/compositions/useNodeApi'
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js'
 
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, { root }) {
-    const { getPurchaseSession, loading } = useNodeApi(root.$nuxt.context)
+
+    document.addEventListener('focusout', e => {console.log(e); changeQuantity()});
+
+    const { getPurchaseSession } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
     // @ts-ignore
+    const loading = ref(false)
+    // @ts-ignore
     const stripePromise = loadStripe(stripeKey)
-    const monthlyBill = ref('24.99')
-    const dueToday = ref('299.88')
+    const quantity = ref(1)
+    const monthlyBill = ref(24.99)
+    const dueToday = ref(299.88)
+    const defaultDueYearly = ref(299.88)
+    const defaultDueMonthly = ref(29.99)
     const planSelect = ref('node_yearly')
     async function selectPlanCard() {
       loading.value = true
       const res = await root.$nuxt.context.$axios.post('/stripe/session', {
-        plan: planSelect.value,
-        quantity: 1
+        items: [{
+          plan: planSelect.value,
+          quantity: quantity.value
+        }]
       })
       const sessionId = res.data.session_id
       const stripe = await stripePromise;
@@ -57,54 +71,36 @@ export default defineComponent({
         sessionId
       });
     }
-    /*
-    async function selectPlanBitcoin() {
-      const opennode = require('opennode');
-      opennode.setCredentials('db10e152-e5d5-4d79-bda2-11f33009aad7', 'dev');
-
-      const charge = {
-        description: 'Voltage Node',
-        amount: 29.99,
-        currency: 'USD',
-        order_id: '823320',
-        customer_name: 'John Doe',
-        customer_email: 'me@johndoe.com',
-        notif_email: 'me@johndoe.com',
-        callback_url: "https://example.com/webhook/opennode",
-        success_url: 'https://example.com/order/abc123',
-        auto_settle: false
-      };
-
-      opennode.createCharge(charge)
-          .then(charge => {
-              console.log(charge);
-          })
-          .catch(error => {
-              console.error(`${error.status} | ${error.message}`);
-          });
-          }
-    */
 
     // @ts-ignore
     function changePlan (event) {
       if (event === 'node_monthly') {
         planSelect.value = 'node_monthly'
-        monthlyBill.value = '29.99'
-        dueToday.value = '29.99'
+        monthlyBill.value = 29.99
+        dueToday.value = 29.99 * quantity.value
       } else if (event === 'node_yearly') {
         planSelect.value = 'node_yearly'
-        monthlyBill.value = '24.99'
-        dueToday.value = '299.88'
+        monthlyBill.value = 24.99
+        dueToday.value = 299.88 * quantity.value
       }
+    }
+
+    function changeQuantity () {
+      let defaultDue = (planSelect.value == 'node_yearly') ? defaultDueYearly.value : defaultDueMonthly.value
+      let newBill = quantity.value * defaultDue
+      dueToday.value = parseFloat(newBill.toFixed(2))
     }
 
     watch(planSelect, changePlan)
 
     return {
+      loading,
       selectPlanCard,
       planSelect,
       monthlyBill,
-      dueToday
+      dueToday,
+      quantity,
+      changeQuantity
     }
   }
 })
