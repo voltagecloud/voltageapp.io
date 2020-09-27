@@ -28,8 +28,20 @@
               | Purchase Node with Card
         v-row(align='center' justify='center')
           v-container
-            v-btn.px-4.info--text(block='' @click='selectPlanCard' color='highlight')
+            v-btn.px-4.info--text(block='' @click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
               | Purchase Node with Bitcoin
+        v-row(v-if='errorMessage' align='center' justify='center')
+          v-container
+            p.px-4.error--text
+              | {{ errorMessage }}
+    v-dialog(v-model='confirmModal' max-width='60%')
+      v-card
+        v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
+          | When purchasing a monthly subscription with Bitcoin you'll be required to manually pay a new invoice every month.
+          | For that reason we recommend a yearly subscription. 
+        v-card-actions
+          v-btn(color='info' @click='selectPlanBitcoin') Continue with monthly
+          v-btn(@click='confirmModal = false') Go Back
 </template>
 <script lang="ts">
 import { defineComponent, SetupContext, reactive, computed, ref, watch } from '@vue/composition-api'
@@ -43,11 +55,13 @@ export default defineComponent({
   setup (_, { root }) {
 
     document.addEventListener('focusout', e => {console.log(e); changeQuantity()});
-
+    const confirmModal = ref(false)
     const { getPurchaseSession } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
     // @ts-ignore
     const loading = ref(false)
+    const btcLoading = ref(false)
+    const errorMessage = ref('')
     // @ts-ignore
     const stripePromise = loadStripe(stripeKey)
     const quantity = ref(1)
@@ -58,18 +72,41 @@ export default defineComponent({
     const planSelect = ref('node_yearly')
     async function selectPlanCard() {
       loading.value = true
-      const res = await root.$nuxt.context.$axios.post('/stripe/session', {
-        items: [{
-          plan: planSelect.value,
-          quantity: quantity.value
-        }]
-      })
-      const sessionId = res.data.session_id
-      const stripe = await stripePromise;
-      // @ts-ignore
-      const { error } = await stripe.redirectToCheckout({
-        sessionId
-      });
+      try {
+        const res = await root.$nuxt.context.$axios.post('/stripe/session', {
+          items: [{
+            plan: planSelect.value,
+            quantity: quantity.value
+          }]
+        })
+        const sessionId = res.data.session_id
+        const stripe = await stripePromise;
+        // @ts-ignore
+        const { error } = await stripe.redirectToCheckout({
+          sessionId
+        });
+      } catch (e) {
+        console.log(e)
+        errorMessage.value = "There was a problem processing request"
+      }
+    }
+
+    async function selectPlanBitcoin() {
+      confirmModal.value = false
+      btcLoading.value = true
+      try {
+        const res = await root.$nuxt.context.$axios.post('/btcpay/session', {
+          items: [{
+            plan: planSelect.value,
+            quantity: quantity.value
+          }]
+        })
+        window.location = res.data.redirect_url
+      } catch (e) {
+        console.log(e)
+        errorMessage.value = "There was a problem processing request"
+      }
+      btcLoading.value = false
     }
 
     // @ts-ignore
@@ -94,13 +131,17 @@ export default defineComponent({
     watch(planSelect, changePlan)
 
     return {
+      errorMessage,
       loading,
+      btcLoading,
       selectPlanCard,
+      selectPlanBitcoin,
       planSelect,
       monthlyBill,
       dueToday,
       quantity,
-      changeQuantity
+      changeQuantity,
+      confirmModal
     }
   }
 })
