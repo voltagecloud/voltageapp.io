@@ -22,6 +22,10 @@
           input(v-model="quantity" style='max-width: 100px; font-size: 28px; border: 2px solid #a6a6a6; border-radius: 3px;' type="number" pattern="[0-9]*" min='1' :required='true' @click='changeQuantity').text-center
         p
           | Due Today: ${{ dueToday }}
+        v-row(v-if='errorMessage' align='center' justify='center')
+          v-container
+            p.px-4.error--text
+              | {{ errorMessage }}
         v-row(align='center' justify='center')
           v-container
             v-btn.px-4.info--text(block='' @click='selectPlanCard' :loading='loading' color='highlight')
@@ -30,10 +34,6 @@
           v-container
             v-btn.px-4.info--text(block='' @click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
               | Purchase Node with Bitcoin
-        v-row(v-if='errorMessage' align='center' justify='center')
-          v-container
-            p.px-4.error--text
-              | {{ errorMessage }}
     v-dialog(v-model='confirmModal' max-width='60%')
       v-card
         v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
