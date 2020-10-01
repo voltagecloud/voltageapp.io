@@ -89,6 +89,7 @@ export default defineComponent({
         console.log(e)
         errorMessage.value = "There was a problem processing request"
       }
+      loading.value = false
     }
 
     async function selectPlanBitcoin() {
