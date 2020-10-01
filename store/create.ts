@@ -10,10 +10,10 @@ interface NodeTypePayload {
 const defaultSettings = {
   autopilot: false,
   grpc: true,
-  rest: false,
+  rest: true,
   tor: false,
   keysend: true,
-  wumbo: false,
+  wumbo: true,
   alias: '',
   color: '#EF820D',
   whitelist: []

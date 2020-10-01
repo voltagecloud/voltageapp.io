@@ -6,6 +6,7 @@
           template(v-slot:heading='')
             h2.font-weight-light
               | Register
+          v-card-text(v-if='currentStep === 1') We sent a confirmation code to your email.
           v-card-actions
             v-col(cols='12')
               v-fade-transition(mode='out-in')
