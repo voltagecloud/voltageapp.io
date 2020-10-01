@@ -37,7 +37,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return node
     } catch (e) {
       loading.value = false
-      error({ statusCode: 500 })
+      throw e;
     } finally {
       loading.value = false
     }

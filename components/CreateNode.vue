@@ -79,6 +79,9 @@
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
           v-col(cols='12').pt-0
+            p.px-4.error--text(v-if='populateError')
+              | There was a problem configuring the node. Please retry or create a new one.
+          v-col(cols='12').pt-0
             v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
               | Save Settings
 </template>
@@ -105,11 +108,16 @@ export default defineComponent({
     const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
 
     const oppositeColor = computed(() => invertColor(settings.color))
-
+    const populateError = ref(false)
     async function handlePopulate () {
       createStore.SETTINGS(settings)
-      const res = await populateNode()
-      root.$router.push(`/node/${createStore.newNodeID}`)
+      try {
+        const res = await populateNode()
+        root.$router.push(`/node/${createStore.newNodeID}`)
+      } catch(e) {
+        console.log(e)
+        populateError.value = true
+      }
     }
 
     const nodeName = computed({
@@ -147,6 +155,7 @@ export default defineComponent({
       form,
       loading,
       handlePopulate,
+      populateError,
       remove,
       displayNetwork,
       isTrial,
