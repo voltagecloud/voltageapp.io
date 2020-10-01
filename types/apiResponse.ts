@@ -22,6 +22,7 @@ export interface CreateNode {
     expires: string
     created: string
     purchased_type: PurchasedType
+    purchase_status: string
     user_ip: string
 }
 

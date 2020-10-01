@@ -1,5 +1,9 @@
 <template lang="pug">
 v-container
+  v-container(v-if='nodeExpired')
+    | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill. 
+    | Please update your payment method to prevent the node from being deleted.
+    p
   password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' text='Decrypt Macaroon')
   v-container(v-if='downloadReady')
     v-dialog(max-width='800' :value='downloadReady' @click:outside='clear')
@@ -157,6 +161,14 @@ export default defineComponent({
       certReady.value = false
     }
 
+    const nodeExpired = computed(() => {
+      if (props.node.purchased_type === "paid" && props.node.purchase_status !== "active") {
+        return true
+      } else {
+        return false
+      }
+    })
+
     return {
       nodeInfo,
       downloadMacaroon,
@@ -172,7 +184,8 @@ export default defineComponent({
       downloadCert,
       cert,
       certButtonText,
-      props
+      props,
+      nodeExpired
     }
   }
 })
