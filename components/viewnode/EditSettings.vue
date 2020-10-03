@@ -78,7 +78,7 @@ v-container
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
           v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
-            v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='loading' @click='updateCert')
+            v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='tlsLoading' @click='updateCert')
               | {{ tlsMessage }}
           v-col(cols='12').pt-0
             p.warning--text
@@ -107,6 +107,8 @@ export default defineComponent({
     const backupMacaroon = ref(!!props.node.macaroon_backup)
 
     const { updateSettings, updateTls, loading } = useNodeApi(root.$nuxt.context)
+
+    const tlsLoading = ref(false)
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -144,6 +146,7 @@ export default defineComponent({
     })
 
     async function updateCert () {
+      tlsLoading.value = true
       await updateTls(props.node.node_id)
       // @ts-ignore
       root.$nuxt.$router.go()

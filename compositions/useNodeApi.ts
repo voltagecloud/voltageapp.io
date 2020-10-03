@@ -89,7 +89,6 @@ export default function useNodeApi ({ $axios, error }: Context) {
   }
 
   async function updateTls (id: string) {
-    loading.value = true
     try {
       const res = await $axios.post('/node/tls_update', {
         node_id: id
