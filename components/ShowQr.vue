@@ -39,9 +39,9 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
     p
     p.font-weight-light.text--darken-1.justify-center.align-center
       | Helpful FAQ Links
-    a(href="https://getvoltage.io/faq.html#collapseFive" target="_blank") How to connect to your node.
+    a(href="https://getvoltage.io/faq.html#connect" target="_blank") How to connect to your node.
     p
-    a(href="https://getvoltage.io/faq.html#collapseFour" target="_blank") Popular apps to connect to your node.
+    a(href="https://getvoltage.io/faq.html#applications" target="_blank") Popular apps to connect to your node.
 
 </template>
 <script lang="ts">

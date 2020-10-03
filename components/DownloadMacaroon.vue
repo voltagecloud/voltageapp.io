@@ -18,9 +18,9 @@ v-card.text-center.align-center(style='padding: 20px;')
   p
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | Helpful FAQ Links
-  a(href="https://getvoltage.io/faq.html#collapseFive" target="_blank") How to connect to your node.
+  a(href="https://getvoltage.io/faq.html#connect" target="_blank") How to connect to your node.
   p
-  a(href="https://getvoltage.io/faq.html#collapseFour" target="_blank") Popular apps to connect to your node.
+  a(href="https://getvoltage.io/faq.html#applications" target="_blank") Popular apps to connect to your node.
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
