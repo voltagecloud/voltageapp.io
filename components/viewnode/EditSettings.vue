@@ -99,7 +99,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props, { root }) {
+  setup (props, { root, emit }) {
     const showSettings = ref(false)
     const { valid, form, invertColor, validIP, showPalette, remove } = useFormValidation()
 
@@ -119,6 +119,7 @@ export default defineComponent({
 
     async function confirmSettings () {
       if (form.value?.validate()) {
+        emit('updated')
         await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
         showSettings.value = false
       }
