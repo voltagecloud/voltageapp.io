@@ -35,7 +35,7 @@ v-container
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
-            edit-settings(:node='nodeData')
+            edit-settings(:node='nodeData' @updated='$fetch')
             v-container
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
@@ -51,8 +51,6 @@ import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
 import { Node } from '~/types/apiResponse'
-
-let timerID: NodeJS.Timeout
 
 export default defineComponent({
   components: {
@@ -81,7 +79,7 @@ export default defineComponent({
       let previousStatus = this.status
       if (!firstRun) {
         // If the node was running, deleted, or stopped on load don't try to refresh
-        if (previousStatus == 'running' || previousStatus == 'stopped' || previousStatus == 'deleted') {
+        if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
           // @ts-ignore
           clearInterval(this.timer)
           return
@@ -212,8 +210,8 @@ export default defineComponent({
     }
     const connectURI = ref('')
 
-    //convert b64 to b64url
-    function safeUrl(data: string) {
+    // convert b64 to b64url
+    function safeUrl (data: string) {
       data = data.replace(/\+/g, "-")
       data = data.replace(/\//g, "_")
       data = data.replace(/=/g, "")
