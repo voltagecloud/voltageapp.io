@@ -20,7 +20,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     |   --tlscertpath=/path/to/tls.cert \
     |   getinfo
   p
-  | API Endpoint
+  | RPC Server
   p
   copy-pill(:text='api + ":10009"' color='accent' text-color='warning').text-break
   p.font-weight-light

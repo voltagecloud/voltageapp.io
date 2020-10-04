@@ -11,7 +11,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     | Open the Zap app and create a new wallet. Select 'Connect'. 
     | You can connect by either scanning the QR code below or copy/pasting the LNDConnect string into the 'Connection String' box.
   p
-    | LNDConnect
+    | Connection String
   copy-pill(:text='connectURI' color='accent' text-color='warning').text-break
   p.font-weight-light
     | click to copy

@@ -2,65 +2,35 @@
 
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | Joule
+    | BTCPay Server
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
-    | Joule uses the REST API to communicate with your node.
+    | BTCPay uses the REST API to communicate with your node.
     | You have this API disabled in your node settings.
-    | Please enable it to connect with Joule.
+    | Please enable it to connect with BTCPay.
   p
-    | First click the 'Get Started' button in Joule. Then select 'Remote Node'. Copy the Node URL below (including port) and paste it into the 'Node URL' field in Joule.
-    | You will be asked to then upload both an Admin macaroon and a Readonly macaroon. You can either download both below or copy the hex values for each. Upload or paste the macaroons into Joule and click 'Continue'.
-    | Create a password for Joule when prompted.
+    | • Go to your Store in BTCPay Server and click 'Settings'<br />
+    | • Scroll down to 'Lightning Network Experimental' and select 'Modify' for 'BTC'<br />
+    | • Copy and paste the connection string below into BTCPay Server<br />
+    | • Click Save
+  p(v-if='hasMac')
+    | Connection String
+  p(v-if='!hasMac')
+    | Please generate a macaroon for BTCPay Server first.
   p
-  | Node URL
-  p
-  copy-pill(:text='"https://" + api + ":8080"' color='accent' text-color='warning').text-break
-  p.font-weight-light
+  copy-pill(v-if='hasMac' :text='connectionString' color='accent' text-color='warning').text-break
+  p.font-weight-light(v-if='hasMac')
     | click to copy
-  p.text--darken-1.v-card__title.justify-center.align-center
-    | Admin Macaroon
   v-btn(
+    v-if='!hasMac'
     color='warning'
-    text-color='highlight'
-    :href='"data:application/text-plain;base64,"+macaroon'
-    download='admin.macaroon'
-    title='admin.macaroon'
-  ).info--text
-    | Download Macaroon
-  p
-  | Hex:
-  p
-  copy-pill(:text='macHex' color='accent' text-color='warning').text-break
-  p.font-weight-light
-    | click to copy
-  p.text--darken-1.v-card__title.justify-center.align-center
-    | Readonly Macaroon
-  v-btn(
-    v-if='hasReadonly'
-    color='warning'
-    :href='"data:application/octet-stream;base64,"+readonlyMac'
-    download='readonly.macaroon'
-    title='readonly.macaroon'
-    :loading='loading'
-  ).info--text
-    | Download Macaroon
-  v-btn(
-    v-if='!hasReadonly'
-    color='warning'
-    @click='createReadonlyMac'
+    @click='createBtcpayMac'
     :loading='loading'
   ).info--text
     | Create Macaroon
   p
   | {{ error }}
   p
-  | Hex:
-  p
-  copy-pill(:text='readonlyMacHex' color='accent' text-color='warning').text-break
-  p.font-weight-light
-    | click to copy
-  p
-  a(href="https://lightningjoule.com/faq" target="_blank") Joule Documentation.
+  a(href="https://docs.btcpayserver.org/LightningNetwork/#connecting-your-internal-lightning-node-in-btcpay" target="_blank") BTCPay Server Documentation.
 </template>
 <script lang="ts">
 import axios from 'axios'
@@ -97,25 +67,30 @@ export default defineComponent({
     }
     const macHex = computed(() => base64ToHex(props.macaroon))
     const {connectNode} = useNodeApi(root.$nuxt.context)
-    const hasReadonly = ref(false)
+    const hasMac = ref(false)
     const loading = ref(false)
     const error = ref('')
-    const readonlyMac = ref('')
-    const readonlyMacHex = ref('pending')
+    const btcpayMac = ref('')
+    const connectionString = ref('')
+
+    function createString (macData: string) {
+      return `type=lnd-rest;server=https://${props.api}:8080/;macaroon=${macData}`
+    }
 
     // @ts-ignore
-    async function getReadonly () {
+    async function getBtcpay () {
       loading.value = true
       try {
         // @ts-ignore
-        const res = await connectNode(root.$nuxt.$route.params.id, 'readonly')
+        const res = await connectNode(root.$nuxt.$route.params.id, 'btcpayserver')
         const {macaroon} = res
         if (macaroon) {
           if (macaroon !== "") {
-            hasReadonly.value = true
+            hasMac.value = true
             let macData = decryptMacaroon(props.pass, macaroon)
-            readonlyMac.value = macData
-            readonlyMacHex.value = base64ToHex(macData)
+            btcpayMac.value = macData
+            //@ts-ignore
+            connectionString.value = createString(macData)
           }
         } else {
           // IMPLEMENT MACAROON UPLOAD
@@ -125,9 +100,9 @@ export default defineComponent({
         error.value = e.toString()
       }
     }
-    getReadonly()
+    getBtcpay()
 
-    async function createReadonlyMac () {
+    async function createBtcpayMac () {
         loading.value = true
         try {
             const res = await axios({
@@ -140,24 +115,24 @@ export default defineComponent({
                             "action": "read"
                         },
                         {
-                            "entity": "peers",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "message",
-                            "action": "read"
-                        },
-                        {
                             "entity": "address",
                             "action": "read"
                         },
                         {
-                            "entity": "offchain",
-                            "action": "read"
+                            "entity": "address",
+                            "action": "write"
                         },
                         {
                             "entity": "onchain",
                             "action": "read"
+                        },
+                        {
+                            "entity": "invoices",
+                            "action": "read"
+                        },
+                        {
+                            "entity": "invoices",
+                            "action": "write"
                         }
                     ]
                 },
@@ -168,14 +143,15 @@ export default defineComponent({
             // @ts-ignore
             let respData = res.data
             let b64ByteMac = hexToBase64(respData.macaroon)
-            hasReadonly.value = true
-            readonlyMac.value = b64ByteMac
-            readonlyMacHex.value = respData.macaroon.toUpperCase()
+            hasMac.value = true
+            btcpayMac.value = b64ByteMac
+            //@ts-ignore
+            connectionString.value = createString(b64ByteMac)
             loading.value = false
             // @ts-ignore
             const encrypted = crypto.AES.encrypt(b64ByteMac, props.pass).toString()
             const { postMacaroon } = useNodeApi(root.$nuxt.context)
-            await postMacaroon(root.$nuxt.$route.params.id, 'readonly', encrypted)
+            await postMacaroon(root.$nuxt.$route.params.id, 'btcpayserver', encrypted)
         } catch (err) {
             error.value = `${err}`
         } finally {
@@ -234,12 +210,10 @@ export default defineComponent({
 
     return {
       clear,
-      macHex,
       apiErrorMessage,
-      createReadonlyMac,
-      hasReadonly,
-      readonlyMac,
-      readonlyMacHex,
+      createBtcpayMac,
+      connectionString,
+      hasMac,
       loading,
       error
     }
