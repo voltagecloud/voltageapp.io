@@ -8,8 +8,9 @@ v-card.text-center.align-center(style='padding: 20px;')
     | You have this API disabled in your node settings.
     | Please enable it to connect with Zeus.
   p
-    | Open the Zeus app and go to the Settings. Select 'Add a new node'. You can connect by either scanning the QR code, copy/pasting the LNDConnect details, or copy/pasting the Endpoint and Macaroon individually.  
-    | After your connection information is entered, select 'Save Node Config'.
+    | • Open the Zeus app and go to the Settings. Select 'Add a new node'. <br />
+    | • You can connect by either scanning the QR code, copy/pasting the LNDConnect details, or copy/pasting the Endpoint and Macaroon individually.  <br />
+    | • After your connection information is entered, select 'Save Node Config'. <br />
   p
     | LNDConnect
   copy-pill(:text='connectURI' color='accent' text-color='warning').text-break

@@ -8,9 +8,10 @@ v-card.text-center.align-center(style='padding: 20px;')
     | You have this API disabled in your node settings.
     | Please enable it to connect with Joule.
   p
-    | First click the 'Get Started' button in Joule. Then select 'Remote Node'. Copy the Node URL below (including port) and paste it into the 'Node URL' field in Joule.
-    | You will be asked to then upload both an Admin macaroon and a Readonly macaroon. You can either download both below or copy the hex values for each. Upload or paste the macaroons into Joule and click 'Continue'.
-    | Create a password for Joule when prompted.
+    | • Click the 'Get Started' button in Joule. Then select 'Remote Node'.<br />
+    | • Copy the Node URL below and paste it into the 'Node URL' field in Joule.<br />
+    | • Upload or paste both the Admin macaroon and a Readonly macaroon. Click 'Continue'.<br />
+    | • Create a password for Joule when prompted.
   p
   | Node URL
   p
