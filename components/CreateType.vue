@@ -15,7 +15,7 @@
                     color='secondary'
                     block
                     :loading='loading && clickedButton === i'
-                  ).warning--text Create
+                  ).warning--text {{ card.buttonText }}
               span {{ card.disabledMsg }}
 </template>
 <script lang="ts">
@@ -27,7 +27,6 @@ import useNodeApi from '~/compositions/useNodeApi'
 export default defineComponent({
   setup (_, { root }) {
     const stdMsg = 'You dont have any available nodes. Purchase one to create this node type.'
-    const stdDisabled = computed(() => !nodeStore.user || nodeStore.user.available_nodes === 0)
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
@@ -36,20 +35,27 @@ export default defineComponent({
     const cards = reactive([
       {
         nodeType: 'Mainnet',
-        buttonText: '',
+        //@ts-ignore
+        buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
-          clickedButton.value = 0
-          createStore.WIPE()
-          createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
-          await createNode()
-          createStore.STEP(1)
+          //@ts-ignore
+          if (nodeStore.user.available_nodes === 0) {
+            root.$router.push('/purchase')
+          } else {
+            clickedButton.value = 0
+            createStore.WIPE()
+            createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
+            await createNode()
+            createStore.STEP(1)
+          }
         },
-        disabled: stdDisabled.value,
+        disabled: false,
         disabledMsg: stdMsg
       },
       {
         nodeType: 'Testnet (trial)',
+        buttonText: 'Create',
         desc: 'Create a trial testnet lightning node. Experiment with test Bitcoins. This node will expire after one week.',
         selectFn: async () => {
           clickedButton.value = 1
@@ -63,15 +69,22 @@ export default defineComponent({
       },
       {
         nodeType: 'Testnet (persistent)',
+        //@ts-ignore
+        buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
         desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
         selectFn: async () => {
-          clickedButton.value = 2
-          createStore.WIPE()
-          createStore.NODE_TYPE({ network: Network.testnet, trial: false })
-          await createNode()
-          createStore.STEP(1)
+          //@ts-ignore
+          if (nodeStore.user.available_nodes === 0) {
+            root.$router.push('/purchase')
+          } else {
+            clickedButton.value = 2
+            createStore.WIPE()
+            createStore.NODE_TYPE({ network: Network.testnet, trial: false })
+            await createNode()
+            createStore.STEP(1)
+          }
         },
-        disabled: stdDisabled.value,
+        disabled: false,
         disabledMsg: stdMsg
       }
     ])
