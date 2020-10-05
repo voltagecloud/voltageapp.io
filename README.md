@@ -1,14 +1,6 @@
-# voltage_typescript
+# voltageapp.io
 
-> My amazing Nuxt.js project
-
-
-## TODO 
-
-* Node exports
-* Node initialization
-* Working MFA
-* General Polish
+Static Dashboard site for [Voltage](https://getvoltage.io).
 
 ## Build Setup
 
@@ -26,5 +18,3 @@ $ yarn start
 # generate static project
 $ yarn generate
 ```
-
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
