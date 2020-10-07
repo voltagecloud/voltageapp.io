@@ -100,8 +100,12 @@ export default defineComponent({
     async function portal() {
       billingLoading.value = true
       const res = await root.$nuxt.context.$axios.post('/stripe/portal', {})
-      const portalUrl = res.data.portal_url
-      window.location.replace(portalUrl)
+      if ('portal_url' in res.data) {
+        const portalUrl = res.data.portal_url
+        window.location.replace(portalUrl)
+      }
+      billingLoading.value = false
+      loading.value = false
     }
 
     return {
