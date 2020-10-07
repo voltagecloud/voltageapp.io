@@ -23,7 +23,21 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
+      { property: 'og:site_name', content: 'Voltage Dashboard' },
+      { property: 'og:title', content: 'Voltage Dashboard' },
+      { property: 'og:description', content: 'Voltage offers noncustodial Lightning node hosting with complete user control. Provision your own node in less than two minutes.' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://voltageapp.io' },
+      { property: 'og:image', content: '/images/voltage-og.png' },
+      { property: 'og:image:width', content: '600' },
+      { property: 'og:image:height', content: '315' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:site', content: '@getvoltage' },
+      { name: 'twitter:creator', content: '@getvoltage' },
+      { name: 'twitter:title', content: 'Voltage Dashboard' },
+      { name: 'twitter:description', content: 'Voltage offers noncustodial Lightning node hosting with complete user control. Provision your own node in less than two minutes.' },
+      { name: 'twitter:image', content: '/images/voltage-twitter.png' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
