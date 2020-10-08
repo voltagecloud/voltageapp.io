@@ -28,8 +28,8 @@ export default {
       { property: 'og:title', content: 'Voltage Dashboard' },
       { property: 'og:description', content: 'Voltage offers noncustodial Lightning node hosting with complete user control. Provision your own node in less than two minutes.' },
       { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: 'https://voltageapp.io' },
-      { property: 'og:image', content: '/images/voltage-og.png' },
+      { property: 'og:url', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}` },
+      { property: 'og:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-og.png` },
       { property: 'og:image:width', content: '600' },
       { property: 'og:image:height', content: '315' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -37,7 +37,7 @@ export default {
       { name: 'twitter:creator', content: '@getvoltage' },
       { name: 'twitter:title', content: 'Voltage Dashboard' },
       { name: 'twitter:description', content: 'Voltage offers noncustodial Lightning node hosting with complete user control. Provision your own node in less than two minutes.' },
-      { name: 'twitter:image', content: '/images/voltage-twitter.png' }
+      { name: 'twitter:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-twitter.png` }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
