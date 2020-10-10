@@ -41,6 +41,8 @@ v-container
                 template(v-slot:activator='{ on }')
                   v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Export Data
                 export-data(:nodeID='nodeID' :nodeStatus='status')
+            v-container
+              v-btn(color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
