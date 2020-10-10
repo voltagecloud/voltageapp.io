@@ -13,7 +13,6 @@
         v-col(cols='auto')
           v-row(justify='end')
 
-
             v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-btn(icon v-bind="attrs" v-on="on" :to='`/node/${exportData.node_id}`').mx-1

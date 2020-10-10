@@ -42,7 +42,6 @@ export interface Node extends PopulateNode {
     volt_version: String
 }
 
-
 export interface NodeExport {
     name: string
     status: NodeExportStatus
@@ -72,7 +71,6 @@ export interface NodeStatusUpdate {
     network: Network
 }
 
-
 export interface User {
     user_id: string
     email: string
@@ -83,7 +81,7 @@ export interface User {
     available_nodes: number
     purchased_nodes: number
     mainnet_nodes: IDName[]
-    testnet_nodes: IDName[] 
+    testnet_nodes: IDName[]
     deleted_mainnet_nodes: IDName[]
     deleted_testnet_nodes: IDName[]
 }
@@ -98,7 +96,6 @@ export interface NodeNameResponse {
     valid: boolean
     node_name: string
 }
-
 
 export interface PaymentSession {
     session_id: string

@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { Network, Settings } from '~/types/api'
 import { Address4, Address6 } from 'ip-address'
+import { Network, Settings } from '~/types/api'
 
 interface NodeTypePayload {
     network: Network

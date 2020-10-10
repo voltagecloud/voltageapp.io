@@ -128,19 +128,19 @@ export default defineComponent({
     }
 
     const tlsMessage = computed(() => {
-      if (props.node.status !== "stopped") {
-        return "Stop node to update certificate"
-      } else{
-        return "Update TLS Certificate"
+      if (props.node.status !== 'stopped') {
+        return 'Stop node to update certificate'
+      } else {
+        return 'Update TLS Certificate'
       }
     })
 
     const oppositeColor = computed(() => invertColor(props.node.settings.color))
 
     const canUpdateTls = computed(() => {
-      if (props.node.status !== "stopped") {
+      if (props.node.status !== 'stopped') {
         return false
-      } else{
+      } else {
         return true
       }
     })

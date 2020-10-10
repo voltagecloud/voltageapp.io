@@ -52,16 +52,16 @@ export default defineComponent({
       required: true
     },
     keyId: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     grpc: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     },
     rest: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { emit }) {
@@ -69,12 +69,12 @@ export default defineComponent({
       emit('clear')
     }
 
-    const apiErrorMessage = ref((!props.grpc && !props.rest) ? true : false)
+    const apiErrorMessage = ref(!!((!props.grpc && !props.rest)))
     const apiDefault = ref((props.grpc) ? 'grpc' : 'rest')
     const certDefault = ref(false)
-    const certMessage = ref((props.cert === "pending") ? "Certificate is pending" : "")
-    const grpcMessage = ref((props.grpc) ? "GRPC" : "GRPC is disabled")
-    const restMessage = ref((props.rest) ? "REST" : "REST is disabled")
+    const certMessage = ref((props.cert === 'pending') ? 'Certificate is pending' : '')
+    const grpcMessage = ref((props.grpc) ? 'GRPC' : 'GRPC is disabled')
+    const restMessage = ref((props.rest) ? 'REST' : 'REST is disabled')
     const dynamicPort = ref((props.grpc) ? '10009' : '8080')
     const dynamicCert = ref('')
 

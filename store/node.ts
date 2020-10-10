@@ -13,9 +13,9 @@ interface NodeIDPayload {
 }
 
 @Module({
-    name: 'node',
-    stateFactory: true,
-    namespaced: true
+  name: 'node',
+  stateFactory: true,
+  namespaced: true
 })
 export default class NodeModule extends VuexModule {
     user: User | null = null
@@ -25,48 +25,48 @@ export default class NodeModule extends VuexModule {
 
     testnetAvailable = 0
     testnetNodeIDName: IDName[] = []
-    
+
     nodes: Node[] = []
 
     @Mutation
-    HYDRATE_USER(user: User) {
-        this.user = user
+    HYDRATE_USER (user: User) {
+      this.user = user
     }
 
     @Mutation
-    SET_AVAILABLE ({network, available}: AvailablePayload) {
-        if (network == 'testnet') {
-            this.testnetAvailable = available
-        } else if (network == 'mainnet') {
-            this.mainnetAvailable = available
-        }
+    SET_AVAILABLE ({ network, available }: AvailablePayload) {
+      if (network == 'testnet') {
+        this.testnetAvailable = available
+      } else if (network == 'mainnet') {
+        this.mainnetAvailable = available
+      }
     }
 
     @Mutation
     SET_NODE_IDS ({ network, idName }: NodeIDPayload) {
-        if (network === 'testnet') {
-            const a = [...this.testnetNodeIDName, ...idName]
-            this.testnetNodeIDName = [...new Set(a.map(o => JSON.stringify(o)))].map(s => JSON.parse(s))
-        } else if (network === 'mainnet') {
-            const a = [...this.mainnetNodeIDName, ...idName]
-            this.mainnetNodeIDName = [...new Set(a.map(o => JSON.stringify(o)))].map(s => JSON.parse(s))
-        }
+      if (network === 'testnet') {
+        const a = [...this.testnetNodeIDName, ...idName]
+        this.testnetNodeIDName = [...new Set(a.map(o => JSON.stringify(o)))].map(s => JSON.parse(s))
+      } else if (network === 'mainnet') {
+        const a = [...this.mainnetNodeIDName, ...idName]
+        this.mainnetNodeIDName = [...new Set(a.map(o => JSON.stringify(o)))].map(s => JSON.parse(s))
+      }
     }
 
     @Mutation
     ADD_NODE (node: Node) {
-        const uniqueNodes = this.nodes.filter(nodeObj => nodeObj.node_id !== node.node_id)
-        this.nodes = [...uniqueNodes, node]
+      const uniqueNodes = this.nodes.filter(nodeObj => nodeObj.node_id !== node.node_id)
+      this.nodes = [...uniqueNodes, node]
     }
 
     @Mutation
     UPDATE_NODE (payload: NodeStatusUpdate) {
-        this.nodes = this.nodes.map(nodeObj => {
-            if (nodeObj.node_id == payload.node_id) {
-                return Object.assign({}, nodeObj, payload)
-            }
-            return nodeObj
-        })
+      this.nodes = this.nodes.map((nodeObj) => {
+        if (nodeObj.node_id == payload.node_id) {
+          return Object.assign({}, nodeObj, payload)
+        }
+        return nodeObj
+      })
     }
 
     // @Mutation
@@ -80,9 +80,9 @@ export default class NodeModule extends VuexModule {
     // }
 
     get IDNames () {
-        if (this.user) {
-            return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => a.node_name > b.node_name ? 1 : -1)
-        }
-        return []
+      if (this.user) {
+        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => a.node_name > b.node_name ? 1 : -1)
+      }
+      return []
     }
 }

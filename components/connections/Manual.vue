@@ -24,7 +24,7 @@ v-card.text-center.align-center(style='padding: 20px;')
   ).info--text
     | Download Macaroon
   p
-  p 
+  p
     | Macaroon Hex:
     copy-pill(:text='macHex' color='accent' text-color='warning').text-break
     p.font-weight-light
@@ -40,7 +40,6 @@ v-card.text-center.align-center(style='padding: 20px;')
   ).info--text
     | {{ certButtonText }}
 
-
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'
@@ -49,7 +48,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   props: {
     api: {
@@ -73,16 +72,15 @@ export default defineComponent({
     }
 
     // @ts-ignore
-    function base64ToHex(str) {
-        const raw = atob(str);
-        let result = '';
-        for (let i = 0; i < raw.length; i++) {
-            const hex = raw.charCodeAt(i).toString(16);
-            result += (hex.length === 2 ? hex : '0' + hex);
-        }
-        return result.toUpperCase();
+    function base64ToHex (str) {
+      const raw = atob(str)
+      let result = ''
+      for (let i = 0; i < raw.length; i++) {
+        const hex = raw.charCodeAt(i).toString(16)
+        result += (hex.length === 2 ? hex : '0' + hex)
+      }
+      return result.toUpperCase()
     }
-
 
     const fullCert = ref('')
     const certReady = ref(false)
@@ -92,9 +90,9 @@ export default defineComponent({
     async function downloadCert () {
       try {
         const res = await getCert(root.$nuxt.$route.params.id)
-        var { tls_cert } = res
+        const { tls_cert } = res
         fullCert.value = tls_cert
-        if (fullCert.value == "pending") {
+        if (fullCert.value == 'pending') {
           certButtonText.value = 'Certificate is pending'
         }
         certReady.value = true
@@ -106,11 +104,11 @@ export default defineComponent({
 
     const macHex = computed(() => base64ToHex(props.macaroon))
     return {
-        macHex,
-        error,
-        fullCert,
-        certButtonText,
-        certReady
+      macHex,
+      error,
+      fullCert,
+      certButtonText,
+      certReady
     }
   }
 })

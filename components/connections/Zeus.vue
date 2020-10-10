@@ -63,8 +63,8 @@ export default defineComponent({
       required: true
     },
     rest: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { emit }) {
@@ -72,14 +72,14 @@ export default defineComponent({
       emit('clear')
     }
     // @ts-ignore
-    function base64ToHex(str) {
-        const raw = atob(str);
-        let result = '';
-        for (let i = 0; i < raw.length; i++) {
-            const hex = raw.charCodeAt(i).toString(16);
-            result += (hex.length === 2 ? hex : '0' + hex);
-        }
-        return result.toUpperCase();
+    function base64ToHex (str) {
+      const raw = atob(str)
+      let result = ''
+      for (let i = 0; i < raw.length; i++) {
+        const hex = raw.charCodeAt(i).toString(16)
+        result += (hex.length === 2 ? hex : '0' + hex)
+      }
+      return result.toUpperCase()
     }
 
     const macHex = computed(() => base64ToHex(props.macaroon))

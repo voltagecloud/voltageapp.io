@@ -8,7 +8,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     | You have this API disabled in your node settings.
     | Please enable it to connect with lncli.
   p
-    | To connect using lncli, you must download your macaroon and TLS certificate below. 
+    | To connect using lncli, you must download your macaroon and TLS certificate below.
     | After you have downloaded the necessary files, simply point your CLI to their location.
   p
   | Command Line:
@@ -56,7 +56,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   props: {
     api: {
@@ -72,8 +72,8 @@ export default defineComponent({
       required: true
     },
     grpc: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { root, emit }) {
@@ -90,9 +90,9 @@ export default defineComponent({
     async function downloadCert () {
       try {
         const res = await getCert(root.$nuxt.$route.params.id)
-        var { tls_cert } = res
+        const { tls_cert } = res
         fullCert.value = tls_cert
-        if (fullCert.value == "pending") {
+        if (fullCert.value == 'pending') {
           certButtonText.value = 'Certificate is pending'
         }
         certReady.value = true
@@ -102,7 +102,7 @@ export default defineComponent({
     }
     downloadCert()
 
-    const apiErrorMessage = ref((!props.grpc) ? true : false)
+    const apiErrorMessage = ref((!props.grpc))
 
     return {
       apiErrorMessage,

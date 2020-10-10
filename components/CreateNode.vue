@@ -114,7 +114,7 @@ export default defineComponent({
       try {
         const res = await populateNode()
         root.$router.push(`/node/${createStore.newNodeID}`)
-      } catch(e) {
+      } catch (e) {
         console.log(e)
         populateError.value = true
       }

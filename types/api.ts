@@ -54,7 +54,6 @@ export enum ApiType {
     rest = 'rest'
 }
 
-
 export enum ExportData {
     full = 'full',
     log = 'log',

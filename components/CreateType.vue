@@ -35,11 +35,11 @@ export default defineComponent({
     const cards = reactive([
       {
         nodeType: 'Mainnet',
-        //@ts-ignore
+        // @ts-ignore
         buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
         desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
         selectFn: async () => {
-          //@ts-ignore
+          // @ts-ignore
           if (nodeStore.user.available_nodes === 0) {
             root.$router.push('/purchase')
           } else {
@@ -69,11 +69,11 @@ export default defineComponent({
       },
       {
         nodeType: 'Testnet (persistent)',
-        //@ts-ignore
+        // @ts-ignore
         buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
         desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
         selectFn: async () => {
-          //@ts-ignore
+          // @ts-ignore
           if (nodeStore.user.available_nodes === 0) {
             root.$router.push('/purchase')
           } else {

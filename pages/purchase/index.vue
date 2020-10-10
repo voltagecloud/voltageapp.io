@@ -38,23 +38,22 @@
       v-card
         v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
           | When purchasing a monthly subscription with Bitcoin you'll be required to manually pay a new invoice every month.
-          | For that reason we recommend a yearly subscription. 
+          | For that reason we recommend a yearly subscription.
         v-card-actions
           v-btn(color='info' @click='selectPlanBitcoin') Continue with monthly
           v-btn(@click='confirmModal = false') Go Back
 </template>
 <script lang="ts">
 import { defineComponent, SetupContext, reactive, computed, ref, watch } from '@vue/composition-api'
-import { Network } from '~/types/api'
 import axios from 'axios'
-import useNodeApi from '~/compositions/useNodeApi'
 import { loadStripe } from '@stripe/stripe-js'
+import { Network } from '~/types/api'
+import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, { root }) {
-
-    document.addEventListener('focusout', e => {console.log(e); changeQuantity()});
+    document.addEventListener('focusout', (e) => { console.log(e); changeQuantity() })
     const confirmModal = ref(false)
     const { getPurchaseSession } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
@@ -70,7 +69,7 @@ export default defineComponent({
     const defaultDueYearly = ref(299.88)
     const defaultDueMonthly = ref(29.99)
     const planSelect = ref('node_yearly')
-    async function selectPlanCard() {
+    async function selectPlanCard () {
       loading.value = true
       try {
         const res = await root.$nuxt.context.$axios.post('/stripe/session', {
@@ -80,19 +79,19 @@ export default defineComponent({
           }]
         })
         const sessionId = res.data.session_id
-        const stripe = await stripePromise;
+        const stripe = await stripePromise
         // @ts-ignore
         const { error } = await stripe.redirectToCheckout({
           sessionId
-        });
+        })
       } catch (e) {
         console.log(e)
-        errorMessage.value = "There was a problem processing request"
+        errorMessage.value = 'There was a problem processing request'
       }
       loading.value = false
     }
 
-    async function selectPlanBitcoin() {
+    async function selectPlanBitcoin () {
       confirmModal.value = false
       btcLoading.value = true
       try {
@@ -105,7 +104,7 @@ export default defineComponent({
         window.location = res.data.redirect_url
       } catch (e) {
         console.log(e)
-        errorMessage.value = "There was a problem processing request"
+        errorMessage.value = 'There was a problem processing request'
       }
       btcLoading.value = false
     }
@@ -124,8 +123,8 @@ export default defineComponent({
     }
 
     function changeQuantity () {
-      let defaultDue = (planSelect.value == 'node_yearly') ? defaultDueYearly.value : defaultDueMonthly.value
-      let newBill = quantity.value * defaultDue
+      const defaultDue = (planSelect.value == 'node_yearly') ? defaultDueYearly.value : defaultDueMonthly.value
+      const newBill = quantity.value * defaultDue
       dueToday.value = parseFloat(newBill.toFixed(2))
     }
 

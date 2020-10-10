@@ -52,23 +52,23 @@ import { defineComponent, ref, computed, watch } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
-     // @ts-ignore
-     LndConnect: () => import('~/components/connections/LndConnect.vue'),
-     // @ts-ignore
-     Lncli: () => import('~/components/connections/Lncli.vue'),
-     // @ts-ignore
-     Joule: () => import('~/components/connections/Joule.vue'),
-     // @ts-ignore
-     Manual: () => import('~/components/connections/Manual.vue'),
-     // @ts-ignore
-     Btcpay: () => import('~/components/connections/Btcpay.vue'),
-     // @ts-ignore
-     ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
-     // @ts-ignore
-     Zap: () => import('~/components/connections/Zap.vue'),
-     // @ts-ignore
-     Zeus: () => import('~/components/connections/Zeus.vue')
-   },
+    // @ts-ignore
+    LndConnect: () => import('~/components/connections/LndConnect.vue'),
+    // @ts-ignore
+    Lncli: () => import('~/components/connections/Lncli.vue'),
+    // @ts-ignore
+    Joule: () => import('~/components/connections/Joule.vue'),
+    // @ts-ignore
+    Manual: () => import('~/components/connections/Manual.vue'),
+    // @ts-ignore
+    Btcpay: () => import('~/components/connections/Btcpay.vue'),
+    // @ts-ignore
+    ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
+    // @ts-ignore
+    Zap: () => import('~/components/connections/Zap.vue'),
+    // @ts-ignore
+    Zeus: () => import('~/components/connections/Zeus.vue')
+  },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   props: {
     connectURI: {
@@ -101,29 +101,29 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-      function clear () {
-        emit('clear')
-      }
+    function clear () {
+      emit('clear')
+    }
 
-      // @ts-ignore
-      function updateApi (api, port, cert, mac) {
-        emit('updateApi', api, port, cert, mac)
-      }
+    // @ts-ignore
+    function updateApi (api, port, cert, mac) {
+      emit('updateApi', api, port, cert, mac)
+    }
 
-      function restApi () {
-        updateApi(props.api, "8080", "", props.macaroon)
-      }
+    function restApi () {
+      updateApi(props.api, '8080', '', props.macaroon)
+    }
 
-      function grpcApi () {
-        updateApi(props.api, "10009", "", props.macaroon)
-      }
+    function grpcApi () {
+      updateApi(props.api, '10009', '', props.macaroon)
+    }
 
-      return {
-        clear,
-        updateApi,
-        restApi,
-        grpcApi
-      }
+    return {
+      clear,
+      updateApi,
+      restApi,
+      grpcApi
+    }
   }
 })
 </script>

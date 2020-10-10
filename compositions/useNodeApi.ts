@@ -37,7 +37,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return node
     } catch (e) {
       loading.value = false
-      throw e;
+      throw e
     } finally {
       loading.value = false
     }
@@ -171,12 +171,12 @@ export default function useNodeApi ({ $axios, error }: Context) {
       })
       return res.data
     } catch (e) {
-      let resp = e.response
-      if (resp.status == 400 && resp.data.message == "macaroon is invalid") {
+      const resp = e.response
+      if (resp.status == 400 && resp.data.message == 'macaroon is invalid') {
         return {
-          endpoint: "",
-          tls_cert: "",
-          macaroon: ""
+          endpoint: '',
+          tls_cert: '',
+          macaroon: ''
         }
       } else {
         console.error(e)
@@ -186,7 +186,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function getCert(node_id: string) {
+  async function getCert (node_id: string) {
     try {
       loading.value = true
       const res = await $axios.post('/node/cert', {
@@ -200,12 +200,12 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function getPurchaseSession(plan: string, quantity: string, email: string) {
+  async function getPurchaseSession (plan: string, quantity: string, email: string) {
     try {
       const res = await $axios.post('/stripe/session', {
-        plan: plan,
-        quantity: quantity,
-        email: email
+        plan,
+        quantity,
+        email
       })
       return res
     } catch (e) {

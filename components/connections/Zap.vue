@@ -36,8 +36,8 @@ export default defineComponent({
       required: true
     },
     grpc: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { emit }) {

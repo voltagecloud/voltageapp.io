@@ -214,9 +214,9 @@ export default defineComponent({
 
     // convert b64 to b64url
     function safeUrl (data: string) {
-      data = data.replace(/\+/g, "-")
-      data = data.replace(/\//g, "_")
-      data = data.replace(/=/g, "")
+      data = data.replace(/\+/g, '-')
+      data = data.replace(/\//g, '_')
+      data = data.replace(/=/g, '')
       return data
     }
 

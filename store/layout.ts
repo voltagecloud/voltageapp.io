@@ -6,9 +6,9 @@ interface Notifications {
 }
 
 @Module({
-    name: 'layout',
-    stateFactory: true,
-    namespaced: true
+  name: 'layout',
+  stateFactory: true,
+  namespaced: true
 })
 export default class LayoutModule extends VuexModule {
     appBarTitle = 'Dashboard'
@@ -18,16 +18,16 @@ export default class LayoutModule extends VuexModule {
 
     @Mutation
     SET_TITLE (title: string) {
-        this.appBarTitle = title
+      this.appBarTitle = title
     }
 
     @Mutation
     SET_ERROR (error: string) {
-        this.error = error
+      this.error = error
     }
 
     @Mutation
     DRAWER (v: boolean | null) {
-        this.showDrawer = v
+      this.showDrawer = v
     }
 }

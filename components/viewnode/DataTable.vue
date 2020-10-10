@@ -1,7 +1,7 @@
 <template lang="pug">
 v-container
   v-container(v-if='nodeExpired')
-    | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill. 
+    | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill.
     | Please update your payment method to prevent the node from being deleted.
     p
   password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' text='Decrypt Macaroon')
@@ -60,9 +60,9 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
+import crypto from 'crypto-js'
 import { Node } from '~/types/apiResponse'
 import useNodeApi from '~/compositions/useNodeApi'
-import crypto from 'crypto-js'
 
 export default defineComponent({
   props: {
@@ -91,7 +91,7 @@ export default defineComponent({
       'LND Version': props.node.lnd_version,
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
-      'Macaroon': props.node.macaroons.length > 0 ? 'Download' : 'pending',
+      Macaroon: props.node.macaroons.length > 0 ? 'Download' : 'pending',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
@@ -101,7 +101,7 @@ export default defineComponent({
       showPasswordDialog.value = true
       try {
         const res = await connectNode(props.node.node_id, 'admin')
-        var { macaroon } = res
+        const { macaroon } = res
         encrypted.value = macaroon
       } catch (e) {
         error.value = e.toString()
@@ -111,9 +111,9 @@ export default defineComponent({
     async function downloadCert () {
       try {
         const res = await getCert(props.node.node_id)
-        var { tls_cert } = res
+        const { tls_cert } = res
         cert.value = tls_cert
-        if (cert.value == "pending") {
+        if (cert.value == 'pending') {
           certButtonText.value = 'Certificate is pending'
         }
         certReady.value = true
@@ -124,12 +124,12 @@ export default defineComponent({
 
     // @ts-ignore
     function isBase64 (str) {
-        if (str ==='' || str.trim() ===''){ return false; }
-        try {
-            return btoa(atob(str)) == str;
-        } catch (err) {
-            return false;
-        }
+      if (str === '' || str.trim() === '') { return false }
+      try {
+        return btoa(atob(str)) == str
+      } catch (err) {
+        return false
+      }
     }
 
     function handleDownload (password: string) {
@@ -162,7 +162,7 @@ export default defineComponent({
     }
 
     const nodeExpired = computed(() => {
-      if (props.node.purchased_type === "paid" && props.node.purchase_status !== "active") {
+      if (props.node.purchased_type === 'paid' && props.node.purchase_status !== 'active') {
         return true
       } else {
         return false

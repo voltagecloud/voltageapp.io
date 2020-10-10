@@ -10,7 +10,7 @@
     "generate": "nuxt-ts generate",
     "start": "nuxt-ts start",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore ."
+    "lintfix": "eslint --fix --ext .js,.vue,.ts --ignore-path .gitignore ."
   },
   "dependencies": {
     "@aws-amplify/auth": "^3.2.3",

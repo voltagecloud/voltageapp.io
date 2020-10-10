@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     div.text-center.warning--text.display-1
-      | Your seed phrase is 
+      | Your seed phrase is
     v-divider.mx-12.mb-6
     v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='width: 100%;' @before-enter='beforeEnter' @enter='enter')
       span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in lndStore.cipher_seed_mnemonic' :key='i' :data-index='i') {{ word }}

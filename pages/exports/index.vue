@@ -43,7 +43,7 @@ export default defineComponent({
       const timerID = setInterval(async () => {
         // If the user leaves the page stop checking
         // @ts-ignore
-        if (this.$route.name !== "exports") {
+        if (this.$route.name !== 'exports') {
           clearInterval(timerID)
         }
         const res = await axios.get('/export')

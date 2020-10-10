@@ -17,7 +17,7 @@ v-card.text-center.align-center(style='padding: 20px;')
     |   - name: '{{ nodename }}'
     |     serverUrl: '{{ api }}:10009'
     |     macaroon: '{{ macaroon }}'
-    | 
+    |
   p
   a(href="https://github.com/apotdevin/thunderhub#server-accounts" target="_blank") ThunderHub Documentation.
 </template>
@@ -28,7 +28,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   props: {
     api: {
@@ -40,8 +40,8 @@ export default defineComponent({
       required: true
     },
     grpc: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { emit }) {
@@ -52,7 +52,7 @@ export default defineComponent({
     const nodename = computed(() => props.api.split('.')[0])
 
     return {
-        nodename
+      nodename
     }
   }
 })

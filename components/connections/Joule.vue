@@ -72,7 +72,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   props: {
     api: {
@@ -84,12 +84,12 @@ export default defineComponent({
       required: true
     },
     pass: {
-        type: String,
-        required: true,
+      type: String,
+      required: true
     },
     rest: {
-        type: Boolean,
-        required: true
+      type: Boolean,
+      required: true
     }
   },
   setup (props, { root, emit }) {
@@ -97,7 +97,7 @@ export default defineComponent({
       emit('clear')
     }
     const macHex = computed(() => base64ToHex(props.macaroon))
-    const {connectNode} = useNodeApi(root.$nuxt.context)
+    const { connectNode } = useNodeApi(root.$nuxt.context)
     const hasReadonly = ref(false)
     const loading = ref(false)
     const error = ref('')
@@ -110,11 +110,11 @@ export default defineComponent({
       try {
         // @ts-ignore
         const res = await connectNode(root.$nuxt.$route.params.id, 'readonly')
-        const {macaroon} = res
+        const { macaroon } = res
         if (macaroon) {
-          if (macaroon !== "") {
+          if (macaroon !== '') {
             hasReadonly.value = true
-            let macData = decryptMacaroon(props.pass, macaroon)
+            const macData = decryptMacaroon(props.pass, macaroon)
             readonlyMac.value = macData
             readonlyMacHex.value = base64ToHex(macData)
           }
@@ -129,69 +129,68 @@ export default defineComponent({
     getReadonly()
 
     async function createReadonlyMac () {
-        loading.value = true
-        try {
-            const res = await axios({
-                method: 'POST',
-                url: `https://${props.api}:8080/v1/macaroon`,
-                data: {
-                    permissions: [
-                        {
-                            "entity": "info",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "peers",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "message",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "address",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "offchain",
-                            "action": "read"
-                        },
-                        {
-                            "entity": "onchain",
-                            "action": "read"
-                        }
-                    ]
-                },
-                headers: {
-                    "Grpc-Metadata-macaroon": macHex.value
-                }
-            })
-            // @ts-ignore
-            let respData = res.data
-            let b64ByteMac = hexToBase64(respData.macaroon)
-            hasReadonly.value = true
-            readonlyMac.value = b64ByteMac
-            readonlyMacHex.value = respData.macaroon.toUpperCase()
-            loading.value = false
-            // @ts-ignore
-            const encrypted = crypto.AES.encrypt(b64ByteMac, props.pass).toString()
-            const { postMacaroon } = useNodeApi(root.$nuxt.context)
-            await postMacaroon(root.$nuxt.$route.params.id, 'readonly', encrypted)
-        } catch (err) {
-            error.value = `${err}`
-        } finally {
-            loading.value = false
-        }
-        return
+      loading.value = true
+      try {
+        const res = await axios({
+          method: 'POST',
+          url: `https://${props.api}:8080/v1/macaroon`,
+          data: {
+            permissions: [
+              {
+                entity: 'info',
+                action: 'read'
+              },
+              {
+                entity: 'peers',
+                action: 'read'
+              },
+              {
+                entity: 'message',
+                action: 'read'
+              },
+              {
+                entity: 'address',
+                action: 'read'
+              },
+              {
+                entity: 'offchain',
+                action: 'read'
+              },
+              {
+                entity: 'onchain',
+                action: 'read'
+              }
+            ]
+          },
+          headers: {
+            'Grpc-Metadata-macaroon': macHex.value
+          }
+        })
+        // @ts-ignore
+        const respData = res.data
+        const b64ByteMac = hexToBase64(respData.macaroon)
+        hasReadonly.value = true
+        readonlyMac.value = b64ByteMac
+        readonlyMacHex.value = respData.macaroon.toUpperCase()
+        loading.value = false
+        // @ts-ignore
+        const encrypted = crypto.AES.encrypt(b64ByteMac, props.pass).toString()
+        const { postMacaroon } = useNodeApi(root.$nuxt.context)
+        await postMacaroon(root.$nuxt.$route.params.id, 'readonly', encrypted)
+      } catch (err) {
+        error.value = `${err}`
+      } finally {
+        loading.value = false
+      }
     }
 
-    const apiErrorMessage = ref((!props.rest) ? true : false)
+    const apiErrorMessage = ref((!props.rest))
 
     // @ts-ignore
-    function hexToBase64(str) {
-        return btoa(String.fromCharCode.apply(null,
-            str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" "))
-        );
+    function hexToBase64 (str) {
+      return btoa(String.fromCharCode.apply(null,
+        str.replace(/\r|\n/g, '').replace(/([\da-fA-F]{2}) ?/g, '0x$1 ').replace(/ +$/, '').split(' '))
+      )
     }
 
     // @ts-ignore
@@ -212,25 +211,25 @@ export default defineComponent({
           return decryptResult
         } else {
           error.value = 'Incorrect password'
-          return ""
+          return ''
         }
       } catch (e) {
         console.error('cipher mismatch, macaroon decryption failed')
         console.error(e)
         error.value = e.toString()
-        return ""
+        return ''
       }
     }
 
     // @ts-ignore
-    function base64ToHex(str) {
-        const raw = atob(str);
-        let result = '';
-        for (let i = 0; i < raw.length; i++) {
-            const hex = raw.charCodeAt(i).toString(16);
-            result += (hex.length === 2 ? hex : '0' + hex);
-        }
-        return result.toUpperCase();
+    function base64ToHex (str) {
+      const raw = atob(str)
+      let result = ''
+      for (let i = 0; i < raw.length; i++) {
+        const hex = raw.charCodeAt(i).toString(16)
+        result += (hex.length === 2 ? hex : '0' + hex)
+      }
+      return result.toUpperCase()
     }
 
     return {
