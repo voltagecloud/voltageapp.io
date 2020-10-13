@@ -31,7 +31,9 @@
               v-model='chosenNetwork'
               :items='["mainnet", "testnet"]'
               :error-messages='errorMessage'
-              placeholder='testnet'
+              placeholder='Choose Network'
+              color='highlight'
+              background-color='secondary'
               outlined
               @change='handleNetwork'
             )
@@ -69,12 +71,14 @@ export default defineComponent({
           createStore.NODE_TYPE({ network: Network.testnet, trial: true })
           await createNode()
           createStore.STEP(1)
+          window.scrollTo(0,0)
         // @ts-ignore
         } else if (nodeStore.user.available_nodes > 0) {
           // @ts-ignore
           createStore.NODE_TYPE({ network: Network.testnet, trial: false })
           await createNode()
           createStore.STEP(1)
+          window.scrollTo(0,0)
         } else {
           root.$router.push('/purchase')
         }
@@ -85,6 +89,7 @@ export default defineComponent({
           createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
           await createNode()
           createStore.STEP(1)
+          window.scrollTo(0,0)
         } else {
           root.$router.push('/purchase')
         }

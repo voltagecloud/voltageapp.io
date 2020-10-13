@@ -29,6 +29,7 @@ export default class CreateModule extends VuexModule {
     network: Network = Network.testnet
     trial = false
     seed: string[] = []
+    password: string = ""
     macaroon_backup = true
     settings: Settings = Object.assign({}, defaultSettings)
 
@@ -38,6 +39,11 @@ export default class CreateModule extends VuexModule {
     @Mutation
     NODE_NAME (name: string) {
       this.nodeName = name
+    }
+
+    @Mutation
+    PASSWORD(password: string) {
+      this.password = password
     }
 
     @Mutation
@@ -82,6 +88,11 @@ export default class CreateModule extends VuexModule {
     @Mutation
     HYDRATE_SETTINGS (settings: Settings) {
       this.settings = Object.assign(this.settings, settings)
+    }
+
+    @Mutation
+    WIPE_PASSWORD() {
+      this.password = ''
     }
 
     @Mutation
