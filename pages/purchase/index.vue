@@ -28,11 +28,11 @@
               | {{ errorMessage }}
         v-row(align='center' justify='center')
           v-container
-            v-btn.px-4.info--text(block='' @click='selectPlanCard' :loading='loading' color='highlight')
+            v-btn.px-4.info--text(@click='selectPlanCard' :loading='loading' color='highlight')
               | Purchase Node with Card
         v-row(align='center' justify='center')
           v-container
-            v-btn.px-4.info--text(block='' @click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
+            v-btn.px-4.info--text(@click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
               | Purchase Node with Bitcoin
     v-dialog(v-model='confirmModal' max-width='60%')
       v-card

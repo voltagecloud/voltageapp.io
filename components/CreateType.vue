@@ -1,22 +1,43 @@
 <template lang="pug">
   v-container(style='height: 100%;')
-    v-row(style='height: 100%;' justify='center')
-      v-col(cols='12' lg='4' v-for='(card, i) in cards' :key='i')
-        v-card(color='info' height='100%' hover).pad-bottom
-          v-card-title.font-weight-light.warning--text.text--darken-1 {{ card.nodeType }}
-          v-card-text(style='line-height: 1.7em;') {{ card.desc }}
-          v-card-actions.make-bottom
-            v-tooltip(top :disabled='!card.disabled')
-              template(v-slot:activator='{ on }')
-                div(v-on='on')
-                  v-btn(
-                    @click='card.selectFn'
-                    :disabled='card.disabled || (loading && clickedButton !== i)'
-                    color='secondary'
-                    block
-                    :loading='loading && clickedButton === i'
-                  ).warning--text {{ card.buttonText }}
-              span {{ card.disabledMsg }}
+    v-card(color='info' height='100%')
+      v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title Choose Node Type
+      div(justify='center' align='center' style='margin: auto;')
+        v-row(style='padding-bottom: 50px')
+          v-col(cols='12' lg='4')
+            v-btn(fab icon tile raised elevation="12" style='border-radius: 5px; border: solid; border-color: #1d437b; background: #ffffff;  width: 200px; height: 150px;')
+              v-col
+                img(src="/images/lnd-logo.png" width="105")
+          v-col(cols='12' lg='4')
+            v-btn(fab icon tile raised elevation="12" :disabled='true' style='background: #e4e4e4; border-radius: 5px; width: 200px; height: 150px;')
+              v-col
+                img(src="/images/c-lightning-logo.png" width="125" style="padding-bottom: 10px")
+                br
+                | Not Yet Available
+          v-col(cols='12' lg='4')
+            v-btn(fab icon tile raised elevation="12" :disabled='true' style='background: #e4e4e4; border-radius: 5px; width: 200px; height: 150px;')
+              v-col
+                img(src="/images/eclair-logo.png" width="125" style="padding-bottom: 10px")
+                br
+                | Not Yet Available
+
+        v-row(justify='center' style='max-width: 65%;')
+          v-col(cols='12')
+            p.font-weight-light.warning--text(style='font-size: 20px;')
+              | {{ stdMsg }}
+            v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title
+              | Choose Network
+            v-select.text--darken-1(
+              v-model='chosenNetwork'
+              :items='["mainnet", "testnet"]'
+              :error-messages='errorMessage'
+              placeholder='testnet'
+              outlined
+              @change='handleNetwork'
+            )
+          v-col(cols='12')
+            v-btn(style="background: #ffffff;" @click='chooseNetwork' :loading='loading' block).warning--text {{ createText }}
+
 </template>
 <script lang="ts">
 import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
@@ -26,73 +47,81 @@ import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   setup (_, { root }) {
-    const stdMsg = 'You dont have any available nodes. Purchase one to create this node type.'
+    // @ts-ignore
+    const stdMsg = `You have ${nodeStore.user.available_nodes} paid nodes and ${nodeStore.user.trial_available ? 1 : 0} trial nodes available.`
+    // @ts-ignore
+    const chosenNetwork = ref(nodeStore.user.trial_available ? "testnet" : "mainnet")
 
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
     const clickedButton = ref<null|number>(null)
+    const errorMessage = ref('')
 
-    const cards = reactive([
-      {
-        nodeType: 'Mainnet',
+    // @ts-ignore
+    const createText = ref(nodeStore.user.trial_available ? 'Create Trial' : nodeStore.user.available_nodes > 0 ? 'Create' : 'Purchase')
+
+    async function chooseNetwork() {
+      loading.value = true
+      if (chosenNetwork.value == 'testnet') {
         // @ts-ignore
-        buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
-        desc: 'Create a standard mainnet lightning node. Send and receive instant Bitcoin payments.',
-        selectFn: async () => {
+        if (nodeStore.user.trial_available) {
           // @ts-ignore
-          if (nodeStore.user.available_nodes === 0) {
-            root.$router.push('/purchase')
-          } else {
-            clickedButton.value = 0
-            createStore.WIPE()
-            createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
-            await createNode()
-            createStore.STEP(1)
-          }
-        },
-        disabled: false,
-        disabledMsg: stdMsg
-      },
-      {
-        nodeType: 'Testnet (trial)',
-        buttonText: 'Create',
-        desc: 'Create a trial testnet lightning node. Experiment with test Bitcoins. This node will expire after one week.',
-        selectFn: async () => {
-          clickedButton.value = 1
-          createStore.WIPE()
           createStore.NODE_TYPE({ network: Network.testnet, trial: true })
           await createNode()
           createStore.STEP(1)
-        },
-        disabled: !nodeStore.user || !nodeStore.user.trial_available,
-        disabledMsg: 'You have already used your trial. Please purchase a node.'
-      },
-      {
-        nodeType: 'Testnet (persistent)',
         // @ts-ignore
-        buttonText: nodeStore.user.available_nodes === 0 ? 'Purchase' : 'Create',
-        desc: 'Create a testnet lightning node. Experiment with test Bitcoins. This node will not expire.',
-        selectFn: async () => {
+        } else if (nodeStore.user.available_nodes > 0) {
           // @ts-ignore
-          if (nodeStore.user.available_nodes === 0) {
-            root.$router.push('/purchase')
-          } else {
-            clickedButton.value = 2
-            createStore.WIPE()
-            createStore.NODE_TYPE({ network: Network.testnet, trial: false })
-            await createNode()
-            createStore.STEP(1)
-          }
-        },
-        disabled: false,
-        disabledMsg: stdMsg
+          createStore.NODE_TYPE({ network: Network.testnet, trial: false })
+          await createNode()
+          createStore.STEP(1)
+        } else {
+          root.$router.push('/purchase')
+        }
+      } else {
+        // @ts-ignore
+        if (nodeStore.user.available_nodes > 0) {
+          // @ts-ignore
+          createStore.NODE_TYPE({ network: Network.mainnet, trial: false })
+          await createNode()
+          createStore.STEP(1)
+        } else {
+          root.$router.push('/purchase')
+        }
       }
-    ])
+      loading.value = false
+    }
+
+    async function handleNetwork () {
+      if (chosenNetwork.value == 'testnet') {
+        // @ts-ignore
+        if (nodeStore.user.trial_available) {
+          createText.value = 'Create Trial'
+        // @ts-ignore
+        } else if (nodeStore.user.available_nodes > 0) {
+          createText.value = 'Create'
+        } else {
+          createText.value = 'Purchase'
+        }
+      } else {
+        // @ts-ignore
+        if (nodeStore.user.available_nodes > 0) {
+          createText.value = 'Create'
+        } else {
+          createText.value = 'Purchase'
+        }
+      }
+    }
 
     return {
-      cards,
+      stdMsg,
       loading,
-      clickedButton
+      clickedButton,
+      chooseNetwork,
+      createText,
+      chosenNetwork,
+      errorMessage,
+      handleNetwork
     }
   }
 })
