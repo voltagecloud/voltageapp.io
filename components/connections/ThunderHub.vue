@@ -2,7 +2,8 @@
 
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | ThunderHub
+    a(href="https://thunderhub.io" target="_blank")
+      | ThunderHub
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='!grpc' max-width='800' style='color: #ff0000; padding: 20px;')
     | ThunderHub uses gRPC to communicate with your node.
     | You have this API disabled in your node settings.

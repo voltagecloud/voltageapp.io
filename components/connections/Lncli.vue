@@ -2,7 +2,8 @@
 
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | lncli
+    a(href="https://github.com/lightningnetwork/lnd" target="_blank")
+      | lncli
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
     | lncli uses gRPC to communicate with your node.
     | You have this API disabled in your node settings.

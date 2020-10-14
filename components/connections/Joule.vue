@@ -2,7 +2,8 @@
 
 v-card.text-center.align-center(style='padding: 20px;')
   p.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | Joule
+    a(href="https://lightningjoule.com" target="_blank") 
+      | Joule
   div.font-weight-light.text--darken-1.justify-center.align-center(v-if='apiErrorMessage' max-width='800' style='color: #ff0000; padding: 20px;')
     | Joule uses the REST API to communicate with your node.
     | You have this API disabled in your node settings.
