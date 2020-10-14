@@ -1,12 +1,12 @@
 <template lang="pug">
   v-container
     v-row
-      v-card(color='info' style="max-width: 85%; margin: auto; height: 100%;")
+      v-card(color='info')
         v-card-title.font-weight-light.warning--text.text--darken-1.v-card__title Logs for '{{ node_name }}'
         p.font-weight-light.warning--text.text--darken-1(style='padding-left: 20px;')
           | Last Modified: {{ last_modified }}
         v-card-text
-          v-list(style='width: 95%; height: 500px; margin: auto; background-color: #505050; font-family: monospace; border-radius: 5px;')
+          v-list(style='background-color: #505050; font-family: monospace; border-radius: 5px;').scrollable
             v-list-item(v-for='(log, i) in log_lines')
               v-list-item-content
                 v-list-item-title(style='font-size: 12px; color: #ffffff;') {{ log }}
@@ -44,3 +44,12 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss">
+.v-list.scrollable {
+  overflow-x: scroll;
+
+  .v-list-item__content {
+    overflow: inherit;
+  }
+}
+</style>
