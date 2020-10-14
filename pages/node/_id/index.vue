@@ -140,6 +140,7 @@ export default defineComponent({
       const { postNode } = useNodeApi(this.$nuxt.context)
       // @ts-ignore
       const res = await postNode(this.nodeID)
+      console.log('called the API')
       // @ts-ignore
       const shouldRefresh = previousStatus === res.status
       // @ts-ignore
@@ -191,6 +192,11 @@ export default defineComponent({
           initializing.value = false
           return
         }
+        if (nodePassword.value.length < 8) {
+          passError.value = "Password must be at least 8 characters."
+          initializing.value = false
+          return
+        }
         initPassword.value = nodePassword.value
       }
       const node = lndStore.currentNode as Node
@@ -223,10 +229,13 @@ export default defineComponent({
         seed.data = {}
         initializing.value = false
       } catch (err) {
+        updateStatus(node.node_id, 'waiting_init')
+        performingInit.value = false
         errorText.value = err
         console.log(err)
         initializing.value = false
       } finally {
+        performingInit.value = false
         initializing.value = false
       }
     }
