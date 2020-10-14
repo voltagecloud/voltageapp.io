@@ -59,7 +59,7 @@ v-container
               @click='downloadMacaroon'
             ).mr-3
               | Download
-          td.text-end(v-else-if='k === "Seed"')
+          td.text-end(v-else-if='k === "Seed" && v !== "pending"')
             v-chip(
               color='accent'
               text-color='warning'
@@ -115,7 +115,7 @@ export default defineComponent({
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
       Macaroon: props.node.macaroons.length > 0 ? 'Download' : 'pending',
-      'Seed': 'View',
+      'Seed': ['provisioning', 'waiting_init', 'initializing'].includes(props.node.status) ? 'pending' : 'View',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
@@ -202,6 +202,7 @@ export default defineComponent({
 
     async function clear () {
       downloadReady.value = false
+      macaroon.value = ""
     }
 
     async function clearCert () {
@@ -210,6 +211,7 @@ export default defineComponent({
 
     async function clearSeed () {
       seedReady.value = false
+      fullSeed.value = [""]
     }
 
     const { copy } = useClipboard(2000)
