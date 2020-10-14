@@ -190,6 +190,20 @@ export default function useNodeApi ({ $axios, error }: Context) {
     try {
       loading.value = true
       const res = await $axios.post('/node/cert', {
+        node_id,
+      })
+      return res.data
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function getSeed(node_id: string) {
+    try {
+      loading.value = true
+      const res = await $axios.post('/node/seed', {
         node_id
       })
       return res.data
@@ -230,6 +244,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     postMacaroon,
     connectNode,
     getCert,
+    getSeed,
     getPurchaseSession
   }
 }

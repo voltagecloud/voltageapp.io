@@ -4,7 +4,7 @@ v-container
     | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill.
     | Please update your payment method to prevent the node from being deleted.
     p
-  password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' text='Decrypt Macaroon')
+  password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
   v-container(v-if='downloadReady')
     v-dialog(max-width='800' :value='downloadReady' @click:outside='clear')
       v-card.text-center(style='padding: 20px;')
@@ -30,6 +30,14 @@ v-container
             title='tls.cert'
           ).info--text
             | {{ certButtonText }}
+  v-container(v-if='seedReady')
+    v-dialog(max-width='800' :value='seedReady' @click:outside='clearSeed')
+      v-card.text-center(style='padding: 20px;')
+        v-fade-transition.justify-center.align-center.row.px-2(group appear tag='div' justify='center' :css='false' style='padding-bottom: 5%; width: 100%;')
+          span.seed-word.display-3.font-weight-thin.warning--text.px-3(v-for='(word, i) in fullSeed' :key='i' :data-index='i') {{ word }}
+        v-chip(color='accent' text-color='warning' @click='copySeed').align-center.justify-center
+          | Click Here to Copy Seed
+
   v-simple-table(
     :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
   )
@@ -51,6 +59,13 @@ v-container
               @click='downloadMacaroon'
             ).mr-3
               | Download
+          td.text-end(v-else-if='k === "Seed"')
+            v-chip(
+              color='accent'
+              text-color='warning'
+              @click='viewSeed'
+            ).mr-3
+              | {{ seedButtonText }}
           td.text-end(v-else)
             copy-pill(
               color='accent'
@@ -60,9 +75,11 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
+// @ts-ignore
 import crypto from 'crypto-js'
 import { Node } from '~/types/apiResponse'
 import useNodeApi from '~/compositions/useNodeApi'
+import useClipboard from '~/compositions/useClipboard'
 
 export default defineComponent({
   props: {
@@ -76,15 +93,21 @@ export default defineComponent({
     PasswordDialog: () => import('~/components/PasswordDialog.vue')
   },
   setup (props, { root }) {
-    const { connectNode, getCert } = useNodeApi(root.$nuxt.context)
+    const { connectNode, getCert, getSeed } = useNodeApi(root.$nuxt.context)
     const showPasswordDialog = ref(false)
+    const passwordDialogButton = ref('')
     const downloadReady = ref(false)
     const certReady = ref(false)
     const certButtonText = ref('Download Certificate')
     const encrypted = ref('')
+    const encryptedType = ref('')
     const macaroon = ref('')
     const cert = ref('')
     const error = ref('')
+    const seed = ref('')
+    const seedReady = ref(false)
+    const seedButtonText = ref('View')
+    const fullSeed = ref([""])
 
     const nodeInfo = computed(() => ({
       Status: props.node.status,
@@ -92,6 +115,7 @@ export default defineComponent({
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
       Macaroon: props.node.macaroons.length > 0 ? 'Download' : 'pending',
+      'Seed': 'View',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
@@ -103,6 +127,8 @@ export default defineComponent({
         const res = await connectNode(props.node.node_id, 'admin')
         const { macaroon } = res
         encrypted.value = macaroon
+        encryptedType.value = 'macaroon'
+        passwordDialogButton.value = "Decrypt Macaroon"
       } catch (e) {
         error.value = e.toString()
       }
@@ -117,6 +143,23 @@ export default defineComponent({
           certButtonText.value = 'Certificate is pending'
         }
         certReady.value = true
+      } catch (e) {
+        error.value = e.toString()
+      }
+    }
+
+    async function viewSeed () {
+      try {
+        const res = await getSeed(props.node.node_id)
+        const { seed } = res
+        if (seed == "") {
+          seedButtonText.value = "Seed was not found"
+          return
+        }
+        showPasswordDialog.value = true
+        encrypted.value = seed
+        encryptedType.value = 'seed'
+        passwordDialogButton.value = "View Seed"
       } catch (e) {
         error.value = e.toString()
       }
@@ -138,9 +181,15 @@ export default defineComponent({
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
         if (isBase64(decryptResult)) {
-          macaroon.value = decryptResult
-          downloadReady.value = true
-          showPasswordDialog.value = false
+          if (encryptedType.value == 'macaroon') {
+            macaroon.value = decryptResult
+            downloadReady.value = true
+            showPasswordDialog.value = false
+          } else if (encryptedType.value == 'seed') {
+            fullSeed.value = atob(decryptResult).split(',')
+            seedReady.value = true
+            showPasswordDialog.value = false
+          }
         } else {
           error.value = 'Incorrect password'
         }
@@ -161,6 +210,16 @@ export default defineComponent({
       certReady.value = false
     }
 
+    async function clearSeed () {
+      seedReady.value = false
+    }
+
+    const { copy } = useClipboard(2000)
+    function copySeed () {
+      const seedStr = fullSeed.value.join(' ')
+      copy(seedStr)
+    }
+
     const nodeExpired = computed(() => {
       if (props.node.purchased_type === 'paid' && props.node.purchase_status !== 'active') {
         return true
@@ -175,6 +234,7 @@ export default defineComponent({
       handleDownload,
       downloadReady,
       showPasswordDialog,
+      passwordDialogButton,
       error,
       macaroon,
       clear,
@@ -185,7 +245,14 @@ export default defineComponent({
       cert,
       certButtonText,
       props,
-      nodeExpired
+      nodeExpired,
+      seed,
+      seedReady,
+      viewSeed,
+      seedButtonText,
+      fullSeed,
+      clearSeed,
+      copySeed
     }
   }
 })
