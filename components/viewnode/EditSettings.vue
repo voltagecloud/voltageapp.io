@@ -66,6 +66,8 @@ v-container
                     :width="colWidth.clientWidth"
                   )
           v-col(cols='12').pb-0
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | Node Alias is a Lightning node setting and is broadcasted to the network.
             v-text-field(
               v-model='settings.alias'
               outlined label='Node Alias'
@@ -73,6 +75,8 @@ v-container
               background-color='secondary'
             )
           v-col(cols='12').pb-01
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | IP Whitelist restricts access to your node's API based on IP address. (Prefilled with your current IP address)
             v-combobox(v-model='settings.whitelist' chips='' label='IP Whitelist' multiple='' outlined='' color='highlight' background-color='secondary' :rules='[validIP]')
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
@@ -168,7 +172,8 @@ export default defineComponent({
       canUpdateTls,
       remove,
       oppositeColor,
-      showPalette
+      showPalette,
+      tlsLoading
     }
   }
 })

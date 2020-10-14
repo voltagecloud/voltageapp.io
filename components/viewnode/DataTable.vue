@@ -200,8 +200,6 @@ export default defineComponent({
       }
     }
 
-    const disabledStatus = ['provisioning', 'waiting_init']
-
     async function clear () {
       downloadReady.value = false
     }
@@ -238,7 +236,6 @@ export default defineComponent({
       error,
       macaroon,
       clear,
-      disabledStatus,
       certReady,
       clearCert,
       downloadCert,

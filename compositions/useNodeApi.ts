@@ -214,6 +214,21 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function saveSeed(node_id: string, seed: string) {
+    try {
+      loading.value = true
+      const res = await $axios.post('/node/seed', {
+        node_id,
+        seed
+      })
+      return res.data
+    } catch (e) {
+      console.error(e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function getPurchaseSession (plan: string, quantity: string, email: string) {
     try {
       const res = await $axios.post('/stripe/session', {
@@ -245,6 +260,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     connectNode,
     getCert,
     getSeed,
+    saveSeed,
     getPurchaseSession
   }
 }
