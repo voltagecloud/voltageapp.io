@@ -2,13 +2,13 @@
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
   v-tabs(:centered='true' :grow='true' show-arrows)
     v-tab(key="1")
-      | Manual
-    v-tab-item(key="1")
-      manual(:api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' keyId="1")
-    v-tab(key="2")
       | LNDConnect
-    v-tab-item(key='2')
+    v-tab-item(key='1')
       lnd-connect(:connectURI='connectURI' :api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' :rest='rest' @changeApi='updateApi' keyId="1")
+    v-tab(key="2")
+      | Manual
+    v-tab-item(key="2")
+      manual(:api='api' :cert='cert' :macaroon='macaroon' :grpc='grpc' keyId="1")
     v-tab(key="3" @click='grpcApi')
       | Zap
     v-tab-item(key="3")

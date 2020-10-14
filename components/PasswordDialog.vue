@@ -7,9 +7,7 @@ v-dialog(max-width='800' :value='value' @input='update')
       | Enter the node's password
     v-card-actions
       v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done' :key='key')
-        v-text-field(v-model='nodePassword' type='password' :rules='[char8]' :error-messages='newError')
-        p.font-weight-light.text--darken-1.justify-center.align-center
-          | This can take up to 30 seconds. Do not close your browser.
+        v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
         v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
 </template>
 <script lang="ts">

@@ -83,6 +83,15 @@ v-container
                 export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container
               v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
+            v-container(v-if='performingInit' color='primary')
+              v-dialog(max-width='800' color='secondary' :value='performingInit')
+                v-card.text-center(style='padding: 20px;' :loading='performingInit')
+                  v-card-title Initialization In Progress
+                  v-container
+                    v-row(justify='center')
+                      v-col(cols='12')
+                        | Please wait while your node is being initialized. This can take approximately 30 seconds.
+
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
@@ -162,6 +171,7 @@ export default defineComponent({
     const initializing = ref(false)
     const initPassword = ref('')
     const passError = ref('')
+    const performingInit = ref(false)
     const passwordInit = computed(() => {
       if (createStore.password) {
         return false
@@ -352,7 +362,11 @@ export default defineComponent({
     watch(nodePassword, () => { error.value = '' })
     watch(nodePassword, () => { passError.value = '' })
     watch(status, (newStatus: string) => {
-      console.log(newStatus)
+      if (newStatus === "initializing") {
+        performingInit.value = true
+      } else {
+        performingInit.value = false
+      }
       if (newStatus === "waiting_init") {
         initialize()
       }
@@ -412,7 +426,8 @@ export default defineComponent({
       password: nodePassword,
       showPassword,
       passError,
-      helperText
+      helperText,
+      performingInit
     }
   }
 })
