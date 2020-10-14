@@ -4,7 +4,7 @@
       v-card(color='info')
         v-card-title.font-weight-light.warning--text.text--darken-1.v-card__title Logs for '{{ node_name }}'
         p.font-weight-light.warning--text.text--darken-1(style='padding-left: 20px;')
-          | Last Modified: {{ last_modified }}
+          | Last Modified: {{ last_modified }}   -   Logs are updated every minute
         v-card-text
           v-list(style='background-color: #505050; font-family: monospace; border-radius: 5px;').scrollable
             v-list-item(v-for='(log, i) in log_lines')
@@ -25,15 +25,23 @@ export default defineComponent({
     })
 
     async function getLogs (node_id: string) {
-      const res = await root.$nuxt.context.$axios({
-        method: 'POST',
-        url: '/node/logs',
-        data: { node_id }
-      })
-      state.last_modified = res.data.last_modified
-      state.log_lines = res.data.log_lines
-      state.node_id = res.data.node_id
-      state.node_name = res.data.node_name
+      try {
+        const res = await root.$nuxt.context.$axios({
+          method: 'POST',
+          url: '/node/logs',
+          data: { node_id }
+        })
+        state.last_modified = res.data.last_modified
+        state.log_lines = res.data.log_lines
+        state.node_id = res.data.node_id
+        state.node_name = res.data.node_name
+      } catch(e) {
+        console.log(e)
+        state.last_modified = ""
+        state.log_lines = ["Failed to retrieve logs"]
+        state.node_id = "Request Failed"
+        state.node_name = "Request Failed"
+      }
     }
 
     getLogs(root.$route.params.id)
