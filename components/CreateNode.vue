@@ -144,11 +144,10 @@
               :error-messages='error'
               required
             )
-            br
             div.text-center.warning--text.mb-6
               v-icon(style='padding-bottom: 10px;') mdi-alert-circle
               br
-              | Write this password down! You need it to unlock your node and your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
+              | Write this password down! You need it to unlock your node. Also your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
             v-divider.mx-12.mt-6
 
       div(justify='center' align='center' style='margin: auto;')

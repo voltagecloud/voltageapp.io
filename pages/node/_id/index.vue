@@ -377,6 +377,7 @@ export default defineComponent({
         performingInit.value = false
       }
       if (newStatus === "waiting_init") {
+        performingInit.value = true
         initialize()
       }
     })

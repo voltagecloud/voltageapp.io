@@ -1,8 +1,14 @@
 <template lang="pug">
-  v-container
+  v-container(justify='center' align='center' style='max-width: 90%')
     v-row
       v-card(color='info')
-        v-card-title.font-weight-light.warning--text.text--darken-1.v-card__title Logs for '{{ node_name }}'
+        v-card-title.font-weight-light.warning--text.text--darken-1.v-card__title
+          v-row(align='center' justify='space-between' no-gutters)
+            v-col(cols='16').font-weight-light.warning--text.text--darken-1.v-card__title
+              | Logs for '{{ node_name }}'
+            v-col(cols='auto')
+              v-btn(icon :to='`/node/${$route.params.id}`').ml-1.mr-3
+                v-icon mdi-arrow-left-circle
         p.font-weight-light.warning--text.text--darken-1(style='padding-left: 20px;')
           | Last Modified: {{ last_modified }}   -   Logs are updated every minute
         v-card-text
@@ -24,6 +30,7 @@ export default defineComponent({
       node_name: 'loading'
     })
 
+  
     async function getLogs (node_id: string) {
       try {
         const res = await root.$nuxt.context.$axios({
