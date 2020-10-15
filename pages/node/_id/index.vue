@@ -184,6 +184,10 @@ export default defineComponent({
       }
     })
 
+    function sleep(ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async function initialize () {
       lndStore.CURRENT_NODE(nodeData.value)
       initializing.value = true
@@ -232,6 +236,7 @@ export default defineComponent({
         createStore.WIPE_PASSWORD()
         res.data = {}
         seed.data = {}
+        await sleep(4000);
         createText.value = "finalizing"
       } catch (err) {
         updateStatus(node.node_id, 'waiting_init')
@@ -263,11 +268,12 @@ export default defineComponent({
     const unlocking = ref(false)
     const error = ref('')
     async function unlockNode (password: string) {
+      error.value = ''
       lndStore.CURRENT_NODE(nodeData.value)
       unlocking.value = true
       try {
         const node = lndStore.currentNode as Node
-        await axios({
+        const res = await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
           data: {
@@ -280,7 +286,7 @@ export default defineComponent({
         postNode(nodeID.value)
         unlockDialog.value = false
       } catch (err) {
-        error.value = `${err}`
+        error.value = `${err.response.data.message}`
       } finally {
         unlocking.value = false
       }
@@ -383,6 +389,9 @@ export default defineComponent({
         nodeCreating.value = true
         createText.value = "waiting_init"
         initialize()
+      }
+      if (newStatus === "running") {
+        createText.value = "complete"
       }
     })
 
