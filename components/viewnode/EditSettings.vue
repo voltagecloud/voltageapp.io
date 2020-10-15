@@ -82,6 +82,8 @@ v-container
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
           v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
+            p(style="padding-left: 5px;" align='center' justify='center').font-weight-light.warning--text.text--darken-1
+              | Update TLS Certificate
             v-btn.px-4.warning--text(block color='secondary' :disabled='!canUpdateTls' :loading='tlsLoading' @click='updateCert')
               | {{ tlsMessage }}
           v-col(cols='12').pt-0

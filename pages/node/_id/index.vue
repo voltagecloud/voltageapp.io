@@ -10,43 +10,6 @@ v-container
             v-divider
             p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
               | {{ helperText }}
-            v-container(v-if='passwordInit && status === "waiting_init"')
-              div(v-if='passwordInit')
-                div(justify='center' align='center' style='margin: auto;')
-                  p(style="padding-left: 5px;").warning--text.text--darken-1
-                    | Create a password for your node
-                div(style='padding: 20px;')
-                  v-form(v-model='valid' ref='form')
-                    v-text-field(
-                      v-model='password'
-                      :rules='[required]'
-                      label='Password'
-                      color='highlight'
-                      background-color='secondary'
-                      outlined
-                      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="showPassword ? 'text' : 'password'"
-                      required
-                      @click:append='showPassword = !showPassword'
-                    )
-                    v-text-field(
-                      v-model='confirmPassword'
-                      :rules='[char8, matchPassword, required]'
-                      :type="showPassword ? 'text' : 'password'"
-                      label='Confirm Password'
-                      color='highlight'
-                      background-color='secondary'
-                      outlined
-                      :error-messages='passError'
-                      required
-                    )
-                    br
-                    div.text-center.warning--text.mb-6
-                      v-icon(style='padding-bottom: 10px;') mdi-alert-circle
-                      br
-                      | Write this password down! You need it to unlock your node and your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
-                    v-divider.mx-12.mt-6
-              v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
             v-container.align-center.justify-center(v-if='canUnlock')
               password-dialog(
                 v-model='unlockDialog'
@@ -83,14 +46,54 @@ v-container
                 export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container
               v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
-            v-container(v-if='performingInit' color='primary')
-              v-dialog(max-width='800' color='secondary' :value='performingInit')
-                v-card.text-center(style='padding: 20px;' :loading='performingInit')
-                  v-card-title Initialization In Progress
+            v-container(v-if='nodeCreating' color='primary')
+              v-dialog(max-width='800' color='secondary' :value='nodeCreating')
+                v-card.text-center(style='padding: 20px;' :loading='nodeCreating')
+                  v-card-title Node is being created
                   v-container
                     v-row(justify='center')
                       v-col(cols='12')
-                        | Please wait while your node is being initialized. This can take approximately 30 seconds.
+                        p
+                          | Please wait while your node is creating. This can take up to a couple of minutes. Please do not close your browser until the node is running.
+                        p(style='font-family: monospace')
+                          | Current stage: {{ createText }}
+                    v-container(v-if='passwordInit && status === "waiting_init"')
+                      div(v-if='passwordInit')
+                        div(justify='center' align='center' style='margin: auto;')
+                          p(style="padding-left: 5px;").warning--text.text--darken-1
+                            | Create a password for your node
+                        div(style='padding: 20px;')
+                          v-form(v-model='valid' ref='form')
+                            v-text-field(
+                              v-model='password'
+                              :rules='[required]'
+                              label='Password'
+                              color='highlight'
+                              background-color='secondary'
+                              outlined
+                              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                              :type="showPassword ? 'text' : 'password'"
+                              required
+                              @click:append='showPassword = !showPassword'
+                            )
+                            v-text-field(
+                              v-model='confirmPassword'
+                              :rules='[char8, matchPassword, required]'
+                              :type="showPassword ? 'text' : 'password'"
+                              label='Confirm Password'
+                              color='highlight'
+                              background-color='secondary'
+                              outlined
+                              :error-messages='passError'
+                              required
+                            )
+                            br
+                            div.text-center.warning--text.mb-6
+                              v-icon(style='padding-bottom: 10px;') mdi-alert-circle
+                              br
+                              | Write this password down! You need it to unlock your node and your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
+                            v-divider.mx-12.mt-6
+                      v-btn(color='highlight' block @click='initialize' :loading='initializing').info--text Initialize
 
 </template>
 <script lang="ts">
@@ -140,7 +143,6 @@ export default defineComponent({
       const { postNode } = useNodeApi(this.$nuxt.context)
       // @ts-ignore
       const res = await postNode(this.nodeID)
-      console.log('called the API')
       // @ts-ignore
       const shouldRefresh = previousStatus === res.status
       // @ts-ignore
@@ -172,7 +174,8 @@ export default defineComponent({
     const initializing = ref(false)
     const initPassword = ref('')
     const passError = ref('')
-    const performingInit = ref(false)
+    const nodeCreating = ref(false)
+    const createText = ref('')
     const passwordInit = computed(() => {
       if (createStore.password) {
         return false
@@ -199,6 +202,7 @@ export default defineComponent({
         }
         initPassword.value = nodePassword.value
       }
+      createText.value = "initializing"
       const node = lndStore.currentNode as Node
       updateStatus(node.node_id, 'initializing')
       try {
@@ -215,6 +219,7 @@ export default defineComponent({
             stateless_init: true
           }
         })
+        createText.value = "encrypting data"
         if (node.macaroon_backup) {
           // @ts-ignore
           const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
@@ -227,15 +232,12 @@ export default defineComponent({
         createStore.WIPE_PASSWORD()
         res.data = {}
         seed.data = {}
-        initializing.value = false
+        createText.value = "finalizing"
       } catch (err) {
         updateStatus(node.node_id, 'waiting_init')
-        performingInit.value = false
+        nodeCreating.value = false
         errorText.value = err
         console.log(err)
-        initializing.value = false
-      } finally {
-        performingInit.value = false
         initializing.value = false
       }
     }
@@ -371,13 +373,15 @@ export default defineComponent({
     watch(nodePassword, () => { error.value = '' })
     watch(nodePassword, () => { passError.value = '' })
     watch(status, (newStatus: string) => {
-      if (newStatus === "initializing") {
-        performingInit.value = true
+      if (newStatus === "initializing" || newStatus === "provisioning") {
+        nodeCreating.value = true
+        createText.value = newStatus
       } else {
-        performingInit.value = false
+        nodeCreating.value = false
       }
       if (newStatus === "waiting_init") {
-        performingInit.value = true
+        nodeCreating.value = true
+        createText.value = "waiting_init"
         initialize()
       }
     })
@@ -437,7 +441,8 @@ export default defineComponent({
       showPassword,
       passError,
       helperText,
-      performingInit
+      nodeCreating,
+      createText
     }
   }
 })

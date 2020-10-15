@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container
+  v-container(style='max-width: 95%')
     v-card
       div(style='padding: 20px;').text-center
         v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center.display-1

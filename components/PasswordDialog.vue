@@ -48,6 +48,10 @@ export default defineComponent({
 
     const key = ref(0)
     function done () {
+      if (nodePassword.value.length < 8) {
+        newError.value = "Password must be at least 8 characters"
+        return
+      }
       emit('done', nodePassword.value)
       // we clear the password after 3 seconds so the incorrect password
       // message still displays but we clear the password for next time.
