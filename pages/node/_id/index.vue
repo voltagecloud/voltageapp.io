@@ -34,6 +34,8 @@ v-container
                 | {{ errorText }}
             v-container(v-if='status === "running"')
               v-btn(color='highlight' block @click='connect').info--text Connect
+            v-container(v-if='status === "waiting_init"')
+              v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
             password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
