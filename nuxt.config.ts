@@ -44,12 +44,6 @@ export default {
     ],
     script: [
       {
-        hid: 'script',
-        innerHTML: 'window.$crisp=[];window.CRISP_WEBSITE_ID="726634f1-0f0d-43b1-a98f-59e24f1ffa45";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();',
-        type: 'text/javascript',
-        charset: 'utf-8'
-      },
-      {
         hid: 'ga',
         innerHTML: "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-176155335-1', 'auto');ga('send', 'pageview');",
         type: 'text/javascript',
