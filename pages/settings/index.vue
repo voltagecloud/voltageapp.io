@@ -37,6 +37,13 @@
                     v-dialog(max-width='800')
                       template(v-slot:activator='{ on }')
                         v-btn(color='secondary' v-on='on' @click='portal' :loading='billingLoading').warning--text Open Dashboard
+                  v-divider
+                  v-row(align='center')
+                    v-col(cols='auto') Support
+                    v-spacer
+                    v-dialog(max-width='800')
+                      template(v-slot:activator='{ on }')
+                        v-btn(color='secondary' href="mailto:support@getvoltage.io").warning--text Email Support
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
