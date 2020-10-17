@@ -22,7 +22,6 @@ v-container
               )
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
-            v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-dialog(v-model='confirmUpdate' max-width='800')
                 v-card
                   v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
