@@ -16,6 +16,9 @@
                   v-text-field(v-model='confirmPassword' :rules='[char6, matchPassword, required]' :type="showPassword ? 'text' : 'password'" label='Confirm Password' required)
                   v-col(cols='12' v-if='error').error--text
                     | {{ error.message }}
+                  p.font-weight-light(style='font-size: 12px;')
+                    | By creating an account you agree to our 
+                    a(href="https://getvoltage.io/terms.html" target="_blank") Terms of Service.
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
                   a(@click='currentStep += 1') Use Existing Code
