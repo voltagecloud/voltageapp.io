@@ -34,6 +34,17 @@
           v-container
             v-btn.px-4.info--text(@click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
               | Purchase Node with Bitcoin
+
+        v-row(align='center' justify='center')
+          v-container
+            p
+              | • 71% cheaper than DIY on AWS
+              br
+              | • 35% cheaper than Nodl One*
+              br
+              | • 20% cheaper than Casa Node 2*
+        p(align='right' style="font-size: 11px;")
+          | *When comparing to an annual subscription
     v-dialog(v-model='confirmModal' max-width='60%')
       v-card
         v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
