@@ -64,10 +64,10 @@ export default defineComponent({
     // @ts-ignore
     const stripePromise = loadStripe(stripeKey)
     const quantity = ref(1)
-    const monthlyBill = ref(24.99)
-    const dueToday = ref(299.88)
-    const defaultDueYearly = ref(299.88)
-    const defaultDueMonthly = ref(29.99)
+    const monthlyBill = ref(26.99)
+    const dueToday = ref(323.88)
+    const defaultDueYearly = ref(323.88)
+    const defaultDueMonthly = ref(31.99)
     const planSelect = ref('node_yearly')
     async function selectPlanCard () {
       loading.value = true
@@ -113,12 +113,12 @@ export default defineComponent({
     function changePlan (event) {
       if (event === 'node_monthly') {
         planSelect.value = 'node_monthly'
-        monthlyBill.value = 29.99
-        dueToday.value = 29.99 * quantity.value
+        monthlyBill.value = 31.99
+        dueToday.value = 31.99 * quantity.value
       } else if (event === 'node_yearly') {
         planSelect.value = 'node_yearly'
-        monthlyBill.value = 24.99
-        dueToday.value = 299.88 * quantity.value
+        monthlyBill.value = 26.99
+        dueToday.value = 323.88 * quantity.value
       }
     }
 
