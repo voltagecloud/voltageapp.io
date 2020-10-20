@@ -37,7 +37,7 @@
 
         v-row(align='center' justify='center')
           v-container
-            p
+            p.font-weight-light.text--darken-1
               | • 71% cheaper than DIY on AWS
               br
               | • 35% cheaper than Nodl One*
@@ -91,6 +91,7 @@ export default defineComponent({
         })
         const sessionId = res.data.session_id
         const stripe = await stripePromise
+        loading.value = false
         // @ts-ignore
         const { error } = await stripe.redirectToCheckout({
           sessionId
