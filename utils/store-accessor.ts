@@ -5,7 +5,6 @@ import auth from '~/store/auth'
 import node from '~/store/node'
 import create from '~/store/create'
 import exports from '~/store/exports'
-import invite from '~/store/invite'
 import lnd from '~/store/lnd'
 
 let layoutStore: layout
@@ -13,7 +12,6 @@ let authStore: auth
 let nodeStore: node
 let createStore: create
 let exportsStore: exports
-let inviteStore: invite
 let lndStore: lnd
 
 function initialiseStores (store: Store<any>): void {
@@ -22,7 +20,6 @@ function initialiseStores (store: Store<any>): void {
   nodeStore = getModule(node, store)
   createStore = getModule(create, store)
   exportsStore = getModule(exports, store)
-  inviteStore = getModule(invite, store)
   lndStore = getModule(lnd, store)
 }
 
@@ -33,6 +30,5 @@ export {
   nodeStore,
   createStore,
   exportsStore,
-  inviteStore,
   lndStore
 }
