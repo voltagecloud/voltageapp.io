@@ -39,12 +39,6 @@
           v-container
             p.font-weight-light.text--darken-1
               | • 71% cheaper than DIY on AWS
-              br
-              | • 35% cheaper than Nodl One*
-              br
-              | • 20% cheaper than Casa Node 2*
-        p(align='right' style="font-size: 11px;")
-          | *When comparing to an annual subscription
     v-dialog(v-model='confirmModal' max-width='60%')
       v-card
         v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
