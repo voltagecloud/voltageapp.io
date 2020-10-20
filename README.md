@@ -1,6 +1,10 @@
 # voltageapp.io
 
+![](logo.png)
+
 Static Dashboard site for [Voltage](https://getvoltage.io).
+
+[Dashboard Link](https://voltageapp.io)
 
 ## Build Setup
 
