@@ -4,7 +4,7 @@
       <h1>
         404 - Page Not Found
       </h1>
-      <div>
+      <div class="container justify-center row">
         <h3>
           <NuxtLink to="/">
             Home page
@@ -16,17 +16,20 @@
       <h1>
         An Error Occured
       </h1>
-    </div>
-    <div>
-      <h3>
-        <NuxtLink to="/">
-          Home page
-        </NuxtLink>
-      </h3>
-      <h3>
-        <a href=".">Refresh
-        </a>
-      </h3>
+      <div class="container justify-center row">
+        <h3>
+          <NuxtLink to="/">
+            Home page
+          </NuxtLink>
+        </h3>
+      </div>
+      <div class="container justify-center row">
+        <h3>
+            <a href="#" onclick="location.reload();">
+              Refresh
+            </a>
+        </h3>
+      </div>
     </div>
   </div>
 </template>
