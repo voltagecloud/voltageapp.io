@@ -4,10 +4,17 @@
       <h1>
         404 - Page Not Found
       </h1>
+      <div>
+        <h3>
+          <NuxtLink to="/">
+            Home page
+          </NuxtLink>
+        </h3>
+      </div>
     </div>
     <div v-else class="container justify-center row" style="height: 100%;">
       <h1>
-        Unknown Error Occured
+        An Error Occured
       </h1>
     </div>
     <div>
@@ -15,6 +22,10 @@
         <NuxtLink to="/">
           Home page
         </NuxtLink>
+      </h3>
+      <h3>
+        <a href=".">Refresh
+        </a>
       </h3>
     </div>
   </div>
