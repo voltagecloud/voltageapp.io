@@ -14,6 +14,7 @@ v-card.text-center.align-center(style='padding: 20px;')
   | Account Config File:
   p
   div(style='text-align: left; overflow: scroll; white-space: pre; background-color: #505050; font-family: monospace; color: #ffffff; border-radius: 5px; padding: 10px; max-width: 85%; margin: auto;')
+    | masterPassword: somerandompassword
     | accounts:
     |   - name: '{{ nodename }}'
     |     serverUrl: '{{ api }}:10009'
