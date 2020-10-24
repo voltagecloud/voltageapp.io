@@ -83,20 +83,23 @@ v-container
                   | {{ item }}
           v-col(cols='12').pb-0
             p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
-              | URL of your webhook endpoint we'll notify on system events. (optional)
+              | URL of your webhook endpoint we'll notify of system events. (optional)
             v-text-field(
               v-model='settings.webhook'
               outlined label='Webhook URL'
               color='highlight'
               background-color='secondary'
+              :error-messages='webhookErrorMessage'
+              @click='webhookErrorMessage = ""'
+              @input='webhookErrorMessage = ""'
             )
           v-col(cols='12').pb-0
             p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
-              | Value put in the 'VOLTAGE_SECRET' Header used for request validation.
+              | Value put in the 'VOLTAGE_SECRET' header used for request validation.
             v-text-field(
               v-model='settings.webhook_secret'
               outlined label='Webhook Secret'
-              placeholder='Not Yet Known'
+              placeholder='Not Generated Yet'
               color='highlight'
               background-color='secondary'
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -116,8 +119,8 @@ v-container
               | Save Settings
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed } from '@vue/composition-api'
-import useFormValidation from '~/8compositions/useFormValidation'
+import { defineComponent, ref, computed, watch } from '@vue/composition-api'
+import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
 import { Node } from '~/types/apiResponse'
 
@@ -138,6 +141,7 @@ export default defineComponent({
     const { updateSettings, updateTls, loading } = useNodeApi(root.$nuxt.context)
 
     const tlsLoading = ref(false)
+    const webhookErrorMessage = ref('')
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -149,10 +153,23 @@ export default defineComponent({
     })
 
     async function confirmSettings () {
-      if (form.value?.validate()) {
-        emit('updated')
-        await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
-        showSettings.value = false
+      if (settings.value.webhook !== "") {
+        if (settings.value.webhook.includes("http") && settings.value.webhook.includes(".")) {
+          if (form.value?.validate()) {
+            emit('updated')
+            await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
+            showSettings.value = false
+          }
+        } else {
+          webhookErrorMessage.value = "Please enter a valid URL"
+          return
+        }
+      } else {
+        if (form.value?.validate()) {
+          emit('updated')
+          await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
+          showSettings.value = false
+        }
       }
     }
 
@@ -181,6 +198,8 @@ export default defineComponent({
       root.$nuxt.$router.go()
     }
 
+    watch(settings, () => { console.log('changeing') })
+
     return {
       form,
       valid,
@@ -199,7 +218,8 @@ export default defineComponent({
       oppositeColor,
       showPalette,
       tlsLoading,
-      showPassword
+      showPassword,
+      webhookErrorMessage
     }
   }
 })

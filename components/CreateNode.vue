@@ -240,6 +240,7 @@ export default defineComponent({
         settings.alias = nodeName.value
         settings.color = "#EF820D"
         settings.whitelist = settings.whitelist
+        settings.webhook = ''
         switch(chosenConfig.value) {
           case "Personal Node":
             settings.autopilot = false
@@ -278,6 +279,12 @@ export default defineComponent({
             break;
           default:
             break;
+        }
+      }
+      if (settings.webhook !== "") {
+        if (!settings.webhook.includes("http") || !settings.webhook.includes(".")) {
+          errorMessage.value = "Please enter a valid URL"
+          return
         }
       }
       createStore.SETTINGS(settings)
