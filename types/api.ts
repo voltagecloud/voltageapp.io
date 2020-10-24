@@ -33,6 +33,7 @@ export interface Settings {
     tor: boolean
     keysend: boolean
     wumbo: boolean
+    webhook: string
     alias: string
     color: string
     whitelist: Array<Address4|Address6>

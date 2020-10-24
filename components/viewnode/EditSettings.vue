@@ -81,6 +81,29 @@ v-container
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
+          v-col(cols='12').pb-0
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | URL of your webhook endpoint we'll notify on system events. (optional)
+            v-text-field(
+              v-model='settings.webhook'
+              outlined label='Webhook URL'
+              color='highlight'
+              background-color='secondary'
+            )
+          v-col(cols='12').pb-0
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | Value put in the 'VOLTAGE_SECRET' Header used for request validation.
+            v-text-field(
+              v-model='settings.webhook_secret'
+              outlined label='Webhook Secret'
+              placeholder='Not Yet Known'
+              color='highlight'
+              background-color='secondary'
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append='showPassword = !showPassword'
+              readonly
+            )
           v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
             p(style="padding-left: 5px;" align='center' justify='center').font-weight-light.warning--text.text--darken-1
               | Update TLS Certificate
@@ -94,7 +117,7 @@ v-container
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
-import useFormValidation from '~/compositions/useFormValidation'
+import useFormValidation from '~/8compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
 import { Node } from '~/types/apiResponse'
 
@@ -107,7 +130,7 @@ export default defineComponent({
   },
   setup (props, { root, emit }) {
     const showSettings = ref(false)
-    const { valid, form, invertColor, validIP, showPalette, remove } = useFormValidation()
+    const { valid, form, invertColor, validIP, showPalette, remove, showPassword } = useFormValidation()
 
     const settings = ref(Object.assign({}, props.node.settings || {}))
     const backupMacaroon = ref(!!props.node.macaroon_backup)
@@ -175,7 +198,8 @@ export default defineComponent({
       remove,
       oppositeColor,
       showPalette,
-      tlsLoading
+      tlsLoading,
+      showPassword
     }
   }
 })
