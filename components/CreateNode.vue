@@ -93,6 +93,15 @@
               template(v-slot:selection='{ attrs, item, select, selected }')
                 v-chip(v-bind='attrs' :input-value='selected' close='' @click='select' @click:close='remove(settings, item)')
                   | {{ item }}
+          v-col(cols='12').pb-0
+            p(style="padding-left: 5px;").font-weight-light.warning--text.text--darken-1
+              | URL of your webhook endpoint we'll notify on system events. (optional)
+            v-text-field(
+              v-model='settings.webhook'
+              outlined label='Webhook URL'
+              color='highlight'
+              background-color='secondary'
+            )
           v-divider.mx-12.mt-6
 
       v-col(cols='12' style='max-width: 100%;')
@@ -200,6 +209,8 @@ export default defineComponent({
       chosenConfig.value = event.currentTarget.getAttribute('value')
       if (chosenConfig.value == "Advanced Configuration") {
         advancedSettings.value = true
+        settings.alias = ''
+        settings.webhook = ''
         configErrorMessage.value = ""
       } else {
         advancedSettings.value = false
@@ -231,6 +242,7 @@ export default defineComponent({
         settings.alias = nodeName.value
         settings.color = "#EF820D"
         settings.whitelist = settings.whitelist
+        settings.webhook = ''
         switch(chosenConfig.value) {
           case "Personal Node":
             settings.autopilot = false
@@ -269,6 +281,12 @@ export default defineComponent({
             break;
           default:
             break;
+        }
+      }
+      if (settings.webhook !== "") {
+        if (!settings.webhook.includes("http") || !settings.webhook.includes(".")) {
+          errorMessage.value = "Please enter a valid URL"
+          return
         }
       }
       createStore.SETTINGS(settings)

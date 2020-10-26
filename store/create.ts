@@ -14,6 +14,7 @@ const defaultSettings = {
   tor: false,
   keysend: true,
   wumbo: true,
+  webhook: '',
   alias: '',
   color: '#EF820D',
   whitelist: []
