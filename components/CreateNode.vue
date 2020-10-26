@@ -209,6 +209,8 @@ export default defineComponent({
       chosenConfig.value = event.currentTarget.getAttribute('value')
       if (chosenConfig.value == "Advanced Configuration") {
         advancedSettings.value = true
+        settings.alias = ''
+        settings.webhook = ''
         configErrorMessage.value = ""
       } else {
         advancedSettings.value = false
