@@ -198,8 +198,6 @@ export default defineComponent({
       root.$nuxt.$router.go()
     }
 
-    watch(settings, () => { console.log('changeing') })
-
     return {
       form,
       valid,

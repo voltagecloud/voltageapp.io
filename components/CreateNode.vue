@@ -16,7 +16,7 @@
               | Routing Node
           v-col(cols='12' lg='4')
             v-btn(fab icon tile raised elevation="12" value='Ecommerce Node' @click='tileSelect' :style='((chosenConfig == "Ecommerce Node") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px;  width: 175px; height: 75px;"')
-              | Ecommerce Node
+              | E-commerce Node
           v-col(cols='12' lg='4')
             v-btn(fab icon tile raised elevation="12" value='Development Node' @click='tileSelect' :style='((chosenConfig == "Development Node") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px;  width: 175px; height: 75px;"')
               | Development Node

@@ -5,7 +5,16 @@
         v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center.display-1
           | Purchase Lightning Nodes
         v-container.justify-center.align-center
-          p.text--darken-1
+          div(justify='center' align='center' style='margin: auto; width: 250px;')
+            v-row(style='padding-bottom: 50px')
+              v-btn(fab icon tile raised elevation="12" value='lite' @click='typeSelect' :style='((chosenType == "lite") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + "border-radius: 5px; width: 125px; height: 75px;"')
+                v-col
+                  | Lite
+              v-spacer
+              v-btn(fab icon tile raised elevation="12" value='standard' @click='typeSelect' :style='((chosenType == "standard") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px; width: 125px; height: 75px;"')
+                v-col
+                  | Standard
+          p.text--darken-1.display-1
             | Payment Interval
           v-row(align='center' justify='center')
             v-radio-group(v-model='planSelect' :column='false').text--darken-1
@@ -16,11 +25,11 @@
         p
           | per month
         p
-        p.text--darken-1
+        p.text--darken-1.display-1
           | Number of Nodes
         p.font-weight-light.text--darken-1
           input(v-model="quantity" style='max-width: 100px; font-size: 28px; border: 2px solid #a6a6a6; border-radius: 3px;' type="number" pattern="[0-9]*" min='1' :required='true' @click='changeQuantity').text-center
-        p
+        p(style="font-size: 20px;").text--darken-1
           | Due Today: ${{ dueToday }}
         v-row(v-if='errorMessage' align='center' justify='center')
           v-container
@@ -34,11 +43,6 @@
           v-container
             v-btn.px-4.info--text(@click='(planSelect == "node_monthly") ? confirmModal = true : selectPlanBitcoin()' :loading='btcLoading' color='highlight')
               | Purchase Node with Bitcoin
-
-        v-row(align='center' justify='center')
-          v-container
-            p.font-weight-light.text--darken-1
-              | • 71% cheaper than DIY on AWS
     v-dialog(v-model='confirmModal' max-width='60%')
       v-card
         v-card-text.pt-3.warning--text.text--darken-1(style='font-size: 18px;')
@@ -58,7 +62,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, { root }) {
-    document.addEventListener('focusout', (e) => { console.log(e); changeQuantity() })
+    document.addEventListener('focusout', (e) => { changeQuantity() })
     const confirmModal = ref(false)
     const { getPurchaseSession } = useNodeApi(root.$nuxt.context)
     const stripeKey = process.env.stripeKey
@@ -72,15 +76,19 @@ export default defineComponent({
     const monthlyBill = ref(26.99)
     const dueToday = ref(323.88)
     const defaultDueYearly = ref(323.88)
+    const defaultDueLiteYearly = ref(119.88)
     const defaultDueMonthly = ref(31.99)
+    const defaultDueLiteMonthly = ref(9.99)
     const planSelect = ref('node_yearly')
+    const chosenType = ref('standard')
     async function selectPlanCard () {
       loading.value = true
       try {
         const res = await root.$nuxt.context.$axios.post('/stripe/session', {
           items: [{
             plan: planSelect.value,
-            quantity: quantity.value
+            quantity: quantity.value,
+            type: chosenType.value
           }]
         })
         const sessionId = res.data.session_id
@@ -104,7 +112,8 @@ export default defineComponent({
         const res = await root.$nuxt.context.$axios.post('/btcpay/session', {
           items: [{
             plan: planSelect.value,
-            quantity: quantity.value
+            quantity: quantity.value,
+            type: chosenType.value
           }]
         })
         window.location = res.data.redirect_url
@@ -115,21 +124,41 @@ export default defineComponent({
       btcLoading.value = false
     }
 
+    function typeSelect (event: any) {
+      chosenType.value = event.currentTarget.getAttribute('value')
+      changePlan(planSelect.value)
+    }
+
     // @ts-ignore
     function changePlan (event) {
-      if (event === 'node_monthly') {
-        planSelect.value = 'node_monthly'
-        monthlyBill.value = 31.99
-        dueToday.value = 31.99 * quantity.value
-      } else if (event === 'node_yearly') {
-        planSelect.value = 'node_yearly'
-        monthlyBill.value = 26.99
-        dueToday.value = 323.88 * quantity.value
+      if (chosenType.value === 'lite') {
+        if (event === 'node_monthly') {
+          planSelect.value = 'node_monthly'
+          monthlyBill.value = 12.99
+          dueToday.value = 12.99 * quantity.value
+        } else if (event === 'node_yearly') {
+          planSelect.value = 'node_yearly'
+          monthlyBill.value = 9.99
+          dueToday.value = 119.88 * quantity.value
+        }
+      } else {
+        if (event === 'node_monthly') {
+          planSelect.value = 'node_monthly'
+          monthlyBill.value = 31.99
+          dueToday.value = 31.99 * quantity.value
+        } else if (event === 'node_yearly') {
+          planSelect.value = 'node_yearly'
+          monthlyBill.value = 26.99
+          dueToday.value = 323.88 * quantity.value
+        }
       }
     }
 
     function changeQuantity () {
-      const defaultDue = (planSelect.value == 'node_yearly') ? defaultDueYearly.value : defaultDueMonthly.value
+      let defaultDue = (planSelect.value == 'node_yearly') ? defaultDueYearly.value : defaultDueMonthly.value
+      if (chosenType.value === "lite") {
+        defaultDue = (planSelect.value == 'node_yearly') ? defaultDueLiteYearly.value : defaultDueLiteMonthly.value
+      }
       const newBill = quantity.value * defaultDue
       dueToday.value = parseFloat(newBill.toFixed(2))
     }
@@ -147,7 +176,9 @@ export default defineComponent({
       dueToday,
       quantity,
       changeQuantity,
-      confirmModal
+      confirmModal,
+      typeSelect,
+      chosenType
     }
   }
 })

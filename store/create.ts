@@ -5,6 +5,7 @@ import { Network, Settings } from '~/types/api'
 interface NodeTypePayload {
     network: Network
     trial: boolean
+    type: string
 }
 
 const defaultSettings = {
@@ -29,6 +30,7 @@ export default class CreateModule extends VuexModule {
     nodeName: string = ''
     network: Network = Network.testnet
     trial = false
+    type: string = ''
     seed: string[] = []
     password: string = ""
     macaroon_backup = true
@@ -58,9 +60,10 @@ export default class CreateModule extends VuexModule {
     }
 
     @Mutation
-    NODE_TYPE ({ network, trial }: NodeTypePayload) {
+    NODE_TYPE ({ network, trial, type }: NodeTypePayload) {
       this.network = network
       this.trial = trial
+      this.type = type
     }
 
     @Mutation

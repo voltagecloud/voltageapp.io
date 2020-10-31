@@ -19,6 +19,7 @@ export interface CreateNode {
     created: string
     purchased_type: PurchasedType
     purchase_status: string
+    type: string
     user_ip: string
 }
 
@@ -75,7 +76,9 @@ export interface User {
     phone_verified: boolean
     trial_available: boolean
     available_nodes: number
+    available_lite_nodes: number
     purchased_nodes: number
+    purchased_lite_nodes: number
     mainnet_nodes: IDName[]
     testnet_nodes: IDName[]
     deleted_mainnet_nodes: IDName[]

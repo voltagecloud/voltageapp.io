@@ -120,7 +120,7 @@ export default defineComponent({
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
     }))
-
+    
     async function downloadMacaroon () {
       showPasswordDialog.value = true
       try {

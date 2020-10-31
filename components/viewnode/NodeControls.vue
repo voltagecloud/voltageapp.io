@@ -10,7 +10,7 @@ v-card(color='info')
               span {{ nodeData.node_name }}
               span.caption.warning--text.ml-2 {{ nodeData.status }}
             v-col(cols='12').overline
-              | {{ nodeData.purchased_type=='trial' ? 'Testnet (trial)' : nodeData.network }}
+              | {{ nodeData.network }} - {{ nodeData.purchased_type=='trial' ? 'Trial' : nodeData.type }}
         v-col(cols='auto')
           v-row(justify='end')
             v-dialog(max-width='800')
