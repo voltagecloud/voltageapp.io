@@ -35,9 +35,10 @@
                   | {{ error.message || error }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light :loading='loading')
                   span.warning--text Confirm
+                a(@click='showMFA=false').ml-3 Back to Login
 </template>
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useAuthentication from '~/compositions/useAuthentication'
 
@@ -71,6 +72,10 @@ export default defineComponent({
         console.log({ error })
       }
     }
+
+    watch(() => password.value, () => { error.value = '' })
+    watch(() => email.value, () => { error.value = '' })
+    watch(() => code.value, () => { error.value = '' })
 
     return {
       valid,

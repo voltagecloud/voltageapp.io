@@ -57,7 +57,7 @@
             div(style="padding: 10px;" class="d-flex justify-space-between")
               p(style="font-size: 20px;") Total
               v-spacer
-              p(style="font-size: 18px;") ${{ dueToday }}
+              p(style="font-size: 18px;") <b>${{ dueToday }}</b>
 
             v-row
               v-container(align='center' justify='center')

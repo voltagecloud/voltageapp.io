@@ -27,6 +27,77 @@
             v-btn(fab icon tile raised elevation="12" value='Advanced Configuration' @click='tileSelect' :style='((chosenConfig == "Advanced Configuration") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px;  width: 175px; height: 75px;"')
               | Advanced
 
+      v-tooltip(right :open-on-click="true")
+        template(v-slot:activator="{ on }")
+          v-icon(v-on="on" style="padding-left: 15px;") mdi-help-box
+        span
+          div(justify='center' align='center' style='margin: auto;').font-weight-light
+            p
+              | Personal Node:
+              br
+              | Autopilot: 
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | gRPC API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | REST API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Keysend:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") Off
+            p
+              | Routing Node:
+              br
+              | Autopilot: 
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | gRPC API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | REST API:
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | Keysend:
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On
+            p
+              | E-Commerce Node:
+              br
+              | Autopilot: 
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | gRPC API:
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | REST API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Keysend:
+              a(style="color: #ffffff; font-family: monospace;") Off - 
+              | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On
+            p
+              | Development Node:
+              br
+              | Autopilot: 
+              a(style="color: #ffffff; font-family: monospace;") {{ (nodeNetwork == "testnet") ? "On" : "Off" }} - 
+              | gRPC API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | REST API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Keysend:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") Off
+            p
+              | Research Node:
+              br
+              | Autopilot: 
+              a(style="color: #ffffff; font-family: monospace;") {{ (nodeNetwork == "testnet") ? "On" : "Off" }} - 
+              | gRPC API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | REST API:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Keysend:
+              a(style="color: #ffffff; font-family: monospace;") On - 
+              | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On
+
       v-container(v-if='advancedSettings')
         v-row(justify='center')
           v-col(cols='12').py-0
@@ -223,6 +294,10 @@ export default defineComponent({
       set: (v: string) => createStore.NODE_NAME(v)
     })
 
+    const nodeNetwork = computed(() => {
+      return createStore.network
+    })
+
     const errorMessage = ref('')
 
     async function populate() {
@@ -326,6 +401,7 @@ export default defineComponent({
       settings,
       required,
       nodeName,
+      nodeNetwork,
       form,
       loading,
       populateError,

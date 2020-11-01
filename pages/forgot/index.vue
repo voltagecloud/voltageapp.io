@@ -31,7 +31,7 @@
                   a(@click='$router.push("/login")') Back to Login
 </template>
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 import useAuthentication from '~/compositions/useAuthentication'
 
@@ -68,6 +68,11 @@ export default defineComponent({
       await login(email.value.trim(), confirmPassword.value)
       root.$router.push('/')
     }
+
+    watch(() => password.value, () => { error.value = '' })
+    watch(() => confirmPassword.value, () => { error.value = '' })
+    watch(() => email.value, () => { error.value = '' })
+    watch(() => code.value, () => { error.value = '' })
 
     return {
       email,
