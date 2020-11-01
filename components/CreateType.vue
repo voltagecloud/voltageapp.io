@@ -196,6 +196,30 @@ export default defineComponent({
       }
     }
 
+    async function getSessionValidity() {
+      try {
+        const res = await root.$nuxt.context.$axios.post('/stripe/validate', {
+          // @ts-ignore
+          session_id: root.context.route.query.session_id
+        })
+        //@ts-ignore
+        if (res.data.valid) {
+          nodeAvailable.value = true
+          //@ts-ignore
+          standardCount.value = res.data.node_count
+          //@ts-ignore
+          liteCount.value = res.data.lite_node_count
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    // @ts-ignore
+    if ('session_id' in root.context.route.query) {
+        getSessionValidity()
+    }
+
     return {
       standardCount,
       liteCount,
