@@ -211,10 +211,10 @@ export default defineComponent({
         advancedSettings.value = true
         settings.alias = ''
         settings.webhook = ''
-        configErrorMessage.value = ""
+        configErrorMessage.value = ''
       } else {
         advancedSettings.value = false
-        configErrorMessage.value = ""
+        configErrorMessage.value = ''
       }
     }
 

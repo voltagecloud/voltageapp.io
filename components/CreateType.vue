@@ -21,42 +21,55 @@
                 br
                 | Not Yet Available
 
-        v-row(justify='center' style='max-width: 65%;')
-          div(justify='center' align='center' style='margin: auto;')
-            v-row(style='padding-bottom: 50px')
-              v-col(cols='12' lg='4')
-                v-btn(fab icon tile raised elevation="12" value='lite' @click='typeSelect' :style='((chosenType == "lite") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + "border-radius: 5px; width: 125px; height: 75px;"')
-                  v-col
-                    | Lite
-                    br
-                    | ({{liteCount}})
-              v-col(cols='12' lg='4')
-                v-btn(fab icon tile raised elevation="12" value='standard' @click='typeSelect' :style='((chosenType == "standard") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px; width: 125px; height: 75px;"')
-                  v-col
-                    | Standard
-                    br
-                    | ({{standardCount}})
-              v-col(cols='12' lg='4')
-                v-btn(fab icon tile raised elevation="12" value='trial' @click='typeSelect' :style='((chosenType == "trial") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px; width: 125px; height: 75px;"')
-                  v-col
-                    | Trial
-                    br
-                    | ({{trialCount}})
-          v-col(cols='12')
-            v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title
-              | Choose Network
-            v-select.text--darken-1(
-              v-model='chosenNetwork'
-              :items='["mainnet", "testnet"]'
-              :error-messages='errorMessage'
-              placeholder='Choose Network'
-              color='highlight'
-              background-color='secondary'
-              outlined
-              @change='handleNetwork'
-            )
-          v-col(cols='12')
-            v-btn(style="background: #ffffff;" @click='chooseNetwork' :loading='loading' block).warning--text {{ createText }}
+        v-container(v-if='nodeAvailable')
+          v-row(justify='center' style='max-width: 65%;')
+            div(justify='center' align='center' style='margin: auto; padding-bottom: 20px; font-size: 18px;').font-weight-light
+              | Creating a <b>{{chosenType}}</b> node on Bitcoin <b>{{chosenNetwork}}</b>.
+              p(@click='changeType' style='font-color: #ffffff; padding-left: 20px; text-decoration: underline; cursor: pointer;')
+                | (Change)
+
+        v-container(v-if='!nodeAvailable')
+          v-row(justify='center' style='max-width: 65%;')
+            div(justify='center' align='center' style='margin: auto; padding-bottom: 20px; font-size: 18px;').font-weight-light
+              | You don't have any nodes available. Please purchase one to continue.
+
+        v-container(v-if='updateType')
+          v-row(justify='center' style='max-width: 65%;')
+            div(justify='center' align='center' style='margin: auto;')
+              v-row(style='padding-bottom: 10px')
+                v-col(cols='12' lg='4')
+                  v-btn(fab icon tile raised elevation="12" value='lite' @click='typeSelect' :style='((chosenType == "lite") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + "border-radius: 5px; width: 125px; height: 75px;"')
+                    v-col
+                      | Lite
+                  br
+                  p(style='padding-top: 10px;').font-weight-light {{liteCount}} available
+                v-col(cols='12' lg='4')
+                  v-btn(fab icon tile raised elevation="12" value='standard' @click='typeSelect' :style='((chosenType == "standard") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px; width: 125px; height: 75px;"')
+                    v-col
+                      | Standard
+                  br
+                  p(style='padding-top: 10px;').font-weight-light {{standardCount}} available
+                v-col(cols='12' lg='4')
+                  v-btn(fab icon tile raised elevation="12" value='trial' @click='typeSelect' :style='((chosenType == "trial") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px; width: 125px; height: 75px;"')
+                    v-col
+                      | Trial
+                  br
+                  p(style='padding-top: 10px;').font-weight-light {{trialCount}} available
+            v-col(cols='12')
+              v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title
+                | Choose Network
+              v-select.text--darken-1(
+                v-model='chosenNetwork'
+                :items='["mainnet", "testnet"]'
+                :error-messages='errorMessage'
+                placeholder='Choose Network'
+                color='highlight'
+                background-color='secondary'
+                outlined
+                @change='handleNetwork'
+              )
+        v-col(cols='12')
+          v-btn(style="background: #ffffff;" @click='chooseNetwork' :loading='loading' block).warning--text {{ createText }}
 
 </template>
 <script lang="ts">
@@ -75,7 +88,8 @@ export default defineComponent({
     const trialCount = nodeStore.user.trial_available ? 1 : 0
     // @ts-ignore
     const chosenNetwork = ref(nodeStore.user.trial_available ? "testnet" : "mainnet")
-
+    // @ts-ignore
+    const nodeAvailable = ref(nodeStore.user.trial_available || nodeStore.user.available_lite_nodes > 0 || nodeStore.user.available_nodes > 0 ? true : false)
     const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
     // @ts-ignore
@@ -84,8 +98,11 @@ export default defineComponent({
     const clickedButton = ref<null|number>(null)
     const errorMessage = ref('')
 
-    // @ts-ignore
-    const createText = ref(nodeStore.user.trial_available ? 'Create' : nodeStore.user.available_nodes > 0 ? 'Create' : 'Purchase')
+    const createText = ref(nodeAvailable.value ? 'Create' : 'Purchase')
+    const updateType = ref(false)
+    function changeType () {
+      updateType.value = !updateType.value
+    }
 
     async function chooseNetwork() {
       loading.value = true
@@ -105,7 +122,7 @@ export default defineComponent({
           createStore.STEP(1)
           window.scrollTo(0,0)
         // @ts-ignore
-        } else if (chosenType.value == "lite" && nodeStore.user.avialable_lite_nodes) {
+        } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
           // @ts-ignore
           createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
           await createNode()
@@ -123,7 +140,7 @@ export default defineComponent({
           createStore.STEP(1)
           window.scrollTo(0,0)
         // @ts-ignore
-        } else if (chosenType.value == "lite" && nodeStore.user.avialable_lite_nodes) {
+        } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
           // @ts-ignore
           createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
           await createNode()
@@ -191,7 +208,10 @@ export default defineComponent({
       errorMessage,
       handleNetwork,
       chosenType,
-      typeSelect
+      typeSelect,
+      updateType,
+      changeType,
+      nodeAvailable
     }
   }
 })

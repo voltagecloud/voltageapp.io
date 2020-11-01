@@ -13,7 +13,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
       '/node/create',
       {
         network: createStore.network,
-        purchased_type: createStore.trial ? 'trial' : 'paid'
+        purchased_type: createStore.trial ? 'trial' : 'paid',
+        type: createStore.type
       }
     )
     createStore.NEW_NODE_ID(node.data?.['node_id'])
