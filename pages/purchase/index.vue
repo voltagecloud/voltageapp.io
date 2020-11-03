@@ -25,6 +25,7 @@
                     | ${{liteMonthCost}}
                     p(justify='center' align='center' style='margin: auto; font-size: 7px;') /mo
                 v-col(cols='12' lg='12')
+                  hr(style="padding-bottom: 20px; border-left: 0px; border-right: 0px;")
                   v-btn(fab icon tile raised elevation="6" value='standard-year' @click='choosePlan' :style='((chosenPlan == "standard-year") ? "border: solid; border-color: #1d437b; background: #ffffff;" : "background: #e4e4e4;") + " border-radius: 5px;  width: 100%; height: 75px; padding-right: 10px; padding-left: 10px;"')
                     | Standard Node/1 Year           
                     v-spacer
@@ -49,7 +50,7 @@
               p(style="font-size: 20px;") Description
               p(style="font-size: 14px;") {{planDescription}}
             div(style="padding: 10px;" class="d-flex justify-space-between")
-              p(style="font-size: 20px;") Quantity:
+              p(style="font-size: 20px;") Node Quantity:
               v-spacer
               input(v-model="quantity" style='max-width: 75px; font-size: 20px; border: 1px solid #a6a6a6; border-radius: 3px;' type="number" pattern="[0-9]*" min='1' :required='true' @click='changeQuantity').text-center
             v-divider

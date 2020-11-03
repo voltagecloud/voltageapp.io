@@ -142,7 +142,7 @@ export default defineComponent({
         // @ts-ignore
         } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
+          createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
           await createNode()
           createStore.STEP(1)
           window.scrollTo(0,0)
