@@ -68,6 +68,7 @@
                 outlined
                 @change='handleNetwork'
               )
+        div(v-if='errorMessage').error--text {{errorMessage}}
         v-col(cols='12')
           v-btn(style="background: #ffffff;" @click='chooseNetwork' :loading='loading' block).warning--text {{ createText }}
 
@@ -106,51 +107,57 @@ export default defineComponent({
 
     async function chooseNetwork() {
       loading.value = true
-      if (chosenNetwork.value == 'testnet') {
-        // @ts-ignore
-        if (chosenType.value === "trial" && nodeStore.user.trial_available) {
+      try {
+        if (chosenNetwork.value == 'testnet') {
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: chosenType.value })
-          await createNode()
-          createStore.STEP(1)
-          window.scrollTo(0,0)
-        // @ts-ignore
-        } else if (chosenType.value == "standard" && nodeStore.user.available_nodes > 0) {
+          if (chosenType.value === "trial" && nodeStore.user.trial_available) {
+            // @ts-ignore
+            createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: chosenType.value })
+            await createNode()
+            createStore.STEP(1)
+            window.scrollTo(0,0)
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
-          await createNode()
-          createStore.STEP(1)
-          window.scrollTo(0,0)
-        // @ts-ignore
-        } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
+          } else if (chosenType.value == "standard" && nodeStore.user.available_nodes > 0) {
+            // @ts-ignore
+            createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
+            await createNode()
+            createStore.STEP(1)
+            window.scrollTo(0,0)
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
-          await createNode()
-          createStore.STEP(1)
-          window.scrollTo(0,0)
+          } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
+            // @ts-ignore
+            createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
+            await createNode()
+            createStore.STEP(1)
+            window.scrollTo(0,0)
+          } else {
+            root.$router.push('/purchase')
+          }
         } else {
-          root.$router.push('/purchase')
-        }
-      } else {
-        // @ts-ignore
-        if (chosenType.value == "standard" && nodeStore.user.available_nodes > 0) {
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
-          await createNode()
-          createStore.STEP(1)
-          window.scrollTo(0,0)
-        // @ts-ignore
-        } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
+          if (chosenType.value == "standard" && nodeStore.user.available_nodes > 0) {
+            // @ts-ignore
+            createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
+            await createNode()
+            createStore.STEP(1)
+            window.scrollTo(0,0)
           // @ts-ignore
-          createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
-          await createNode()
-          createStore.STEP(1)
-          window.scrollTo(0,0)
-        } else {
-          root.$router.push('/purchase')
+          } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
+            // @ts-ignore
+            createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
+            await createNode()
+            createStore.STEP(1)
+            window.scrollTo(0,0)
+          } else {
+            root.$router.push('/purchase')
+          }
         }
+        loading.value = false
+      } catch (e) {
+        console.log(e)
+        loading.value = false
+        errorMessage.value = "There was a problem creating your node. Please try again in a few minutes."
       }
-      loading.value = false
     }
 
     function typeSelect (event: any) {
