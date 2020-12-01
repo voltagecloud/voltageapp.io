@@ -28,6 +28,8 @@ export default class NodeModule extends VuexModule {
 
     nodes: Node[] = []
 
+    showedTrial = false
+
     @Mutation
     HYDRATE_USER (user: User) {
       this.user = user
@@ -69,6 +71,12 @@ export default class NodeModule extends VuexModule {
       })
     }
 
+    @Mutation
+    SET_SHOWED_TRIAL(shown: boolean) {
+      this.showedTrial = shown
+      return shown
+    }
+
     // @Mutation
     // PURGE_NODE ({ id, network }: PurgePayload) {
     //     this.nodes = this.nodes.filter(n => n.node_id !== id)
@@ -84,5 +92,12 @@ export default class NodeModule extends VuexModule {
         return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => a.node_name > b.node_name ? 1 : -1)
       }
       return []
+    }
+
+    get showTrialBox () {
+      if (this.user?.trial_available === true && this.showedTrial === false) {
+        return true
+      }
+      return false
     }
 }
