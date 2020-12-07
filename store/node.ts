@@ -28,8 +28,6 @@ export default class NodeModule extends VuexModule {
 
     nodes: Node[] = []
 
-    showedTrial = false
-
     @Mutation
     HYDRATE_USER (user: User) {
       this.user = user
@@ -73,7 +71,7 @@ export default class NodeModule extends VuexModule {
 
     @Mutation
     SET_SHOWED_TRIAL(shown: boolean) {
-      this.showedTrial = shown
+      localStorage.setItem("showedTrial", shown.toString())
       return shown
     }
 
@@ -95,7 +93,8 @@ export default class NodeModule extends VuexModule {
     }
 
     get showTrialBox () {
-      if (this.user?.trial_available === true && this.showedTrial === false) {
+      let showedTrial = localStorage.getItem("showedTrial")
+      if (this.user?.trial_available === true && (showedTrial === null || showedTrial === "false")) {
         return true
       }
       return false

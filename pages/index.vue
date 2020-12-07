@@ -99,6 +99,8 @@ import { layoutStore, nodeStore } from '~/store'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
 import { createStore } from '~/store'
+import { Network } from '~/types/api'
+import { Address4, Address6 } from 'ip-address'
 
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
@@ -122,7 +124,7 @@ export default defineComponent({
       password,
       showPassword
     } = useFormValidation()
-    const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
+    const { populateNode, createNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
 
     const oppositeColor = computed(() => invertColor(settings.color))
     const populateError = ref(false)
@@ -145,16 +147,23 @@ export default defineComponent({
     const noNodes = computed(() => nodes.value.length === 0 && display.value)
 
     const showTrialBox = computed(() => nodeStore.showTrialBox)
+    
+    const ip = ref("")
 
-    /*
-    TODO:
-    The showTrialBox gets reset on refresh. Need to persist it. 
-    If showTrialBox is true, then we need to call the /node/create endpoint and create a node
-    */
-
-    if (showTrialBox.value) {
-      console.log("I'll show it")
+    async function create() {
+      if (showTrialBox.value) {
+        try {
+          // @ts-ignore
+          createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: 'trial' })
+          let node = await createNode()
+          ip.value = node.data.user_ip
+        } catch (e) {
+          throw new Error(e)
+          populateError.value = true
+        }
+      }
     }
+    create()
 
     async function clear() {
       nodeStore.SET_SHOWED_TRIAL(true)
@@ -171,7 +180,7 @@ export default defineComponent({
       }
       settings.alias = nodeName.value
       settings.color = "#EF820D"
-      settings.whitelist = settings.whitelist
+      settings.whitelist = [ip.value as unknown as Address4]
       settings.webhook = ''
       settings.autopilot = false
       settings.grpc = true

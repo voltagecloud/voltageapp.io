@@ -9,18 +9,23 @@ export default function useNodeApi ({ $axios, error }: Context) {
 
   async function createNode () {
     loading.value = true
-    const node = await $axios.post<CreateNode>(
-      '/node/create',
-      {
-        network: createStore.network,
-        purchased_type: createStore.trial ? 'trial' : 'paid',
-        type: createStore.type
-      }
-    )
-    createStore.NEW_NODE_ID(node.data?.['node_id'])
-    createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
-    loading.value = false
-    return node
+    try {
+      const node = await $axios.post<CreateNode>(
+        '/node/create',
+        {
+          network: createStore.network,
+          purchased_type: createStore.trial ? 'trial' : 'paid',
+          type: createStore.type
+        }
+      )
+      await createStore.NEW_NODE_ID(node.data?.['node_id'])
+      await createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
+      loading.value = false
+      return node
+    } catch (e) {
+      loading.value = false
+      throw e
+    }
   }
 
   async function populateNode () {
