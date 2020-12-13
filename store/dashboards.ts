@@ -20,6 +20,16 @@ export default class DashboardsModule extends VuexModule {
       this.dashboards = data
     }
 
+    @Mutation
+    UPDATE_DASHBOARD(payload: NodeDashboard) {
+      this.dashboards = this.dashboards.map((dashboardObj) => {
+        if (dashboardObj.dashboard_id == payload.dashboard_id) {
+          return Object.assign({}, dashboardObj, payload)
+        }
+        return dashboardObj
+      })
+    }
+
     get shouldRefresh () {
       return this.dashboards.some(elem => elem.status === NodeDashboardStatus.provisioning)
     }

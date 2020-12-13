@@ -9,7 +9,7 @@
       v-col(col='12').text-center
         v-card
           v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-            | You have no dashboards
+            | You have no running dashboards
     v-row(v-else justify='center')
       v-col(cols='12')
         v-fade-transition(group)

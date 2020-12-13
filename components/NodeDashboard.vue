@@ -6,26 +6,28 @@
         v-col(cols='auto')
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
+              span
+                img(src="/images/thunderhub.svg" width="30" style="padding-right: 10px; padding-top: 10px")
               span {{ dashboardData.type }} - {{ dashboardData.node_name }}
               span.caption.warning--text.ml-2 {{ dashboardData.status }}
         v-col(cols='auto')
           v-row(justify='end')
 
-            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="attrs" v-on="on" :to='`/node/${dashboardData.node_id}`').mx-1
+                v-btn(icon v-bind="$attrs" v-on="on" :to='`/node/${dashboardData.node_id}`').mx-1
                   v-icon mdi-forward
               span
                 | Go to Node
-            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="attrs" v-on="on" :href='"https://" + dashboardData.endpoint' target='_blank' :disabled='isPending').ml-1.mr-3
+                v-btn(icon v-bind="$attrs" v-on="on" :href='"https://" + dashboardData.endpoint' target='_blank' :disabled='isPending').ml-1.mr-3
                   v-icon mdi-laptop
               span
                 | Open Dashboard
-            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="attrs" v-on="on" @click='deleteDashboard').ml-1.mr-3
+                v-btn(icon v-bind="$attrs" v-on="on" @click='deleteDashboard').ml-1.mr-3
                   v-icon mdi-delete
               span
                 | Delete Dashboard
@@ -47,6 +49,7 @@
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
 import { dashboardsStore } from '../store'
+import useDashboardControls from '~/compositions/useDashboardControls'
 import { NodeDashboardStatus } from '~/types/apiResponse'
 
 export default defineComponent({
@@ -59,7 +62,7 @@ export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  setup ({ dashboardID }) {
+  setup ({ dashboardID }, { root }) {
     const dashboardData = computed(() => dashboardsStore.dashboards.filter(elem => elem.dashboard_id === dashboardID)[0])
     const isPending = computed(() => dashboardData.value.status === NodeDashboardStatus.provisioning)
 
@@ -71,10 +74,13 @@ export default defineComponent({
       'Dashboard Name': dashboardData.value.dashboard_name
     }))
 
+    const { deleteDashboard } = useDashboardControls(dashboardData, root.$nuxt.context)
+
     return {
       isPending,
       dashboardInfo,
-      dashboardData
+      dashboardData,
+      deleteDashboard
     }
   }
 })
