@@ -61,6 +61,11 @@ export default defineComponent({
 
     const bottomItems = reactive([
       {
+        title: 'Dashboards',
+        icon: 'mdi-laptop',
+        fct: () => $router.push('/dashboards')
+      },
+      {
         title: 'Exports',
         icon: 'mdi-file-export-outline',
         fct: () => $router.push('/exports')

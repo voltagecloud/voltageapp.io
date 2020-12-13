@@ -41,12 +41,14 @@ v-container
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData' @updated='$fetch')
             v-container
+              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/dashboards`').warning--text Dashboards
+            v-container
+              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
+            v-container
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
                   v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Export Data
                 export-data(:nodeID='nodeID' :nodeStatus='status')
-            v-container
-              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
             v-container(v-if='nodeCreating' color='primary')
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
                 v-card.text-center(style='padding: 20px;' :loading='nodeCreating')

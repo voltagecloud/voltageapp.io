@@ -61,3 +61,7 @@ export enum ExportData {
     channelbackup = 'channelbackup',
     tls = 'tls'
 }
+
+export enum DashboardData {
+    thunderhub = 'thunderhub'
+}

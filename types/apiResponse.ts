@@ -1,4 +1,4 @@
-import { Network, Settings, NodeStatus, IDName, ExportData } from '~/types/api'
+import { Network, Settings, NodeStatus, IDName, ExportData, DashboardData } from '~/types/api'
 
 export enum PurchasedType {
     paid = 'paid',
@@ -54,6 +54,26 @@ export enum NodeExportStatus {
     pending = 'pending',
     created = 'created',
     failed = 'failed'
+}
+
+export interface NodeDashboard {
+    dashboard_id: string
+    dashboard_name: string
+    status: NodeDashboardStatus
+    node_id: string
+    node_name: string
+    created: string
+    type: DashboardData
+    owner_id: string
+    endpoint: string
+}
+
+export enum NodeDashboardStatus {
+    provisioning = 'provisioning',
+    running = 'running',
+    failed = 'failed',
+    stopped = 'stopped',
+    deleted = 'deleted'
 }
 
 export interface NodeStatusUpdate {
