@@ -31,6 +31,9 @@
                   v-icon mdi-delete
               span
                 | Delete Dashboard
+        
+    p(v-if='isPending' style="padding-left: 30px").font-weight-light.warning--text.text--darken-1
+      | Provisioning takes approximately 45 seconds
     v-container
       v-simple-table(
         :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
