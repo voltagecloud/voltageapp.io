@@ -1,6 +1,6 @@
 import { Context } from '@nuxt/types'
 import { ref } from '@vue/composition-api'
-import { createStore, nodeStore, exportsStore } from '~/store'
+import { createStore, nodeStore, exportsStore, dashboardsStore } from '~/store'
 import { Node, CreateNode, PopulateNode, NodeExport, NodeNameResponse } from '~/types/apiResponse'
 import { Settings, Network, ExportData } from '~/types/api'
 
@@ -251,6 +251,35 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function getDashboards(node_id: string) {
+    try {
+      const res = await $axios.post('/node/dashboards', {
+        node_id
+      })
+      return res
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 })
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function createDashboard(node_id: string, dashboard_type: string) {
+    loading.value = true
+    try {
+      const res = await $axios.post('/dashboards/create', { node_id: node_id, type: dashboard_type })
+      loading.value = false
+      dashboardsStore.ADD_DASHBOARD(res.data)
+      return res
+    } catch (e) {
+      loading.value = false
+      error({ statusCode: 500 })
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -267,6 +296,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
     getCert,
     getSeed,
     saveSeed,
-    getPurchaseSession
+    getPurchaseSession,
+    getDashboards,
+    createDashboard
   }
 }

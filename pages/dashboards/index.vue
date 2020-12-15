@@ -14,7 +14,7 @@
       v-col(cols='12')
         v-fade-transition(group)
           v-col(cols='12' v-for='(dashboardData, i) in filteredDashboards' :key='dashboardData.dashboard_id')
-            node-dashboard(:dashboardID='dashboardData.dashboard_id')
+            node-dashboard(:dashboardID='dashboardData.dashboard_id' :includeNodeButton='true')
 </template>
 <script lang="ts">
 import { defineComponent, SetupContext, computed, ref } from '@vue/composition-api'

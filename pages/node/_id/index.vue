@@ -41,7 +41,10 @@ v-container
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData' @updated='$fetch')
             v-container
-              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/dashboards`').warning--text Dashboards
+              v-dialog(max-width='800')
+                template(v-slot:activator='{ on }')
+                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Dashboards
+                dashboard-data(:nodeID='nodeID')
             v-container
               v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
             v-container
@@ -103,7 +106,7 @@ v-container
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
 import crypto from 'crypto-js'
-import { nodeStore, lndStore, createStore } from '~/store'
+import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
@@ -115,13 +118,19 @@ export default defineComponent({
     DataTable: () => import('~/components/viewnode/DataTable.vue'),
     EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
+    DashboardData: () => import('~/components/DashboardData.vue'),
     PasswordDialog: () => import('~/components/PasswordDialog.vue'),
     ShowQr: () => import('~/components/ShowQr.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  fetch () {
+  async fetch () {
+    // @ts-ignore
+    const axios = this.$nuxt.context.$axios
+    // @ts-ignore
+    const res = await axios.get('/dashboards')
+    dashboardsStore.DASHBOARDS(res.data.dashboards)
     // @ts-ignore
     const { postNode } = useNodeApi(this.$nuxt.context)
     // @ts-ignore

@@ -7,13 +7,13 @@
           v-row(no-gutters)
             v-col(cols='12').font-weight-light.warning--text.text--darken-1.v-card__title
               span
-                img(src="/images/thunderhub.svg" width="30" style="padding-right: 10px; padding-top: 10px")
-              span {{ dashboardData.type }} - {{ dashboardData.node_name }}
+                img(src="/images/thunderhub.png" width="150" style="padding-right: 10px; padding-top: 10px")
+              span {{ dashboardData.node_name }}
               span.caption.warning--text.ml-2 {{ dashboardData.status }}
         v-col(cols='auto')
           v-row(justify='end')
 
-            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true" v-if='nodeButton')
               template(v-slot:activator="{ on }")
                 v-btn(icon v-bind="$attrs" v-on="on" :to='`/node/${dashboardData.node_id}`').mx-1
                   v-icon mdi-forward
@@ -47,7 +47,7 @@
                 ).mr-3
 </template>
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import { dashboardsStore } from '../store'
 import useDashboardControls from '~/compositions/useDashboardControls'
 import { NodeDashboardStatus } from '~/types/apiResponse'
@@ -57,14 +57,19 @@ export default defineComponent({
     dashboardID: {
       required: true,
       type: String
+    },
+    includeNodeButton: {
+      required: true,
+      type: Boolean
     }
   },
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  setup ({ dashboardID }, { root }) {
+  setup ({ dashboardID, includeNodeButton }, { root }) {
     const dashboardData = computed(() => dashboardsStore.dashboards.filter(elem => elem.dashboard_id === dashboardID)[0])
     const isPending = computed(() => dashboardData.value.status === NodeDashboardStatus.provisioning)
+    const nodeButton = ref(includeNodeButton)
 
     const dashboardInfo = computed(() => ({
       'Endpoint': `https://${dashboardData.value.endpoint}`,
@@ -80,7 +85,8 @@ export default defineComponent({
       isPending,
       dashboardInfo,
       dashboardData,
-      deleteDashboard
+      deleteDashboard,
+      nodeButton
     }
   }
 })
