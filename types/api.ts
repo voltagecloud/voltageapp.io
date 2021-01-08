@@ -37,6 +37,8 @@ export interface Settings {
     alias: string
     color: string
     whitelist: Array<Address4|Address6>
+    minchansize: string
+    maxchansize: string
 }
 
 export enum MacaroonLevel {

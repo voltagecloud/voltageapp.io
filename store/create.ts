@@ -18,7 +18,9 @@ const defaultSettings = {
   webhook: '',
   alias: '',
   color: '#EF820D',
-  whitelist: []
+  whitelist: [],
+  minchansize: '',
+  maxchansize: ''
 }
 
 @Module({

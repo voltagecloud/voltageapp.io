@@ -140,6 +140,18 @@
                   v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
                 span
                   | Allows LND to create channels larger than 0.1677 BTC
+            v-row(justify='space-between' style='padding-top: 20px;')
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-text-field(v-model='settings.minchansize' label='minchansize' outlined color='highlight' background-color='secondary')
+                span
+                  | Minimum Channel Size in Satoshis that can be opened to you
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined color='highlight' background-color='secondary')
+                span
+                  | Maximum Channel Size in Satoshis that can be opened to you
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')
@@ -282,6 +294,8 @@ export default defineComponent({
         advancedSettings.value = true
         settings.alias = ''
         settings.webhook = ''
+        settings.minchansize = ''
+        settings.maxchansize = ''
         configErrorMessage.value = ''
       } else {
         advancedSettings.value = false
@@ -318,6 +332,8 @@ export default defineComponent({
         settings.color = "#EF820D"
         settings.whitelist = settings.whitelist
         settings.webhook = ''
+        settings.minchansize = ''
+        settings.maxchansize = ''
         switch(chosenConfig.value) {
           case "Personal Node":
             settings.autopilot = false
@@ -325,6 +341,8 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = false
+            settings.minchansize = ''
+            settings.maxchansize = ''
             break;
           case "Routing Node":
             settings.autopilot = false
@@ -332,6 +350,8 @@ export default defineComponent({
             settings.rest = false
             settings.keysend = false
             settings.wumbo = true
+            settings.minchansize = ''
+            settings.maxchansize = ''
             break;
           case "Ecommerce Node":
             settings.autopilot = false
@@ -339,6 +359,8 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = false
             settings.wumbo = true
+            settings.minchansize = ''
+            settings.maxchansize = ''
             break;
           case "Development Node":
             settings.autopilot = (createStore.network == "testnet") ? true : false
@@ -346,6 +368,8 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = false
+            settings.minchansize = ''
+            settings.maxchansize = ''
             break;
           case "Research Node":
             settings.autopilot = (createStore.network == "testnet") ? true : false
@@ -353,6 +377,8 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = true
+            settings.minchansize = ''
+            settings.maxchansize = ''
             break;
           default:
             break;

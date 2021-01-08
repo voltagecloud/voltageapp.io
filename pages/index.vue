@@ -187,6 +187,8 @@ export default defineComponent({
       settings.rest = true
       settings.keysend = true
       settings.wumbo = true
+      settings.minchansize = ''
+      settings.maxchansize = ''
       createStore.SETTINGS(settings)
       createStore.PASSWORD(password.value)
       try {

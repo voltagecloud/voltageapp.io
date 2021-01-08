@@ -48,6 +48,18 @@ v-container
                   v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
                 span
                   | Allows LND to create channels larger than 0.1677 BTC
+            v-row(justify='space-between' style='padding-top: 20px;')
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-text-field(v-model='settings.minchansize' label='minchansize' outlined color='highlight' background-color='secondary')
+                span
+                  | Minimum Channel Size in Satoshis that can be opened to you
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined color='highlight' background-color='secondary')
+                span
+                  | Maximum Channel Size in Satoshis that can be opened to you
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')
