@@ -1,6 +1,6 @@
 <template lang="pug">
 v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
-  v-tabs(:centered='true' background-color='primary' :grow='true' show-arrows)
+  v-tabs(:centered='true' background-color='highlight' color='primary' :dark='true' :grow='true' show-arrows)
     v-tab(key="1")
       | LNDConnect
     v-tab-item(key='1')
