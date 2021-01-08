@@ -239,7 +239,7 @@
             div.text-center.warning--text.mb-6
               v-icon(style='padding-bottom: 10px;') mdi-alert-circle
               br
-              | Write this password down! You need it to unlock your node. Also your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
+              | Write this password down! You need it to unlock your node. Also your node's seed and macaroons are encrypted to this password. Losing this password means losing access to your node and backups. Voltage can not reset it.
             v-divider.mx-12.mt-6
 
       div(justify='center' align='center' style='margin: auto;')
@@ -247,6 +247,8 @@
           v-col(cols='12').pt-0
             p.px-4.error--text(v-if='populateError')
               | There was a problem configuring the node. Please retry or create a new one.
+            p.px-4.error--text(v-if='configError')
+              | {{configErrorMessage}}
           v-col(cols='12').pt-0
             v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
               | Provision Node
@@ -285,6 +287,7 @@ export default defineComponent({
     const populateError = ref(false)
     const error = ref('')
     const configErrorMessage = ref('')
+    const configError = ref(false)
     const advancedSettings = ref(false)
     const chosenConfig = ref('Personal Node')
 
@@ -315,11 +318,14 @@ export default defineComponent({
     const errorMessage = ref('')
 
     async function populate() {
+      configError.value = false
+      configErrorMessage.value = ""
       if (nodeName.value == "") {
         errorMessage.value = "You must specify a node name."
         return
       }
       if (chosenConfig.value == "") {
+        configError.value = true
         configErrorMessage.value = "You must select a configuration type."
         return
       }
@@ -386,7 +392,29 @@ export default defineComponent({
       }
       if (settings.webhook !== "") {
         if (!settings.webhook.includes("http") || !settings.webhook.includes(".")) {
-          errorMessage.value = "Please enter a valid URL"
+          configError.value = true
+          configErrorMessage.value = "Please enter a valid URL"
+          return
+        }
+      }
+      // @ts-ignore
+      if (isNaN(parseInt(settings.minchansize))) {
+        configError.value = true
+        configErrorMessage.value = "minchansize must be a number"
+        return
+      }
+      // @ts-ignore
+      if (isNaN(parseInt(settings.maxchansize))) {
+        configError.value = true
+        configErrorMessage.value = "maxchansize must be a number"
+        return
+      }
+      if (settings.minchansize != "" && settings.maxchansize != "") {
+        let minSize = parseInt(settings.minchansize)
+        let maxSize = parseInt(settings.maxchansize)
+        if (minSize > maxSize) {
+          configError.value = true
+          configErrorMessage.value = "minchansize must be smaller than maxchansize"
           return
         }
       }
@@ -449,6 +477,7 @@ export default defineComponent({
       showPassword,
       error,
       configErrorMessage,
+      configError,
       populate
     }
   }

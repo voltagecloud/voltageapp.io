@@ -51,13 +51,31 @@ v-container
             v-row(justify='space-between' style='padding-top: 20px;')
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-text-field(v-model='settings.minchansize' label='minchansize' outlined color='highlight' background-color='secondary')
+                  v-text-field(
+                    v-model='settings.minchansize'
+                    label='minchansize'
+                    outlined
+                    color='highlight'
+                    background-color='secondary'
+                    :error-messages='minchanErrorMessage'
+                    @click='minchanErrorMessage = ""'
+                    @input='minchanErrorMessage = ""'
+                  )
                 span
                   | Minimum Channel Size in Satoshis that can be opened to you
               v-spacer
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined color='highlight' background-color='secondary')
+                  v-text-field(
+                    v-model='settings.maxchansize'
+                    label='maxchansize'
+                    outlined
+                    color='highlight'
+                    background-color='secondary'
+                    :error-messages='maxchanErrorMessage'
+                    @click='maxchanErrorMessage = ""'
+                    @input='maxchanErrorMessage = ""'
+                  )
                 span
                   | Maximum Channel Size in Satoshis that can be opened to you
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
@@ -154,6 +172,8 @@ export default defineComponent({
 
     const tlsLoading = ref(false)
     const webhookErrorMessage = ref('')
+    const minchanErrorMessage = ref('')
+    const maxchanErrorMessage = ref('')
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -165,12 +185,13 @@ export default defineComponent({
     })
 
     async function confirmSettings () {
+      console.log("Confirming the settings")
+      let webhookValid = false
+      let chansizeValid = false
       if (settings.value.webhook !== "") {
         if (settings.value.webhook.includes("http") && settings.value.webhook.includes(".")) {
           if (form.value?.validate()) {
-            emit('updated')
-            await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
-            showSettings.value = false
+            webhookValid = true
           }
         } else {
           webhookErrorMessage.value = "Please enter a valid URL"
@@ -178,10 +199,39 @@ export default defineComponent({
         }
       } else {
         if (form.value?.validate()) {
+          webhookValid = true
+        }
+      }
+
+      // @ts-ignore
+      if (isNaN(parseInt(settings.value.minchansize))) {
+        minchanErrorMessage.value = "Value must be a number"
+        return
+      }
+
+      // @ts-ignore
+      if (isNaN(parseInt(settings.value.maxchansize))) {
+        maxchanErrorMessage.value = "Value must be a number"
+        return
+      }
+
+      if (settings.value.minchansize != "" && settings.value.maxchansize != "") {
+        let minSize = parseInt(settings.value.minchansize)
+        let maxSize = parseInt(settings.value.maxchansize)
+        if (minSize > maxSize) {
+          minchanErrorMessage.value = "minchansize must be smaller than maxchansize"
+          return
+        } else {
+          chansizeValid = true
+        }
+      } else {
+        chansizeValid = true
+      }
+
+      if (webhookValid && chansizeValid) {
           emit('updated')
           await updateSettings(props.node.node_id, backupMacaroon.value, settings.value)
           showSettings.value = false
-        }
       }
     }
 
@@ -229,7 +279,9 @@ export default defineComponent({
       showPalette,
       tlsLoading,
       showPassword,
-      webhookErrorMessage
+      webhookErrorMessage,
+      minchanErrorMessage,
+      maxchanErrorMessage
     }
   }
 })
