@@ -398,16 +398,32 @@ export default defineComponent({
         }
       }
       // @ts-ignore
-      if (isNaN(parseInt(settings.minchansize))) {
+      if (settings.minchansize != "" && isNaN(parseInt(settings.minchansize))) {
         configError.value = true
         configErrorMessage.value = "minchansize must be a number"
         return
       }
       // @ts-ignore
-      if (isNaN(parseInt(settings.maxchansize))) {
-        configError.value = true
-        configErrorMessage.value = "maxchansize must be a number"
-        return
+      if (settings.maxchansize != "") {
+        if (isNaN(parseInt(settings.maxchansize))) {
+          configError.value = true
+          configErrorMessage.value = "maxchansize must be a number"
+          return
+        }
+        let maxSize = parseInt(settings.maxchansize)
+        if (settings.wumbo) {
+          if (maxSize > 1000000000) {
+            configError.value = true
+            configErrorMessage.value = "When Wumbo is enabled, maxchansize can't exceed 1000000000"
+            return
+          }
+        } else {
+          if (maxSize > 16777215) {
+            configError.value = true
+            configErrorMessage.value = "When Wumbo is disabled, maxchansize can't exceed  16777215"
+            return
+          }
+        }
       }
       if (settings.minchansize != "" && settings.maxchansize != "") {
         let minSize = parseInt(settings.minchansize)
