@@ -38,7 +38,7 @@
                     | ${{standardMonthCost}}
                     p(justify='center' align='center' style='margin: auto; font-size: 7px;') /mo
       v-col(cols='12' lg='4')
-        v-card(height='550px')
+        v-card(height='565px')
           div(style='padding: 10px;')
             v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center.h1
               | Order Details
@@ -62,7 +62,7 @@
 
             v-row
               v-container(align='center' justify='center')
-                v-btn.px-4.info--text(@click='selectPlanCard' :loading='loading' color='highlight' style="width: 100%;")
+                v-btn.px-4.info--text(@click='selectPlanCard' :loading='loading' color='highlight' style="width: 100%")
                   | Purchase with Card
             v-row
               v-container(align='center' justify='center')

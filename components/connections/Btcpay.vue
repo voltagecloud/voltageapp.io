@@ -79,6 +79,17 @@ export default defineComponent({
     }
 
     // @ts-ignore
+    function base64ToHex (str) {
+      const raw = atob(str)
+      let result = ''
+      for (let i = 0; i < raw.length; i++) {
+        const hex = raw.charCodeAt(i).toString(16)
+        result += (hex.length === 2 ? hex : '0' + hex)
+      }
+      return result.toUpperCase()
+    }
+
+    // @ts-ignore
     async function getBtcpay () {
       loading.value = true
       try {
@@ -88,7 +99,7 @@ export default defineComponent({
         if (macaroon) {
           if (macaroon !== '') {
             hasMac.value = true
-            const macData = decryptMacaroon(props.pass, macaroon)
+            const macData = base64ToHex(decryptMacaroon(props.pass, macaroon))
             btcpayMac.value = macData
             // @ts-ignore
             connectionString.value = createString(macData)
@@ -145,7 +156,7 @@ export default defineComponent({
         const respData = res.data
         const b64ByteMac = hexToBase64(respData.macaroon)
         hasMac.value = true
-        btcpayMac.value = b64ByteMac
+        btcpayMac.value = base64ToHex(b64ByteMac)
         // @ts-ignore
         connectionString.value = createString(b64ByteMac)
         loading.value = false
