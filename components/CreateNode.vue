@@ -44,6 +44,8 @@
               | Keysend:
               a(style="color: #ffffff; font-family: monospace;") On - 
               | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") Off -
+              | Autocompaction:
               a(style="color: #ffffff; font-family: monospace;") Off
             p
               | Routing Node:
@@ -57,6 +59,8 @@
               | Keysend:
               a(style="color: #ffffff; font-family: monospace;") Off - 
               | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On -
+              | Autocompaction:
               a(style="color: #ffffff; font-family: monospace;") On
             p
               | E-Commerce Node:
@@ -70,6 +74,8 @@
               | Keysend:
               a(style="color: #ffffff; font-family: monospace;") Off - 
               | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On -
+              | Autocompaction:
               a(style="color: #ffffff; font-family: monospace;") On
             p
               | Development Node:
@@ -83,6 +89,8 @@
               | Keysend:
               a(style="color: #ffffff; font-family: monospace;") On - 
               | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") Off -
+              | Autocompaction:
               a(style="color: #ffffff; font-family: monospace;") Off
             p
               | Research Node:
@@ -96,6 +104,8 @@
               | Keysend:
               a(style="color: #ffffff; font-family: monospace;") On - 
               | Wumbo:
+              a(style="color: #ffffff; font-family: monospace;") On -
+              | Autocompaction:
               a(style="color: #ffffff; font-family: monospace;") On
 
       v-container(v-if='advancedSettings')
@@ -152,6 +162,12 @@
                   v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined color='highlight' background-color='secondary')
                 span
                   | Maximum Channel Size in Satoshis that can be opened to you
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
+                span
+                  | Automatically runs an automated compaction on the node's database at startup. 
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')
@@ -347,6 +363,7 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = false
+            settings.autocompaction = false
             settings.minchansize = ''
             settings.maxchansize = ''
             break;
@@ -356,6 +373,7 @@ export default defineComponent({
             settings.rest = false
             settings.keysend = false
             settings.wumbo = true
+            settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
             break;
@@ -365,6 +383,7 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = false
             settings.wumbo = true
+            settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
             break;
@@ -374,6 +393,7 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = false
+            settings.autocompaction = false
             settings.minchansize = ''
             settings.maxchansize = ''
             break;
@@ -383,6 +403,7 @@ export default defineComponent({
             settings.rest = true
             settings.keysend = true
             settings.wumbo = true
+            settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
             break;

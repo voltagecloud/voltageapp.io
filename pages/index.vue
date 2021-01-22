@@ -189,6 +189,7 @@ export default defineComponent({
       settings.wumbo = true
       settings.minchansize = ''
       settings.maxchansize = ''
+      settings.autocompaction = false
       createStore.SETTINGS(settings)
       createStore.PASSWORD(password.value)
       try {
