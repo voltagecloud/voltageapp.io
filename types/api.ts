@@ -39,6 +39,7 @@ export interface Settings {
     whitelist: Array<Address4|Address6>
     minchansize: string
     maxchansize: string
+    autocompaction: boolean
 }
 
 export enum MacaroonLevel {

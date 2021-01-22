@@ -78,6 +78,12 @@ v-container
                   )
                 span
                   | Maximum Channel Size in Satoshis that can be opened to you
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
+                span
+                  | Automatically runs an automated compaction on the node's database at startup. 
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')

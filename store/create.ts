@@ -20,7 +20,8 @@ const defaultSettings = {
   color: '#EF820D',
   whitelist: [],
   minchansize: '',
-  maxchansize: ''
+  maxchansize: '',
+  autocompaction: false
 }
 
 @Module({
