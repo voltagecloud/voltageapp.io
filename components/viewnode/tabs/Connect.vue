@@ -78,7 +78,6 @@ export default defineComponent({
       // get encrypted macaroon from api
       try {
         const res = await connectNode(props.node.node_id, 'admin')
-        console.log({ res })
         const { endpoint, macaroon, tls_cert } = res
         if (macaroon) {
           state.apiEndpoint = endpoint
@@ -95,7 +94,6 @@ export default defineComponent({
       try {
         const decrypted = crypto.AES.decrypt(state.encrypted || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
-        console.log({ decrypted, decryptResult })
         if (isBase64(decryptResult)) {
           state.macaroon = decryptResult
           buildUri(props.node.api_endpoint, port, '', decryptResult)
