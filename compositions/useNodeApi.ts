@@ -178,7 +178,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
       return res.data
     } catch (e) {
       const resp = e.response
-      if (resp.status == 400 && resp.data.message == 'macaroon is invalid') {
+      if (resp.status === 400 && resp.data.message === 'macaroon is invalid') {
         return {
           endpoint: '',
           tls_cert: '',
@@ -196,7 +196,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     try {
       loading.value = true
       const res = await $axios.post('/node/cert', {
-        node_id,
+        node_id
       })
       return res.data
     } catch (e) {
@@ -206,7 +206,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function getSeed(node_id: string) {
+  async function getSeed (node_id: string) {
     try {
       loading.value = true
       const res = await $axios.post('/node/seed', {
@@ -220,7 +220,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function saveSeed(node_id: string, seed: string) {
+  async function saveSeed (node_id: string, seed: string) {
     try {
       loading.value = true
       const res = await $axios.post('/node/seed', {
@@ -251,7 +251,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function getDashboards(node_id: string) {
+  async function getDashboards (node_id: string) {
     try {
       const res = await $axios.post('/node/dashboards', {
         node_id
@@ -265,10 +265,10 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
-  async function createDashboard(node_id: string, dashboard_type: string) {
+  async function createDashboard (node_id: string, dashboard_type: string) {
     loading.value = true
     try {
-      const res = await $axios.post('/dashboards/create', { node_id: node_id, type: dashboard_type })
+      const res = await $axios.post('/dashboards/create', { node_id, type: dashboard_type })
       loading.value = false
       dashboardsStore.ADD_DASHBOARD(res.data)
       return res
