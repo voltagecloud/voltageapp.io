@@ -107,7 +107,7 @@ export default defineComponent({
     const seed = ref('')
     const seedReady = ref(false)
     const seedButtonText = ref('View')
-    const fullSeed = ref([""])
+    const fullSeed = ref([''])
 
     const nodeInfo = computed(() => ({
       Status: props.node.status,
@@ -115,12 +115,12 @@ export default defineComponent({
       'Voltage Version': props.node.volt_version,
       'TLS Cert': props.node.tls_cert,
       Macaroon: props.node.macaroons.length > 0 ? 'Download' : 'pending',
-      'Seed': ['provisioning', 'waiting_init', 'initializing'].includes(props.node.status) ? 'pending' : 'View',
+      Seed: ['provisioning', 'waiting_init', 'initializing'].includes(props.node.status) ? 'pending' : 'View',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
       'API Endpoint': props.node.api_endpoint
     }))
-    
+
     async function downloadMacaroon () {
       showPasswordDialog.value = true
       try {
@@ -128,7 +128,7 @@ export default defineComponent({
         const { macaroon } = res
         encrypted.value = macaroon
         encryptedType.value = 'macaroon'
-        passwordDialogButton.value = "Decrypt Macaroon"
+        passwordDialogButton.value = 'Decrypt Macaroon'
       } catch (e) {
         error.value = e.toString()
       }
@@ -139,7 +139,7 @@ export default defineComponent({
         const res = await getCert(props.node.node_id)
         const { tls_cert } = res
         cert.value = tls_cert
-        if (cert.value == 'pending') {
+        if (cert.value === 'pending') {
           certButtonText.value = 'Certificate is pending'
         }
         certReady.value = true
@@ -152,14 +152,14 @@ export default defineComponent({
       try {
         const res = await getSeed(props.node.node_id)
         const { seed } = res
-        if (seed == "") {
-          seedButtonText.value = "Seed was not found"
+        if (seed === '') {
+          seedButtonText.value = 'Seed was not found'
           return
         }
         showPasswordDialog.value = true
         encrypted.value = seed
         encryptedType.value = 'seed'
-        passwordDialogButton.value = "View Seed"
+        passwordDialogButton.value = 'View Seed'
       } catch (e) {
         error.value = e.toString()
       }
@@ -169,7 +169,7 @@ export default defineComponent({
     function isBase64 (str) {
       if (str === '' || str.trim() === '') { return false }
       try {
-        return btoa(atob(str)) == str
+        return btoa(atob(str)) === str
       } catch (err) {
         return false
       }
@@ -181,11 +181,11 @@ export default defineComponent({
         const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
         if (isBase64(decryptResult)) {
-          if (encryptedType.value == 'macaroon') {
+          if (encryptedType.value === 'macaroon') {
             macaroon.value = decryptResult
             downloadReady.value = true
             showPasswordDialog.value = false
-          } else if (encryptedType.value == 'seed') {
+          } else if (encryptedType.value === 'seed') {
             fullSeed.value = atob(decryptResult).split(',')
             seedReady.value = true
             showPasswordDialog.value = false
@@ -200,18 +200,18 @@ export default defineComponent({
       }
     }
 
-    async function clear () {
+    function clear () {
       downloadReady.value = false
-      macaroon.value = ""
+      macaroon.value = ''
     }
 
-    async function clearCert () {
+    function clearCert () {
       certReady.value = false
     }
 
-    async function clearSeed () {
+    function clearSeed () {
       seedReady.value = false
-      fullSeed.value = [""]
+      fullSeed.value = ['']
     }
 
     const { copy } = useClipboard(2000)
