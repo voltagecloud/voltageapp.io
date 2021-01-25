@@ -1,10 +1,14 @@
 <template lang="pug">
   v-container
-    span(v-if='status !== "running"')
+    span(v-if='node.status !== "running"')
       | You can only connect to a running node. Please turn this node on before connecting
-    node-password-input(v-else-if='curStage === 0' @done='')
+    node-password-input(
+      v-else-if='curStage === 0'
+      @done='handleConnectNode'
+      text='Connect'
+    )
     show-qr(
-      v-model='showQrDialog'
+      v-else-if='curStage === 1'
       :connectURI='connectURI'
       :api='apiEndpoint'
       :cert='cert'
@@ -12,18 +16,19 @@
       :pass='pass'
       :grpc='grpc'
       :rest='rest'
-      @clear='clearQr'
       @updateApi='buildUri'
     )
 </template>
 <script lang="ts">
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api'
+import crypto from 'crypto-js'
 import { Node } from '~/types/apiResponse'
 import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
+    ShowQr: () => import('~/components/ShowQr.vue')
   },
   props: {
     node: {
@@ -40,26 +45,10 @@ export default defineComponent({
       encrypted: '',
       error: '',
       macaroon: '',
-      validPw: '',
-      step: 0,
-      connectURI: ''
+      curStage: 0,
+      connectURI: '',
+      pass: ''
     })
-
-    async function connect () {
-      try {
-        const res = await connectNode(props.node.node_id, 'admin')
-        const { endpoint, macaroon, tls_cert } = res
-        if (macaroon) {
-          state.apiEndpoint = endpoint
-          state.cert = tls_cert
-          state.encrypted = macaroon
-        } else {
-          // IMPLEMENT MACAROON UPLOAD
-        }
-      } catch (e) {
-        state.error = e.toString()
-      }
-    }
 
     function isBase64 (str) {
       if (str === '' || str.trim() === '') { return false }
@@ -85,16 +74,33 @@ export default defineComponent({
         : `lndconnect://${api}:${port}?macaroon=${macaroon}`
     }
 
-    function handleConnectNode (password: string, api: string) {
+    async function handleConnectNode (password: string, api: string) {
+      // get encrypted macaroon from api
+      try {
+        const res = await connectNode(props.node.node_id, 'admin')
+        console.log({ res })
+        const { endpoint, macaroon, tls_cert } = res
+        if (macaroon) {
+          state.apiEndpoint = endpoint
+          state.cert = tls_cert
+          state.encrypted = macaroon
+        } else {
+          // IMPLEMENT MACAROON UPLOAD
+        }
+      } catch (e) {
+        state.error = e.toString()
+      }
       const port = (api === 'rest') ? '8080' : '10009'
+      // attempt to decrypt macaroon
       try {
         const decrypted = crypto.AES.decrypt(state.encrypted || '', password).toString(crypto.enc.Base64)
         const decryptResult = atob(decrypted)
+        console.log({ decrypted, decryptResult })
         if (isBase64(decryptResult)) {
           state.macaroon = decryptResult
           buildUri(props.node.api_endpoint, port, '', decryptResult)
-          state.step = 2
-          state.validPw = password
+          state.curStage = 1
+          state.pass = password
         } else {
           state.error = 'Incorrect password'
         }
@@ -105,19 +111,14 @@ export default defineComponent({
       }
     }
 
-    function clearQr () {
-      showQrDialog.value = false
-    }
-
     const grpc = computed(() => props.node.settings.grpc)
     const rest = computed(() => props.node.settings.rest)
 
     return {
-      connect,
       handleConnectNode,
-      clearQr,
       grpc,
       rest,
+      buildUri,
       ...toRefs(state)
     }
   }
