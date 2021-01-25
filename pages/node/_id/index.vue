@@ -4,6 +4,10 @@ v-container
     v-col
       v-fade-transition
         node-controls(:nodeID='nodeID' @event='$fetch')
+          template(v-slot:prepend-content)
+            v-tabs(v-model='curTab' background-color='transparent' grow)
+              v-tab(v-for='tab in tabs' :key='tab.id') {{tab.name}}
+            v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
             data-table(:node='nodeData')
@@ -103,7 +107,7 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch, reactive } from '@vue/composition-api'
 import axios from 'axios'
 import crypto from 'crypto-js'
 import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
@@ -196,8 +200,8 @@ export default defineComponent({
       }
     })
 
-    function sleep(ms: number) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+    function sleep (ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms))
     }
 
     async function initialize () {
@@ -206,19 +210,19 @@ export default defineComponent({
       if (createStore.password) {
         initPassword.value = createStore.password
       } else {
-        if (nodePassword.value == "") {
-          passError.value = "You must create a password."
+        if (nodePassword.value == '') {
+          passError.value = 'You must create a password.'
           initializing.value = false
           return
         }
         if (nodePassword.value.length < 8) {
-          passError.value = "Password must be at least 8 characters."
+          passError.value = 'Password must be at least 8 characters.'
           initializing.value = false
           return
         }
         initPassword.value = nodePassword.value
       }
-      createText.value = "initializing"
+      createText.value = 'initializing'
       const node = lndStore.currentNode as Node
       updateStatus(node.node_id, 'initializing')
       try {
@@ -235,7 +239,7 @@ export default defineComponent({
             stateless_init: true
           }
         })
-        createText.value = "encrypting data"
+        createText.value = 'encrypting data'
         if (node.macaroon_backup) {
           // @ts-ignore
           const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
@@ -248,8 +252,8 @@ export default defineComponent({
         createStore.WIPE_PASSWORD()
         res.data = {}
         seed.data = {}
-        await sleep(4000);
-        createText.value = "finalizing"
+        await sleep(4000)
+        createText.value = 'finalizing'
       } catch (err) {
         updateStatus(node.node_id, 'waiting_init')
         nodeCreating.value = false
@@ -274,7 +278,6 @@ export default defineComponent({
       password: nodePassword,
       showPassword
     } = useFormValidation()
-
 
     const unlockDialog = ref(false)
     const unlocking = ref(false)
@@ -391,19 +394,19 @@ export default defineComponent({
     watch(nodePassword, () => { error.value = '' })
     watch(nodePassword, () => { passError.value = '' })
     watch(status, (newStatus: string) => {
-      if (newStatus === "initializing" || newStatus === "provisioning") {
+      if (newStatus === 'initializing' || newStatus === 'provisioning') {
         nodeCreating.value = true
         createText.value = newStatus
       } else {
         nodeCreating.value = false
       }
-      if (newStatus === "waiting_init") {
+      if (newStatus === 'waiting_init') {
         nodeCreating.value = true
-        createText.value = "waiting_init"
+        createText.value = 'waiting_init'
         initialize()
       }
-      if (newStatus === "running") {
-        createText.value = "complete"
+      if (newStatus === 'running') {
+        createText.value = 'complete'
       }
     })
 
@@ -412,6 +415,17 @@ export default defineComponent({
       confirmUpdate.value = false
       await update()
     }
+
+    // data for tab state
+    const tabs = reactive([
+      { name: 'Info', id: 'info' },
+      { name: 'Network', id: 'network' },
+      { name: 'Connect', id: 'connect' },
+      { name: 'Settings', id: 'settings' },
+      { name: 'Logs', id: 'Logs' }
+    ])
+
+    const curTab = ref('info')
 
     return {
       nodeData,
@@ -463,7 +477,9 @@ export default defineComponent({
       passError,
       helperText,
       nodeCreating,
-      createText
+      createText,
+      tabs,
+      curTab
     }
   }
 })
