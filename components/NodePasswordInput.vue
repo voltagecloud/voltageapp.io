@@ -3,7 +3,7 @@ v-card.text-center(style='padding: 20px;')
   v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
     | Enter the node's password
   v-card-actions
-    v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done' :key='key')
+    v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done')
       v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
       v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
 </template>
@@ -13,10 +13,6 @@ import useFormValidation from '~/compositions/useFormValidation'
 
 export default defineComponent({
   props: {
-    value: {
-      type: Boolean,
-      required: true
-    },
     loading: {
       type: Boolean,
       required: false,
@@ -34,7 +30,6 @@ export default defineComponent({
   setup (props, { emit }) {
     const { char8, valid, form, password: nodePassword } = useFormValidation()
 
-    const key = ref(0)
     function done () {
       if (nodePassword.value.length < 8) {
         newError.value = 'Password must be at least 8 characters'
@@ -52,20 +47,14 @@ export default defineComponent({
 
     watch(() => props.error, (val) => { newError.value = val })
     watch(nodePassword, () => { newError.value = '' })
-    watch(() => props.value, (cur) => {
-      if (!cur) {
-        nodePassword.value = ''
-        key.value++
-      }
-    })
+
     return {
       char8,
       valid,
       form,
       nodePassword,
       done,
-      newError,
-      key
+      newError
     }
   }
 })
