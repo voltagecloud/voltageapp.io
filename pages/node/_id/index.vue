@@ -39,15 +39,21 @@ v-container
               v-model='curTab'
               :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
             )
+              //- node data table tab
               v-tab-item
                 data-table(:node='nodeData')
                 v-divider
                 p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
                   | {{ helperText }}
+              //- WIP network tab
+              v-tab-item
+                span this is the network tab
+              v-tab-item
+                connect-tab(:node='nodeData')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
-            v-container(v-if='status === "running"')
+            //- v-container(v-if='status === "running"')
               v-btn(color='highlight' block @click='connect').info--text Connect
             v-container(v-if='status === "waiting_init"')
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
@@ -121,7 +127,6 @@ v-container
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
-import crypto from 'crypto-js'
 import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -135,8 +140,9 @@ export default defineComponent({
     EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
+    ConnectTab: () => import('~/components/viewnode/tabs/Connect.vue'),
     // PasswordDialog: () => import('~/components/PasswordDialog.vue'),
-    ShowQr: () => import('~/components/ShowQr.vue'),
+    // ShowQr: () => import('~/components/ShowQr.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
