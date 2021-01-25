@@ -47,15 +47,15 @@ export default function useNodeStatus (node: Ref<Node>) {
 
   const helperText = computed(() => {
     if (node.value.status === NodeStatus.waiting_init) {
-      return "Your node is waiting to be initialized."
+      return 'Your node is waiting to be initialized.'
     } else if (node.value.status === NodeStatus.initializing) {
-      return "Your node is being initialized. Please do not close your browser until the node is running."
+      return 'Your node is being initialized. Please do not close your browser until the node is running.'
     } else if (node.value.status === NodeStatus.provisioning) {
-      return "Your node is being created. Please leave your browser open for initialization."
+      return 'Your node is being created. Please leave your browser open for initialization.'
     } else if (node.value.status === NodeStatus.waiting_unlock) {
-      return "Your node is waiting to be unlocked."
+      return 'Your node is waiting to be unlocked.'
     } else {
-      return ""
+      return ''
     }
   })
 
