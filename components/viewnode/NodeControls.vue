@@ -1,5 +1,6 @@
 <template lang="pug">
 v-card(color='info')
+  slot(name='prepend-content')
   v-progress-linear(indeterminate absolute top v-if='loading' color='accent')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
