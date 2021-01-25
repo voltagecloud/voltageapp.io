@@ -55,7 +55,7 @@ export default defineComponent({
   components: {
     ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
   },
-  setup (props, { root, emit }) {
+  setup (props, { root }) {
     const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
 
     function navigate () {
