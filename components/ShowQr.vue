@@ -1,5 +1,5 @@
 <template lang="pug">
-v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
+v-container(:v-show='connectURI')
   v-tabs(:centered='true' background-color='highlight' color='primary' :dark='true' :grow='true' show-arrows)
     v-tab(key="1")
       | LNDConnect
@@ -48,7 +48,7 @@ v-dialog(max-width='800' :value='connectURI' @click:outside='clear')
 
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
