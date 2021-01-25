@@ -53,7 +53,7 @@ v-container
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
             //- TODO delete me. component function is now handled in tabs
             //- password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
-            v-container(v-if='showQrDialog === true')
+            //- v-container(v-if='showQrDialog === true')
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData' @updated='$fetch')
             v-container
@@ -196,7 +196,7 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus, postNode, connectNode } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus, postNode } = useNodeApi(root.$nuxt.context)
     const timer = ref<NodeJS.Timeout|null>(null)
     const errorText = ref('')
     const initializing = ref(false)
@@ -222,7 +222,7 @@ export default defineComponent({
       if (createStore.password) {
         initPassword.value = createStore.password
       } else {
-        if (nodePassword.value == '') {
+        if (nodePassword.value === '') {
           passError.value = 'You must create a password.'
           initializing.value = false
           return
@@ -325,83 +325,6 @@ export default defineComponent({
       root.$nuxt.$router.go()
     }
 
-    const encrypted = ref('')
-    const pass = ref('')
-    const cert = ref('')
-    const apiEndpoint = ref('')
-    const macaroon = ref('')
-    const grpc = computed(() => nodeData.value.settings.grpc)
-    const rest = computed(() => nodeData.value.settings.rest)
-    const showPasswordDialog = ref(false)
-    const showQrDialog = ref(false)
-    async function connect () {
-      showPasswordDialog.value = true
-      try {
-        const res = await connectNode(nodeData.value.node_id, 'admin')
-        const { endpoint, macaroon, tls_cert } = res
-        if (macaroon) {
-          apiEndpoint.value = endpoint
-          cert.value = tls_cert
-          encrypted.value = macaroon
-        } else {
-          // IMPLEMENT MACAROON UPLOAD
-        }
-      } catch (e) {
-        error.value = e.toString()
-      }
-    }
-
-    // @ts-ignore
-    function isBase64 (str) {
-      if (str === '' || str.trim() === '') { return false }
-      try {
-        return btoa(atob(str)) === str
-      } catch (err) {
-        return false
-      }
-    }
-    const connectURI = ref('')
-
-    // convert b64 to b64url
-    function safeUrl (data: string) {
-      data = data.replace(/\+/g, '-')
-      data = data.replace(/\//g, '_')
-      data = data.replace(/=/g, '')
-      return data
-    }
-
-    function buildUri (api: string, port: string, tls_cert: string, macaroon: string) {
-      macaroon = safeUrl(macaroon)
-      connectURI.value = (tls_cert)
-        ? `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
-        : `lndconnect://${api}:${port}?macaroon=${macaroon}`
-    }
-
-    function handleConnectNode (password: string, api: string) {
-      const port = (api === 'rest') ? '8080' : '10009'
-      try {
-        const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
-        const decryptResult = atob(decrypted)
-        if (isBase64(decryptResult)) {
-          macaroon.value = decryptResult
-          buildUri(nodeData.value.api_endpoint, port, '', decryptResult)
-          showQrDialog.value = true
-          showPasswordDialog.value = false
-          pass.value = password
-        } else {
-          error.value = 'Incorrect password'
-        }
-      } catch (e) {
-        console.error('cipher mismatch, macaroon decryption failed')
-        console.error(e)
-        error.value = e.toString()
-      }
-    }
-
-    function clearQr () {
-      showQrDialog.value = false
-    }
-
     // clear errors on typing in password field
     watch(nodePassword, () => { error.value = '' })
     watch(nodePassword, () => { passError.value = '' })
@@ -459,22 +382,8 @@ export default defineComponent({
       unlockDialog,
       timer,
       error,
-      connect,
-      showPasswordDialog,
-      showQrDialog,
-      handleConnectNode,
-      pass,
-      connectURI,
-      clearQr,
-      encrypted,
-      cert,
-      apiEndpoint,
-      macaroon,
-      buildUri,
       confirmUpdate,
       closeAndUpdate,
-      grpc,
-      rest,
       errorText,
       settings,
       required,
