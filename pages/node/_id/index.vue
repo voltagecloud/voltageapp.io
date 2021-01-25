@@ -5,15 +5,16 @@ v-container
       v-fade-transition
         node-controls(:nodeID='nodeID' @event='$fetch')
           template(v-slot:prepend-content)
-            v-tabs(v-model='curTab' background-color='transparent' grow)
-              v-tab(v-for='tab in tabs' :key='tab.id') {{tab.name}}
+            v-tabs(v-model='curTab' background-color='transparent' grow )
+              v-tab(
+                v-for='tab in tabs'
+                :key='tab'
+                active-class='highlight'
+              ) {{tab}}
             v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
-            data-table(:node='nodeData')
-            v-divider
-            p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
-              | {{ helperText }}
+            //- Unlock button
             v-container.align-center.justify-center(v-if='canUnlock')
               password-dialog(
                 v-model='unlockDialog'
@@ -24,6 +25,7 @@ v-container
                 :error='error'
                 :loading='unlocking'
               )
+            //- Update button
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
               v-dialog(v-model='confirmUpdate' max-width='800')
@@ -33,6 +35,15 @@ v-container
                   v-card-actions
                     v-btn(color='info' @click='closeAndUpdate') Yes
                     v-btn(@click='confirmUpdate = false') No
+            v-tabs-items(
+              v-model='curTab'
+              :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
+            )
+              v-tab-item
+                data-table(:node='nodeData')
+                v-divider
+                p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
+                  | {{ helperText }}
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
@@ -40,7 +51,8 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             v-container(v-if='status === "waiting_init"')
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
-            password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
+            //- TODO delete me. component function is now handled in tabs
+            //- password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
             v-container(v-if='showQrDialog === true')
               show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
             edit-settings(:node='nodeData' @updated='$fetch')
@@ -107,7 +119,7 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch, reactive } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
 import crypto from 'crypto-js'
 import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
@@ -123,7 +135,7 @@ export default defineComponent({
     EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
-    PasswordDialog: () => import('~/components/PasswordDialog.vue'),
+    // PasswordDialog: () => import('~/components/PasswordDialog.vue'),
     ShowQr: () => import('~/components/ShowQr.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
@@ -417,15 +429,15 @@ export default defineComponent({
     }
 
     // data for tab state
-    const tabs = reactive([
-      { name: 'Info', id: 'info' },
-      { name: 'Network', id: 'network' },
-      { name: 'Connect', id: 'connect' },
-      { name: 'Settings', id: 'settings' },
-      { name: 'Logs', id: 'Logs' }
+    const tabs = ref([
+      'Info',
+      'Network',
+      'Connect',
+      'Settings',
+      'Logs'
     ])
 
-    const curTab = ref('info')
+    const curTab = ref(0)
 
     return {
       nodeData,
