@@ -1,34 +1,18 @@
 <template lang="pug">
-v-dialog(max-width='800' :value='value' @input='update')
-  template(v-if='useActivator' v-slot:activator='{ on }')
-    v-btn(v-on='on' color='highlight' block).info--text {{activatorText}}
-  v-card.text-center(style='padding: 20px;')
-    v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-      | Enter the node's password
-    v-card-actions
-      v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done' :key='key')
-        v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
-        v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
+v-card.text-center(style='padding: 20px;')
+  v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
+    | Enter the node's password
+  v-card-actions
+    v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done' :key='key')
+      v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
+      v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
 </template>
 <script lang="ts">
-import { defineComponent, watch, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import useFormValidation from '~/compositions/useFormValidation'
 
 export default defineComponent({
   props: {
-    useActivator: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    activatorText: {
-      type: String,
-      required: false
-    },
-    text: {
-      type: String,
-      required: true
-    },
     value: {
       type: Boolean,
       required: true
@@ -41,6 +25,10 @@ export default defineComponent({
     error: {
       type: String,
       required: false
+    },
+    text: {
+      type: String,
+      required: true
     }
   },
   setup (props, { emit }) {
@@ -49,7 +37,7 @@ export default defineComponent({
     const key = ref(0)
     function done () {
       if (nodePassword.value.length < 8) {
-        newError.value = "Password must be at least 8 characters"
+        newError.value = 'Password must be at least 8 characters'
         return
       }
       emit('done', nodePassword.value)
@@ -58,10 +46,6 @@ export default defineComponent({
       // nodePassword.value = ''
       // key.value++
       newError.value = props.error
-    }
-
-    function update (v: boolean) {
-      emit('input', v)
     }
 
     const newError = ref(props.error)
@@ -80,7 +64,6 @@ export default defineComponent({
       form,
       nodePassword,
       done,
-      update,
       newError,
       key
     }
