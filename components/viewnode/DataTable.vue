@@ -4,7 +4,9 @@ v-container
     | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill.
     | Please update your payment method to prevent the node from being deleted.
     p
-  password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
+  //- password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
+  core-dialog(v-model='showPasswordDialog')
+    node-password-input(:text='passwordDialogButton' :error='error' @done='handleDownload')
   v-container(v-if='downloadReady')
     v-dialog(max-width='800' :value='downloadReady' @click:outside='clear')
       v-card.text-center(style='padding: 20px;')
@@ -90,7 +92,8 @@ export default defineComponent({
   },
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue'),
-    PasswordDialog: () => import('~/components/PasswordDialog.vue')
+    CoreDialog: () => import('~/components/core/Dialog.vue'),
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
   },
   setup (props, { root }) {
     const { connectNode, getCert, getSeed } = useNodeApi(root.$nuxt.context)
