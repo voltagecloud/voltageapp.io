@@ -6,7 +6,12 @@ v-container
     p
   //- password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
   core-dialog(v-model='showPasswordDialog')
-    node-password-input(:text='passwordDialogButton' :error='error' @done='handleDownload')
+    node-password-input(
+      :text='passwordDialogButton'
+      :error='error'
+      :value='showPasswordDialog'
+      @done='handleDownload'
+    )
   v-container(v-if='downloadReady')
     v-dialog(max-width='800' :value='downloadReady' @click:outside='clear')
       v-card.text-center(style='padding: 20px;')
