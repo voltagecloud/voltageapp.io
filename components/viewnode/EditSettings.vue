@@ -51,6 +51,12 @@ v-container
             v-row(justify='space-between' style='padding-top: 20px;')
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
+                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' style='padding-right: 5px;' inset color='highlight')
+                span
+                  | Automatically runs an automated compaction on the node's database at startup. 
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
                   v-text-field(
                     v-model='settings.minchansize'
                     label='minchansize'
@@ -60,6 +66,7 @@ v-container
                     :error-messages='minchanErrorMessage'
                     @click='minchanErrorMessage = ""'
                     @input='minchanErrorMessage = ""'
+                    style='padding-right: 5px;'
                   )
                 span
                   | Minimum Channel Size in Satoshis that can be opened to you
@@ -75,15 +82,26 @@ v-container
                     :error-messages='maxchanErrorMessage'
                     @click='maxchanErrorMessage = ""'
                     @input='maxchanErrorMessage = ""'
+                    style='padding-right: 5px;'
                   )
                 span
                   | Maximum Channel Size in Satoshis that can be opened to you
               v-spacer
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
+                  v-text-field(
+                    v-model='settings.defaultfeerate'
+                    label='feerate'
+                    outlined
+                    color='highlight'
+                    background-color='secondary'
+                    :error-messages='feerateErrorMessage'
+                    @click='feerateErrorMessage = ""'
+                    @input='feerateErrorMessage = ""'
+                    style='padding-right: 5px;'
+                  )
                 span
-                  | Automatically runs an automated compaction on the node's database at startup. 
+                  | Default fee rate that's set on created channels. Default is 1
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')
@@ -180,6 +198,7 @@ export default defineComponent({
     const webhookErrorMessage = ref('')
     const minchanErrorMessage = ref('')
     const maxchanErrorMessage = ref('')
+    const feerateErrorMessage = ref('')
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -207,6 +226,12 @@ export default defineComponent({
         if (form.value?.validate()) {
           webhookValid = true
         }
+      }
+
+      // @ts-ignore
+      if (settings.value.defaultfeerate != "" && isNaN(parseInt(settings.value.defaultfeerate))) {
+        feerateErrorMessage.value = "Value must be a number"
+        return
       }
 
       // @ts-ignore
@@ -300,7 +325,8 @@ export default defineComponent({
       showPassword,
       webhookErrorMessage,
       minchanErrorMessage,
-      maxchanErrorMessage
+      maxchanErrorMessage,
+      feerateErrorMessage
     }
   }
 })

@@ -40,6 +40,7 @@ export interface Settings {
     minchansize: string
     maxchansize: string
     autocompaction: boolean
+    defaultfeerate: string
 }
 
 export enum MacaroonLevel {

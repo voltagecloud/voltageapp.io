@@ -153,21 +153,27 @@
             v-row(justify='space-between' style='padding-top: 20px;')
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-text-field(v-model='settings.minchansize' label='minchansize' outlined color='highlight' background-color='secondary')
+                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' style='padding-right: 5px;' inset color='highlight')
+                span
+                  | Automatically runs an automated compaction on the node's database at startup. 
+              v-spacer
+              v-tooltip(top :open-on-click="true" :open-on-hover="true")
+                template(v-slot:activator="{ on }")
+                  v-text-field(v-model='settings.minchansize' label='minchansize' outlined style='padding-right: 5px;' color='highlight' background-color='secondary')
                 span
                   | Minimum Channel Size in Satoshis that can be opened to you
               v-spacer
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined color='highlight' background-color='secondary')
+                  v-text-field(v-model='settings.maxchansize' label='maxchansize' outlined style='padding-right: 5px;' color='highlight' background-color='secondary')
                 span
                   | Maximum Channel Size in Satoshis that can be opened to you
               v-spacer
               v-tooltip(top :open-on-click="true" :open-on-hover="true")
                 template(v-slot:activator="{ on }")
-                  v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
+                  v-text-field(v-model='settings.defaultfeerate' label='feerate' outlined style='padding-right: 5px;' color='highlight' background-color='secondary')
                 span
-                  | Automatically runs an automated compaction on the node's database at startup. 
+                  | Default fee rate that's set on created channels. Default is 1
               //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
           v-col(cols='12')
             v-row(justify='center')
@@ -315,6 +321,7 @@ export default defineComponent({
         settings.webhook = ''
         settings.minchansize = ''
         settings.maxchansize = ''
+        settings.defaultfeerate = ''
         configErrorMessage.value = ''
       } else {
         advancedSettings.value = false
@@ -356,6 +363,7 @@ export default defineComponent({
         settings.webhook = ''
         settings.minchansize = ''
         settings.maxchansize = ''
+        settings.defaultfeerate = ''
         switch(chosenConfig.value) {
           case "Personal Node":
             settings.autopilot = false
@@ -366,6 +374,7 @@ export default defineComponent({
             settings.autocompaction = false
             settings.minchansize = ''
             settings.maxchansize = ''
+            settings.defaultfeerate = ''
             break;
           case "Routing Node":
             settings.autopilot = false
@@ -376,6 +385,7 @@ export default defineComponent({
             settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
+            settings.defaultfeerate = ''
             break;
           case "Ecommerce Node":
             settings.autopilot = false
@@ -386,6 +396,7 @@ export default defineComponent({
             settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
+            settings.defaultfeerate = ''
             break;
           case "Development Node":
             settings.autopilot = (createStore.network == "testnet") ? true : false
@@ -396,6 +407,7 @@ export default defineComponent({
             settings.autocompaction = false
             settings.minchansize = ''
             settings.maxchansize = ''
+            settings.defaultfeerate = ''
             break;
           case "Research Node":
             settings.autopilot = (createStore.network == "testnet") ? true : false
@@ -406,6 +418,7 @@ export default defineComponent({
             settings.autocompaction = true
             settings.minchansize = ''
             settings.maxchansize = ''
+            settings.defaultfeerate = ''
             break;
           default:
             break;
@@ -418,6 +431,13 @@ export default defineComponent({
           return
         }
       }
+      // @ts-ignore
+      if (settings.defaultfeerate != "" && isNaN(parseInt(settings.defaultfeerate))) {
+        configError.value = true
+        configErrorMessage.value = "feerate must be a number"
+        return
+      }
+
       // @ts-ignore
       if (settings.minchansize != "" && isNaN(parseInt(settings.minchansize))) {
         configError.value = true
