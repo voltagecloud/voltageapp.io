@@ -17,7 +17,7 @@
             node-export(:exportID='exportData.export_id')
 </template>
 <script lang="ts">
-import { defineComponent, SetupContext, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import { exportsStore } from '~/store'
 
 let timerID: NodeJS.Timeout
