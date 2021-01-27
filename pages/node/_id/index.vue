@@ -43,6 +43,9 @@ v-container
               //- node data table tab
               v-tab-item
                 data-table(:node='nodeData')
+                v-container
+                  core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
+                    export-data(:nodeID='nodeID' :nodeStatus='status')
               //- WIP network tab
               //- v-tab-item
                 span this is the network tab
@@ -54,11 +57,6 @@ v-container
                 node-settings(:node='nodeData' @updated='$fetch')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
-                  v-dialog(max-width='800')
-                    template(v-slot:activator='{ on }')
-                      v-btn(:disabled='status === "provisioning"' v-on='on' icon).ml-1.mr-3
-                        v-icon mdi-export
-                    export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
