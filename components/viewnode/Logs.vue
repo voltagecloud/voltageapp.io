@@ -16,7 +16,13 @@
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 
 export default defineComponent({
-  setup (_, { root }) {
+  props: {
+    nodeId: {
+      type: String,
+      required: true
+    }
+  },
+  setup (props, { root }) {
     const state = reactive({
       last_modified: 'loading',
       log_lines: ['loading'],
@@ -24,12 +30,12 @@ export default defineComponent({
       node_name: 'loading'
     })
 
-    async function getLogs (node_id: string) {
+    async function getLogs () {
       try {
         const res = await root.$nuxt.context.$axios({
           method: 'POST',
           url: '/node/logs',
-          data: { node_id }
+          data: { node_id: props.nodeId }
         })
         state.last_modified = res.data.last_modified
         state.log_lines = res.data.log_lines
@@ -44,10 +50,11 @@ export default defineComponent({
       }
     }
 
-    getLogs(root.$route.params.id)
+    getLogs()
 
     return {
-      ...toRefs(state)
+      ...toRefs(state),
+      getLogs
     }
   }
 })

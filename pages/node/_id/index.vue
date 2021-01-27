@@ -15,14 +15,17 @@ v-container
             v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
+            p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
+              | {{ helperText }}
             //- Unlock button
-            core-dialog(v-if='canUnlock' :value='false' useActivator activatorText='Unlock Node')
-              password-input(
-                @done='unlockNode'
-                text='Unlock Node'
-                :error='error'
-                :loading='unlocking'
-              )
+            v-container(v-if='canUnlock')
+              core-dialog(:value='false' useActivator activatorText='Unlock Node')
+                password-input(
+                  @done='unlockNode'
+                  text='Unlock Node'
+                  :error='error'
+                  :loading='unlocking'
+                )
             //- Update button
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
@@ -40,9 +43,6 @@ v-container
               //- node data table tab
               v-tab-item
                 data-table(:node='nodeData')
-                v-divider
-                p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
-                  | {{ helperText }}
               //- WIP network tab
               //- v-tab-item
                 span this is the network tab
@@ -53,7 +53,7 @@ v-container
               v-tab-item
                 node-settings(:node='nodeData' @updated='$fetch')
               v-tab-item
-                logs(ref='logsRef')
+                logs(ref='logsRef' :nodeId='$route.params.id')
                   v-dialog(max-width='800')
                     template(v-slot:activator='{ on }')
                       v-btn(:disabled='status === "provisioning"' v-on='on' icon).ml-1.mr-3
