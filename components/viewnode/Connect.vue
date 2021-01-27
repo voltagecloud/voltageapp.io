@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container
+  div
     span(v-if='node.status !== "running"')
       | You can only connect to a running node. Please turn this node on before connecting
     node-password-input(

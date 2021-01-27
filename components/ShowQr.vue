@@ -1,5 +1,5 @@
 <template lang="pug">
-v-container(:v-show='connectURI')
+div(:v-show='connectURI')
   v-tabs(:centered='true' background-color='highlight' color='primary' :dark='true' :grow='true' show-arrows)
     v-tab(key="1")
       | LNDConnect
