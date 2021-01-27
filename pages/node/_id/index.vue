@@ -44,7 +44,7 @@ v-container
                 p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
                   | {{ helperText }}
               //- WIP network tab
-              v-tab-item
+              //- v-tab-item
                 span this is the network tab
               v-tab-item
                 connect-tab(:node='nodeData')
@@ -354,7 +354,7 @@ export default defineComponent({
     // data for tab state
     const tabs = ref([
       'Info',
-      'Network',
+      // 'Network',
       'Connect',
       'Dashboards',
       'Settings',
