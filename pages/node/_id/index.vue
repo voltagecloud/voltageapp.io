@@ -60,7 +60,7 @@ v-container
                   v-dialog(max-width='800')
                     template(v-slot:activator='{ on }')
                       v-btn(:disabled='status === "provisioning"' v-on='on' icon).ml-1.mr-3
-                        v-icon mdi-arrow-left-circle
+                        v-icon mdi-export
                     export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
