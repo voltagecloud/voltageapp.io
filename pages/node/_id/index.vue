@@ -10,6 +10,7 @@ v-container
                 v-for='tab in tabs'
                 :key='tab'
                 active-class='highlight'
+                @click='() => { if (tab === "Logs" && !!logsRef) { logsRef.getLogs() }}'
               ) {{tab}}
             v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
@@ -50,6 +51,17 @@ v-container
                 span this is the network tab
               v-tab-item
                 connect-tab(:node='nodeData')
+              v-tab-item
+                dashboard-data(:nodeID='nodeID')
+              v-tab-item
+                node-settings(:node='nodeData' @updated='$fetch')
+              v-tab-item
+                logs(ref='logsRef')
+                  v-dialog(max-width='800')
+                    template(v-slot:activator='{ on }')
+                      v-btn(:disabled='status === "provisioning"' v-on='on' icon).ml-1.mr-3
+                        v-icon mdi-arrow-left-circle
+                    export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
@@ -57,23 +69,6 @@ v-container
               v-btn(color='highlight' block @click='connect').info--text Connect
             v-container(v-if='status === "waiting_init"')
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
-            //- TODO delete me. component function is now handled in tabs
-            //- password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
-            //- v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
-            edit-settings(:node='nodeData' @updated='$fetch')
-            v-container
-              v-dialog(max-width='800')
-                template(v-slot:activator='{ on }')
-                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Dashboards
-                dashboard-data(:nodeID='nodeID')
-            v-container
-              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
-            v-container
-              v-dialog(max-width='800')
-                template(v-slot:activator='{ on }')
-                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Export Data
-                export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container(v-if='nodeCreating' color='primary')
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
                 v-card.text-center(style='padding: 20px;' :loading='nodeCreating')
@@ -131,16 +126,18 @@ import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
-import { Node } from '~/types/apiResponse'
+import type { Node } from '~/types/apiResponse'
+import type LogsComponent from '~/components/viewnode/Logs.vue'
 
 export default defineComponent({
   components: {
     NodeControls: () => import('~/components/viewnode/NodeControls.vue'),
     DataTable: () => import('~/components/viewnode/DataTable.vue'),
-    EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
+    NodeSettings: () => import('~/components/viewnode/NodeSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
-    ConnectTab: () => import('~/components/viewnode/tabs/Connect.vue'),
+    ConnectTab: () => import('~/components/viewnode/Connect.vue'),
+    Logs: () => import('~/components/viewnode/Logs.vue'),
     // PasswordDialog: () => import('~/components/PasswordDialog.vue'),
     // ShowQr: () => import('~/components/ShowQr.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
@@ -362,11 +359,15 @@ export default defineComponent({
       'Info',
       'Network',
       'Connect',
+      'Dashboards',
       'Settings',
       'Logs'
     ])
 
     const curTab = ref(0)
+
+    // only load logs on tab click
+    const logsRef = ref<null|typeof LogsComponent>(null)
 
     return {
       nodeData,
@@ -406,7 +407,8 @@ export default defineComponent({
       nodeCreating,
       createText,
       tabs,
-      curTab
+      curTab,
+      logsRef
     }
   }
 })
