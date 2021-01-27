@@ -16,12 +16,9 @@ v-container
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
             //- Unlock button
-            v-container.align-center.justify-center(v-if='canUnlock')
-              password-dialog(
-                v-model='unlockDialog'
+            core-dialog(v-if='canUnlock' :value='false' useActivator activatorText='Unlock Node')
+              password-input(
                 @done='unlockNode'
-                useActivator
-                activatorText='Unlock'
                 text='Unlock Node'
                 :error='error'
                 :loading='unlocking'
@@ -138,8 +135,8 @@ export default defineComponent({
     DashboardData: () => import('~/components/DashboardData.vue'),
     ConnectTab: () => import('~/components/viewnode/Connect.vue'),
     Logs: () => import('~/components/viewnode/Logs.vue'),
-    // PasswordDialog: () => import('~/components/PasswordDialog.vue'),
-    // ShowQr: () => import('~/components/ShowQr.vue'),
+    CoreDialog: () => import('~/components/core/Dialog.vue'),
+    PasswordInput: () => import('~/components/NodePasswordInput.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
