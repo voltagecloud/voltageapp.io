@@ -13,7 +13,7 @@
           | Last Modified: {{ last_modified }}   -   Logs are updated every minute
         v-card-text
           v-list(style='background-color: #505050; font-family: monospace; border-radius: 5px;').scrollable
-            v-list-item(v-for='(log, i) in log_lines')
+            v-list-item(v-for='(log, i) in log_lines' :key='i')
               v-list-item-content
                 v-list-item-title(style='font-size: 12px; color: #ffffff;') {{ log }}
 </template>

@@ -50,7 +50,7 @@ export default defineComponent({
       pass: ''
     })
 
-    function isBase64 (str) {
+    function isBase64 (str: string) {
       if (str === '' || str.trim() === '') { return false }
       try {
         return btoa(atob(str)) === str
