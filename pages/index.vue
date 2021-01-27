@@ -190,6 +190,7 @@ export default defineComponent({
       settings.minchansize = ''
       settings.maxchansize = ''
       settings.autocompaction = false
+      settings.defaultfeerate = ''
       createStore.SETTINGS(settings)
       createStore.PASSWORD(password.value)
       try {

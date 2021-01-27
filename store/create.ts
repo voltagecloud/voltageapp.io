@@ -21,7 +21,8 @@ const defaultSettings = {
   whitelist: [],
   minchansize: '',
   maxchansize: '',
-  autocompaction: false
+  autocompaction: false,
+  defaultfeerate: ''
 }
 
 @Module({
