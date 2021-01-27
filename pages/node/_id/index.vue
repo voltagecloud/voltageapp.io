@@ -119,6 +119,7 @@ v-container
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import axios from 'axios'
+import crypto from 'crypto-js'
 import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
