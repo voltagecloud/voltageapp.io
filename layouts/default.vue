@@ -2,7 +2,7 @@
   v-app
     v-navigation-drawer(v-model='showDrawer' app='' clipped='')
       v-list.mt-lg-8(v-if='nodeStore.IDNames.length' dense nav)
-        v-list-item(v-for='obj in nodeStore.IDNames' :key='obj.node_id' link='' @click='$router.push(`/node/${obj.node_id}`)')
+        v-list-item(v-for='obj in nodeStore.IDNames' :key='obj.node_id' link='' @click='$router.push(`/node/${obj.node_id}`); showDrawer = false')
           v-list-item-action(v-if='false')
             v-icon {{ }}
           v-list-item-content
