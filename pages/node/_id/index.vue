@@ -5,7 +5,7 @@ v-container
       v-fade-transition
         node-controls(:nodeID='nodeID' @event='$fetch')
           template(v-slot:prepend-content)
-            v-tabs(v-model='curTab' background-color='transparent' grow )
+            v-tabs(v-model='curTab' background-color='transparent' grow show-arrows)
               v-tab(
                 v-for='tab in tabs'
                 :key='tab'
