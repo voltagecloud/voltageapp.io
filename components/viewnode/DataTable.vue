@@ -4,7 +4,6 @@ v-container
     | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill.
     | Please update your payment method to prevent the node from being deleted.
     p
-  //- password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
   core-dialog(v-model='showPasswordDialog')
     //- force component reset on dialog change
     template(v-if='showPasswordDialog')
