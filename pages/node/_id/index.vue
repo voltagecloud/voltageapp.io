@@ -4,22 +4,29 @@ v-container
     v-col
       v-fade-transition
         node-controls(:nodeID='nodeID' @event='$fetch')
-          template(v-slot:append-content v-if='nodeData && nodeData.node_name')
+          template(v-slot:prepend-content)
+            v-tabs(v-model='curTab' background-color='transparent' grow show-arrows)
+              v-tab(
+                v-for='tab in tabs'
+                :key='tab'
+                active-class='highlight'
+                @click='() => { if (tab === "Logs" && !!logsRef) { logsRef.getLogs() }}'
+              ) {{tab}}
             v-divider
-            data-table(:node='nodeData')
+          template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
             p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
               | {{ helperText }}
-            v-container.align-center.justify-center(v-if='canUnlock')
-              password-dialog(
-                v-model='unlockDialog'
-                @done='unlockNode'
-                useActivator
-                activatorText='Unlock'
-                text='Unlock Node'
-                :error='error'
-                :loading='unlocking'
-              )
+            //- Unlock button
+            v-container(v-if='canUnlock')
+              core-dialog(:value='false' useActivator activatorText='Unlock Node')
+                password-input(
+                  @done='unlockNode'
+                  text='Unlock Node'
+                  :error='error'
+                  :loading='unlocking'
+                )
+            //- Update button
             v-container(v-if='canUpdate' @click='confirmUpdate = true')
               v-btn(color='highlight' block).info--text Update Available
               v-dialog(v-model='confirmUpdate' max-width='800')
@@ -29,29 +36,34 @@ v-container
                   v-card-actions
                     v-btn(color='info' @click='closeAndUpdate') Yes
                     v-btn(@click='confirmUpdate = false') No
+            v-tabs-items(
+              v-model='curTab'
+              :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
+            )
+              //- node data table tab
+              v-tab-item
+                data-table(:node='nodeData')
+                v-container
+                  core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
+                    export-data(:nodeID='nodeID' :nodeStatus='status')
+              //- WIP network tab
+              //- v-tab-item
+                span this is the network tab
+              v-tab-item
+                connect-tab(:node='nodeData')
+              v-tab-item
+                dashboard-data(:nodeID='nodeID')
+              v-tab-item
+                node-settings(:node='nodeData' @updated='$fetch')
+              v-tab-item
+                logs(ref='logsRef' :nodeId='$route.params.id')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
-            v-container(v-if='status === "running"')
+            //- v-container(v-if='status === "running"')
               v-btn(color='highlight' block @click='connect').info--text Connect
             v-container(v-if='status === "waiting_init"')
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
-            password-dialog(v-model='showPasswordDialog' @done='handleConnectNode' :error='error' text='Connect to Node')
-            v-container(v-if='showQrDialog === true')
-              show-qr(v-model='showQrDialog' :connectURI='connectURI' :api='apiEndpoint' :cert='cert' :macaroon='macaroon' :pass='pass' :grpc='grpc' :rest='rest' @clear='clearQr' @updateApi='buildUri')
-            edit-settings(:node='nodeData' @updated='$fetch')
-            v-container
-              v-dialog(max-width='800')
-                template(v-slot:activator='{ on }')
-                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Dashboards
-                dashboard-data(:nodeID='nodeID')
-            v-container
-              v-btn(:disabled='status === "provisioning"' color='secondary' block :to='`/node/${$route.params.id}/logs`').warning--text View Logs
-            v-container
-              v-dialog(max-width='800')
-                template(v-slot:activator='{ on }')
-                  v-btn(:disabled='status === "provisioning"' v-on='on' color='secondary' block).warning--text Export Data
-                export-data(:nodeID='nodeID' :nodeStatus='status')
             v-container(v-if='nodeCreating' color='primary')
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
                 v-card.text-center(style='padding: 20px;' :loading='nodeCreating')
@@ -110,17 +122,20 @@ import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
 import useNodeStatus from '~/compositions/useNodeStatus'
 import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
-import { Node } from '~/types/apiResponse'
+import type { Node } from '~/types/apiResponse'
+import type LogsComponent from '~/components/viewnode/Logs.vue'
 
 export default defineComponent({
   components: {
     NodeControls: () => import('~/components/viewnode/NodeControls.vue'),
     DataTable: () => import('~/components/viewnode/DataTable.vue'),
-    EditSettings: () => import('~/components/viewnode/EditSettings.vue'),
+    NodeSettings: () => import('~/components/viewnode/NodeSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
-    PasswordDialog: () => import('~/components/PasswordDialog.vue'),
-    ShowQr: () => import('~/components/ShowQr.vue'),
+    ConnectTab: () => import('~/components/viewnode/Connect.vue'),
+    Logs: () => import('~/components/viewnode/Logs.vue'),
+    CoreDialog: () => import('~/components/core/Dialog.vue'),
+    PasswordInput: () => import('~/components/NodePasswordInput.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
@@ -180,7 +195,7 @@ export default defineComponent({
     const nodeID = ref(root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus, postNode, connectNode } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus, postNode } = useNodeApi(root.$nuxt.context)
     const timer = ref<NodeJS.Timeout|null>(null)
     const errorText = ref('')
     const initializing = ref(false)
@@ -196,8 +211,8 @@ export default defineComponent({
       }
     })
 
-    function sleep(ms: number) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+    function sleep (ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms))
     }
 
     async function initialize () {
@@ -206,19 +221,19 @@ export default defineComponent({
       if (createStore.password) {
         initPassword.value = createStore.password
       } else {
-        if (nodePassword.value == "") {
-          passError.value = "You must create a password."
+        if (nodePassword.value === '') {
+          passError.value = 'You must create a password.'
           initializing.value = false
           return
         }
         if (nodePassword.value.length < 8) {
-          passError.value = "Password must be at least 8 characters."
+          passError.value = 'Password must be at least 8 characters.'
           initializing.value = false
           return
         }
         initPassword.value = nodePassword.value
       }
-      createText.value = "initializing"
+      createText.value = 'initializing'
       const node = lndStore.currentNode as Node
       updateStatus(node.node_id, 'initializing')
       try {
@@ -235,7 +250,7 @@ export default defineComponent({
             stateless_init: true
           }
         })
-        createText.value = "encrypting data"
+        createText.value = 'encrypting data'
         if (node.macaroon_backup) {
           // @ts-ignore
           const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
@@ -248,8 +263,8 @@ export default defineComponent({
         createStore.WIPE_PASSWORD()
         res.data = {}
         seed.data = {}
-        await sleep(4000);
-        createText.value = "finalizing"
+        await sleep(4000)
+        createText.value = 'finalizing'
       } catch (err) {
         updateStatus(node.node_id, 'waiting_init')
         nodeCreating.value = false
@@ -274,7 +289,6 @@ export default defineComponent({
       password: nodePassword,
       showPassword
     } = useFormValidation()
-
 
     const unlockDialog = ref(false)
     const unlocking = ref(false)
@@ -310,100 +324,23 @@ export default defineComponent({
       root.$nuxt.$router.go()
     }
 
-    const encrypted = ref('')
-    const pass = ref('')
-    const cert = ref('')
-    const apiEndpoint = ref('')
-    const macaroon = ref('')
-    const grpc = computed(() => nodeData.value.settings.grpc)
-    const rest = computed(() => nodeData.value.settings.rest)
-    const showPasswordDialog = ref(false)
-    const showQrDialog = ref(false)
-    async function connect () {
-      showPasswordDialog.value = true
-      try {
-        const res = await connectNode(nodeData.value.node_id, 'admin')
-        const { endpoint, macaroon, tls_cert } = res
-        if (macaroon) {
-          apiEndpoint.value = endpoint
-          cert.value = tls_cert
-          encrypted.value = macaroon
-        } else {
-          // IMPLEMENT MACAROON UPLOAD
-        }
-      } catch (e) {
-        error.value = e.toString()
-      }
-    }
-
-    // @ts-ignore
-    function isBase64 (str) {
-      if (str === '' || str.trim() === '') { return false }
-      try {
-        return btoa(atob(str)) === str
-      } catch (err) {
-        return false
-      }
-    }
-    const connectURI = ref('')
-
-    // convert b64 to b64url
-    function safeUrl (data: string) {
-      data = data.replace(/\+/g, '-')
-      data = data.replace(/\//g, '_')
-      data = data.replace(/=/g, '')
-      return data
-    }
-
-    function buildUri (api: string, port: string, tls_cert: string, macaroon: string) {
-      macaroon = safeUrl(macaroon)
-      connectURI.value = (tls_cert)
-        ? `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
-        : `lndconnect://${api}:${port}?macaroon=${macaroon}`
-    }
-
-    function handleConnectNode (password: string, api: string) {
-      const port = (api === 'rest') ? '8080' : '10009'
-      try {
-        const decrypted = crypto.AES.decrypt(encrypted.value || '', password).toString(crypto.enc.Base64)
-        const decryptResult = atob(decrypted)
-        if (isBase64(decryptResult)) {
-          macaroon.value = decryptResult
-          buildUri(nodeData.value.api_endpoint, port, '', decryptResult)
-          showQrDialog.value = true
-          showPasswordDialog.value = false
-          pass.value = password
-        } else {
-          error.value = 'Incorrect password'
-        }
-      } catch (e) {
-        console.error('cipher mismatch, macaroon decryption failed')
-        console.error(e)
-        error.value = e.toString()
-      }
-    }
-
-    function clearQr () {
-      showQrDialog.value = false
-    }
-
     // clear errors on typing in password field
     watch(nodePassword, () => { error.value = '' })
     watch(nodePassword, () => { passError.value = '' })
     watch(status, (newStatus: string) => {
-      if (newStatus === "initializing" || newStatus === "provisioning") {
+      if (newStatus === 'initializing' || newStatus === 'provisioning') {
         nodeCreating.value = true
         createText.value = newStatus
       } else {
         nodeCreating.value = false
       }
-      if (newStatus === "waiting_init") {
+      if (newStatus === 'waiting_init') {
         nodeCreating.value = true
-        createText.value = "waiting_init"
+        createText.value = 'waiting_init'
         initialize()
       }
-      if (newStatus === "running") {
-        createText.value = "complete"
+      if (newStatus === 'running') {
+        createText.value = 'complete'
       }
     })
 
@@ -412,6 +349,21 @@ export default defineComponent({
       confirmUpdate.value = false
       await update()
     }
+
+    // data for tab state
+    const tabs = ref([
+      'Info',
+      // 'Network',
+      'Connect',
+      'Dashboards',
+      'Settings',
+      'Logs'
+    ])
+
+    const curTab = ref(0)
+
+    // only load logs on tab click
+    const logsRef = ref<null|typeof LogsComponent>(null)
 
     return {
       nodeData,
@@ -433,22 +385,8 @@ export default defineComponent({
       unlockDialog,
       timer,
       error,
-      connect,
-      showPasswordDialog,
-      showQrDialog,
-      handleConnectNode,
-      pass,
-      connectURI,
-      clearQr,
-      encrypted,
-      cert,
-      apiEndpoint,
-      macaroon,
-      buildUri,
       confirmUpdate,
       closeAndUpdate,
-      grpc,
-      rest,
       errorText,
       settings,
       required,
@@ -463,7 +401,10 @@ export default defineComponent({
       passError,
       helperText,
       nodeCreating,
-      createText
+      createText,
+      tabs,
+      curTab,
+      logsRef
     }
   }
 })

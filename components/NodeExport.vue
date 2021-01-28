@@ -13,15 +13,15 @@
         v-col(cols='auto')
           v-row(justify='end')
 
-            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="attrs" v-on="on" :to='`/node/${exportData.node_id}`').mx-1
+                v-btn(icon v-bind="$attrs" v-on="on" :to='`/node/${exportData.node_id}`').mx-1
                   v-icon mdi-forward
               span
                 | Go to Node
-            v-tooltip(top v-model="show" :open-on-click="true" :open-on-hover="true")
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="attrs" v-on="on" :href='exportData.url' target='_blank' :disabled='isPending').ml-1.mr-3
+                v-btn(icon v-bind="$attrs" v-on="on" :href='exportData.url' target='_blank' :disabled='isPending').ml-1.mr-3
                   v-icon mdi-download
               span
                 | Download Export

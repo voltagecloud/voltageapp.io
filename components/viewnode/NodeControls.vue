@@ -1,5 +1,6 @@
 <template lang="pug">
 v-card(color='info')
+  slot(name='prepend-content')
   v-progress-linear(indeterminate absolute top v-if='loading' color='accent')
   template(v-if='nodeData && nodeData.node_name')
     v-card-title
@@ -55,7 +56,7 @@ export default defineComponent({
   components: {
     ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
   },
-  setup (props, { root, emit }) {
+  setup (props, { root }) {
     const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
 
     function navigate () {

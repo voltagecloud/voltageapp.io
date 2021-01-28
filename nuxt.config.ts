@@ -78,7 +78,8 @@ export default {
   */
   buildModules: [
     '@nuxt/typescript-build',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxtjs/composition-api'
   ],
   /*
   ** Nuxt.js modules
