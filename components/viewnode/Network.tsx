@@ -5,7 +5,8 @@ const h = createElement
 
 export default defineComponent({
   components: {
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
+    JsonTable: () => import('~/components/core/JsonTable')
   },
   props: {
     enabledREST: {
@@ -20,7 +21,7 @@ export default defineComponent({
   setup: (props, ctx) => {
     const { isMacaroonDecrypted, handleConnectNode, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.nodeId)
 
-    const payload = ref('')
+    const payload = ref<Record<string, any>>({})
 
     watchEffect(async () => {
       if (!macaroonHex.value) return
@@ -32,7 +33,29 @@ export default defineComponent({
         })
       })
       const json = await res.json()
-      payload.value = JSON.stringify(json)
+      payload.value = {
+        'Identity Pubkey': json.identity_pubkey,
+        Alias: json.alias,
+        Color: json.color,
+        'Pending Channels': json.num_pending_channels,
+        'Active Channels': json.num_active_channels,
+        'Inactive Channels': json.num_inactive_channels,
+        Peers: json.num_peers,
+        'Block Height': json.block_height,
+        'Synced to Chain': json.synced_to_chain,
+        'Synced to Graph': json.synced_to_graph,
+        URIs: json.uris
+      }
+      console.log({ json })
+    })
+
+    const normalizedPayload = computed(() => {
+      if (payload.value.keys().length === 0) return []
+      const { chains, uris, features, ...simpleKeys } = payload.value
+      return Object.entries(simpleKeys).map(([key, value]) => ({
+        key: key as string,
+        value: value as string
+      }))
     })
 
     return () => {
@@ -47,7 +70,7 @@ export default defineComponent({
             error={error.value}
         />
       } else {
-        return <div>{payload.value}</div>
+        return <json-table data={() => payload.value} />
       }
     }
   }
