@@ -301,7 +301,7 @@ export default defineComponent({
       unlocking.value = true
       try {
         const node = lndStore.currentNode as Node
-        const res = await axios({
+        await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
           data: {
