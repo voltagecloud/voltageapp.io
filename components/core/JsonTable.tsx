@@ -42,6 +42,7 @@ export default defineComponent({
             color="accent"
             text-color="warning"
             text={`${data.value}`}
+            class="mr-3"
           />
         )
       } else if (data.value === null) {
@@ -54,8 +55,7 @@ export default defineComponent({
             <tbody>
               {data.value.map((elem, i) => (
                 <tr>
-                  <td>{i}</td>
-                  <td>
+                  <td class="text-end">
                     <json-table data={() => elem} />
                   </td>
                 </tr>
@@ -71,8 +71,10 @@ export default defineComponent({
             <tbody>
               {Object.entries(data.value).map(([key, val]) => (
                 <tr>
-                  <td>{key}</td>
-                  <td>
+                  <td style="width: 20vw;">
+                    <div style="width: 20vw;">{key}</div>
+                  </td>
+                  <td class="text-end">
                     <json-table data={() => val} />
                   </td>
                 </tr>

@@ -50,7 +50,8 @@ v-container
     tbody
       template(v-for='(v, k) in nodeInfo')
         tr(v-if='!!v' :key='k')
-          td {{ k }}
+          td(style='width: 20vw; margin: 0;')
+            div(style='width: 20vw; margin: 0;') {{ k }}
           td.text-end(v-if='k === "TLS Cert" && v !== "pending"')
             v-chip(
               color='accent'
