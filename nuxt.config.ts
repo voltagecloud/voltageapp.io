@@ -94,7 +94,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://api.voltageapp.io',
+    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io',
     https: true,
     progress: true,
     debug: !!(dev)
