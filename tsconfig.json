@@ -16,6 +16,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "baseUrl": ".",
+    "jsx": "preserve",
     "paths": {
       "~/*": [
         "./*"
@@ -29,7 +30,7 @@
       "@nuxt/types",
       "@nuxtjs/axios",
       "vuetify",
-      "@aws-amplify/auth",
+      "@aws-amplify/auth"
     ]
   },
   "exclude": [

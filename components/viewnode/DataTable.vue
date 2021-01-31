@@ -3,8 +3,6 @@ v-container
   v-container(v-if='nodeExpired')
     | [BILLING ISSUE] This node is set to expire on {{ props.node.expires }} due to a past due bill.
     | Please update your payment method to prevent the node from being deleted.
-    p
-  //- password-dialog(v-model='showPasswordDialog' @done='handleDownload' :error='error' :text='passwordDialogButton')
   core-dialog(v-model='showPasswordDialog')
     //- force component reset on dialog change
     template(v-if='showPasswordDialog')
@@ -52,7 +50,8 @@ v-container
     tbody
       template(v-for='(v, k) in nodeInfo')
         tr(v-if='!!v' :key='k')
-          td {{ k }}
+          td(style='width: 20vw; margin: 0;')
+            div(style='width: 20vw; margin: 0;') {{ k }}
           td.text-end(v-if='k === "TLS Cert" && v !== "pending"')
             v-chip(
               color='accent'

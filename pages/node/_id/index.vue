@@ -20,7 +20,7 @@ v-container
             //- Unlock button
             v-container(v-if='canUnlock')
               core-dialog(:value='false' useActivator activatorText='Unlock Node')
-                password-input(
+                node-password-input(
                   @done='unlockNode'
                   text='Unlock Node'
                   :error='error'
@@ -47,8 +47,8 @@ v-container
                   core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
                     export-data(:nodeID='nodeID' :nodeStatus='status')
               //- WIP network tab
-              //- v-tab-item
-                span this is the network tab
+              v-tab-item
+                network(:enabledREST='nodeData.settings.rest' :nodeId='nodeData.node_id')
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
@@ -124,6 +124,7 @@ import useNodeApi from '~/compositions/useNodeApi'
 import useFormValidation from '~/compositions/useFormValidation'
 import type { Node } from '~/types/apiResponse'
 import type LogsComponent from '~/components/viewnode/Logs.vue'
+import Network from '~/components/viewnode/Network'
 
 export default defineComponent({
   components: {
@@ -132,10 +133,11 @@ export default defineComponent({
     NodeSettings: () => import('~/components/viewnode/NodeSettings.vue'),
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
+    Network,
     ConnectTab: () => import('~/components/viewnode/Connect.vue'),
     Logs: () => import('~/components/viewnode/Logs.vue'),
     CoreDialog: () => import('~/components/core/Dialog.vue'),
-    PasswordInput: () => import('~/components/NodePasswordInput.vue'),
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue')
   },
@@ -299,7 +301,7 @@ export default defineComponent({
       unlocking.value = true
       try {
         const node = lndStore.currentNode as Node
-        const res = await axios({
+        await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
           data: {
@@ -353,7 +355,7 @@ export default defineComponent({
     // data for tab state
     const tabs = ref([
       'Info',
-      // 'Network',
+      'Network',
       'Connect',
       'Dashboards',
       'Settings',
