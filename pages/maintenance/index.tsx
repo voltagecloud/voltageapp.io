@@ -19,7 +19,7 @@ export default defineComponent({
                   Voltage is currently under maintenance
                 </v-col>
                 <v-col cols="12">
-                  This won't take long. Please Check back soon!
+                  This won't take long. Please check back soon!
                 </v-col>
               </v-row>
             </v-container>
