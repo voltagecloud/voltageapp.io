@@ -14,6 +14,12 @@ export default {
     webClientId: (dev) ? '4n1knfj0o7c473ult1qeqtv9u2' : '16hidm6n73l20ses41ruukko6t',
     stripeKey: (dev) ? 'pk_test_51HAHUBFE3QI8QkHeTr6oaBLIUUobHjxy3OeV2hVfhumWpJv8o0aZl7nsVPyOi2PbvuUhD0heQxxtwxsFbPRZhBbB00sTGDK9of' : 'pk_live_51HAHUBFE3QI8QkHeJoBERYx7cvgsbqcvVZdzGw4YC9e5aCCTOBOOZGjGj7pVeFatlZzi4OvG9qDNvphGBGd4tD5S00d7ZkkPzx'
   },
+  router: {
+    // POSSIBLE VALUES
+    // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
+    // [] --> disables maintenance mode
+    middleware: ['maintenance']
+  },
   /*
   ** Headers of the page
   */
