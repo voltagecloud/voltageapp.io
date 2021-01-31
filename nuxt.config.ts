@@ -18,7 +18,7 @@ export default {
     // POSSIBLE VALUES
     // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
     // [] --> disables maintenance mode
-    middleware: ['maintenance']
+    middleware: []
   },
   /*
   ** Headers of the page
