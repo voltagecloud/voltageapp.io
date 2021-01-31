@@ -1,12 +1,14 @@
 import { defineComponent, reactive, computed, ref, watchEffect, createElement } from '@vue/composition-api'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
+import { VContainer } from 'vuetify/lib'
 
 const h = createElement
 
 export default defineComponent({
   components: {
     NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
-    JsonTable: () => import('~/components/core/JsonTable')
+    JsonTable: () => import('~/components/core/JsonTable'),
+    VContainer
   },
   props: {
     enabledREST: {
@@ -70,7 +72,9 @@ export default defineComponent({
             error={error.value}
         />
       } else {
-        return <json-table data={() => payload.value} />
+        return <v-container>
+          <json-table data={() => payload.value} />
+        </v-container>
       }
     }
   }
