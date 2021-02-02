@@ -3,6 +3,7 @@
     app
     padless
     elevation="3"
+    style="padding-bottom: env(--safe-area-inset-bottom);"
   >
     <v-container fluid>
       <v-row justify="start">
