@@ -1,10 +1,13 @@
 import { Context, Middleware } from '@nuxt/types'
 import { nodeStore } from '~/store'
-import { User } from '~/types/apiResponse'
+import type { User, Node } from '~/types/apiResponse'
 
 const loadUser: Middleware = async ({ $axios }: Context) => {
-  const userRes = await $axios.get<User>('/user')
-  nodeStore.HYDRATE_USER(userRes.data)
+  const user = await $axios.get<User>('/user')
+  const nodes = await $axios.get<{nodes: Node[]}>('/node')
+  console.log({ nodes })
+
+  nodeStore.HYDRATE_USER({ user: user.data, nodes: nodes.data.nodes })
 }
 
 export default loadUser
