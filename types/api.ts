@@ -3,6 +3,7 @@ import { Address4, Address6 } from 'ip-address'
 export interface IDName {
     node_id: string
     node_name: string
+    created?: string
 }
 
 export enum NodeStatus {
@@ -69,3 +70,4 @@ export enum ExportData {
 export enum DashboardData {
     thunderhub = 'thunderhub'
 }
+
