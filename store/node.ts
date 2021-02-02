@@ -102,7 +102,7 @@ export default class NodeModule extends VuexModule {
 
     get IDNames () {
       if (this.user) {
-        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => (a.created || 0) > (b.created || 0) ? 1 : -1)
+        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => (a.created || 0) > (b.created || 0) ? -1 : 1)
       }
       return []
     }
