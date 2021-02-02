@@ -14,6 +14,12 @@ export default {
     webClientId: (dev) ? '4n1knfj0o7c473ult1qeqtv9u2' : '16hidm6n73l20ses41ruukko6t',
     stripeKey: (dev) ? 'pk_test_51HAHUBFE3QI8QkHeTr6oaBLIUUobHjxy3OeV2hVfhumWpJv8o0aZl7nsVPyOi2PbvuUhD0heQxxtwxsFbPRZhBbB00sTGDK9of' : 'pk_live_51HAHUBFE3QI8QkHeJoBERYx7cvgsbqcvVZdzGw4YC9e5aCCTOBOOZGjGj7pVeFatlZzi4OvG9qDNvphGBGd4tD5S00d7ZkkPzx'
   },
+  router: {
+    // POSSIBLE VALUES
+    // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
+    // [] --> disables maintenance mode
+    middleware: []
+  },
   /*
   ** Headers of the page
   */
@@ -94,7 +100,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://api.voltageapp.io',
+    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io',
     https: true,
     progress: true,
     debug: !!(dev)

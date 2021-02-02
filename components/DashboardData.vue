@@ -1,6 +1,9 @@
 <template lang="pug">
   v-card(color='secondary')
     v-card-title Dashboards
+      v-container
+        p(style='font-size: 13px; padding-bottom: 0px; word-wrap: break-word;' no-gutters).font-weight-light
+          | Dashboards expire after 30 minutes of inactivity or a max-life of 3 hours. You can provision as many as you want, but can only have 1 dashboard running per node at a time.
       v-container(v-if='newDashboard')
         v-card-actions
           v-container

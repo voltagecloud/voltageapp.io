@@ -108,10 +108,15 @@ export default class NodeModule extends VuexModule {
     }
 
     get showTrialBox () {
-      const showedTrial = localStorage.getItem('showedTrial')
-      if (this.user?.trial_available === true && (showedTrial === null || showedTrial === 'false')) {
+      /*
+      Disabling this for now because it doesn't work that great and can be annoying
+
+      let showedTrial = localStorage.getItem("showedTrial")
+      if (this.user?.trial_available === true && (showedTrial === null || showedTrial === "false")) {
         return true
       }
+      return false
+      */
       return false
     }
 }
