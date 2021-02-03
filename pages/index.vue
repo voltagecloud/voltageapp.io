@@ -95,12 +95,12 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import { layoutStore, nodeStore } from '~/store'
+import { Address4 } from 'ip-address'
+import { layoutStore, nodeStore, createStore } from '~/store'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
-import { createStore } from '~/store'
+
 import { Network } from '~/types/api'
-import { Address4, Address6 } from 'ip-address'
 
 export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
@@ -113,11 +113,6 @@ export default defineComponent({
       valid,
       settings,
       required,
-      form,
-      validIP,
-      remove,
-      showPalette,
-      invertColor,
       char8,
       matchPassword,
       confirmPassword,
@@ -126,7 +121,6 @@ export default defineComponent({
     } = useFormValidation()
     const { populateNode, createNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
 
-    const oppositeColor = computed(() => invertColor(settings.color))
     const populateError = ref(false)
 
     const nodeName = computed({
@@ -147,39 +141,39 @@ export default defineComponent({
     const noNodes = computed(() => nodes.value.length === 0 && display.value)
 
     const showTrialBox = computed(() => nodeStore.showTrialBox)
-    
-    const ip = ref("")
 
-    async function create() {
+    const ip = ref('')
+
+    async function create () {
       if (showTrialBox.value) {
         try {
           // @ts-ignore
           createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: 'trial' })
-          let node = await createNode()
+          const node = await createNode()
           ip.value = node.data.user_ip
         } catch (e) {
-          throw new Error(e)
           populateError.value = true
+          throw new Error(e)
         }
       }
     }
     create()
 
-    async function clear() {
+    function clear () {
       nodeStore.SET_SHOWED_TRIAL(true)
     }
 
-    async function populate() {
-      if (nodeName.value == "") {
-        errorMessage.value = "You must specify a node name."
+    async function populate () {
+      if (nodeName.value === '') {
+        errorMessage.value = 'You must specify a node name.'
         return
       }
-      if (password.value == "") {
-        error.value = "You must create a password."
+      if (password.value === '') {
+        error.value = 'You must create a password.'
         return
       }
       settings.alias = nodeName.value
-      settings.color = "#EF820D"
+      settings.color = '#EF820D'
       settings.whitelist = [ip.value as unknown as Address4]
       settings.webhook = ''
       settings.autopilot = false
@@ -194,7 +188,7 @@ export default defineComponent({
       createStore.SETTINGS(settings)
       createStore.PASSWORD(password.value)
       try {
-        const res = await populateNode()
+        await populateNode()
         nodeStore.SET_SHOWED_TRIAL(true)
         root.$router.push(`/node/${createStore.newNodeID}`)
       } catch (e) {
@@ -216,7 +210,6 @@ export default defineComponent({
     }
 
     return {
-      nodes,
       display,
       noNodes,
       showTrialBox,
@@ -234,7 +227,8 @@ export default defineComponent({
       matchPassword,
       char8,
       nodeName,
-      clear
+      clear,
+      nodes
     }
   }
 })

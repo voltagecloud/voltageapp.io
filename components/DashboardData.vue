@@ -37,13 +37,9 @@
                 a(@click='createNew')  Create a new one
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed } from '@vue/composition-api'
-import { DashboardData } from '~/types/api'
+import { defineComponent, ref, computed, onBeforeUnmount } from '@vue/composition-api'
 import useNodeApi from '~/compositions/useNodeApi'
 import { dashboardsStore } from '~/store'
-import { NodeDashboardStatus, NodeDashboard } from '~/types/apiResponse'
-
-let timerID: NodeJS.Timeout
 
 export default defineComponent({
   props: {
@@ -56,24 +52,23 @@ export default defineComponent({
     NodeDashboard: () => import('~/components/NodeDashboard.vue')
   },
   setup (props, { root }) {
-    const chosenDashboard = ref(DashboardData.thunderhub)
-    const dashboardTypes = [Object.values(DashboardData)]
     const errorMessage = ref('')
     const runningDashboard = ref(false)
     const newDashboard = ref(false)
-    const isChecking = ref(false)
-    const { getDashboards, createDashboard, loading } = useNodeApi(root.$nuxt.context)
+    const { createDashboard, loading } = useNodeApi(root.$nuxt.context)
     const filteredDashboards = computed(() => {
       return dashboardsStore.dashboards.filter((exp) => {
-        if (exp.node_id === props.nodeID && exp.status !== "deleted") {
+        if (exp.node_id === props.nodeID && exp.status !== 'deleted') {
           return true
         }
         return false
       })
     })
+    const unMounting = ref(false)
+    onBeforeUnmount(() => { unMounting.value = true })
 
-    async function checkRunningDashboard() {
-      let runningList = dashboardsStore.dashboards.filter(elem => elem.node_id === props.nodeID && elem.status !== "deleted")
+    function checkRunningDashboard () {
+      const runningList = dashboardsStore.dashboards.filter(elem => elem.node_id === props.nodeID && elem.status !== 'deleted')
       if (runningList.length > 0) {
         intervalCheck()
         runningDashboard.value = true
@@ -82,48 +77,28 @@ export default defineComponent({
         runningDashboard.value = false
         newDashboard.value = true
       }
-      return
     }
 
-    async function intervalCheck() {
-      if (isChecking.value) {
-        return
-      }
-      // @ts-ignore
+    async function intervalCheck () {
+      if (!dashboardsStore.shouldRefresh || unMounting.value) { return }
       const axios = root.$nuxt.context.$axios
-      // @ts-ignore
       const res = await axios.get('/dashboards')
-      await dashboardsStore.DASHBOARDS(res.data.dashboards)
-      if (dashboardsStore.shouldRefresh && !timerID) {
-        isChecking.value = true
-        // make suer interval is clean
-        // set new interval
-        const timerID = setInterval(async () => {
-          // If the user leaves the page stop checking
-          // @ts-ignore
-          if (root.$nuxt.context.route.name !== 'node-id') {
-            isChecking.value = false
-            clearInterval(timerID)
-          }
-          const res = await axios.get('/dashboards')
-          dashboardsStore.DASHBOARDS(res.data.dashboards)
-          if (!dashboardsStore.shouldRefresh) {
-            isChecking.value = true
-            clearInterval(timerID)
-          }
-        }, 5000)
-      }
+      dashboardsStore.DASHBOARDS(res.data.dashboards)
+
+      setTimeout(async () => {
+        await intervalCheck()
+      }, 5000)
     }
 
-    async function provisionDashboard() {
+    async function provisionDashboard () {
       loading.value = true
-      let newDash = await createDashboard(props.nodeID, 'thunderhub')
+      await createDashboard(props.nodeID, 'thunderhub')
       runningDashboard.value = true
       newDashboard.value = false
       await intervalCheck()
     }
 
-    function createNew() {
+    function createNew () {
       runningDashboard.value = false
       newDashboard.value = true
     }

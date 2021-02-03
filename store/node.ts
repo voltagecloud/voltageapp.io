@@ -29,15 +29,30 @@ export default class NodeModule extends VuexModule {
     nodes: Node[] = []
 
     @Mutation
-    HYDRATE_USER (user: User) {
+    HYDRATE_USER ({ user, nodes }: { user: User; nodes: Node[]; }) {
+      for (const n of nodes) {
+        if (n.network === Network.testnet) {
+          for (const tn of user.testnet_nodes) {
+            if (n.node_id === tn.node_id) {
+              tn.created = n.created
+            }
+          }
+        } else if (n.network === Network.mainnet) {
+          for (const mn of user.mainnet_nodes) {
+            if (n.node_id === mn.node_id) {
+              mn.created = n.created
+            }
+          }
+        }
+      }
       this.user = user
     }
 
     @Mutation
     SET_AVAILABLE ({ network, available }: AvailablePayload) {
-      if (network == 'testnet') {
+      if (network === 'testnet') {
         this.testnetAvailable = available
-      } else if (network == 'mainnet') {
+      } else if (network === 'mainnet') {
         this.mainnetAvailable = available
       }
     }
@@ -62,7 +77,7 @@ export default class NodeModule extends VuexModule {
     @Mutation
     UPDATE_NODE (payload: NodeStatusUpdate) {
       this.nodes = this.nodes.map((nodeObj) => {
-        if (nodeObj.node_id == payload.node_id) {
+        if (nodeObj.node_id === payload.node_id) {
           return Object.assign({}, nodeObj, payload)
         }
         return nodeObj
@@ -70,8 +85,8 @@ export default class NodeModule extends VuexModule {
     }
 
     @Mutation
-    SET_SHOWED_TRIAL(shown: boolean) {
-      localStorage.setItem("showedTrial", shown.toString())
+    SET_SHOWED_TRIAL (shown: boolean) {
+      localStorage.setItem('showedTrial', shown.toString())
       return shown
     }
 
@@ -87,7 +102,7 @@ export default class NodeModule extends VuexModule {
 
     get IDNames () {
       if (this.user) {
-        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => a.node_name > b.node_name ? 1 : -1)
+        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => (a.created || 0) > (b.created || 0) ? -1 : 1)
       }
       return []
     }
@@ -95,13 +110,13 @@ export default class NodeModule extends VuexModule {
     get showTrialBox () {
       /*
       Disabling this for now because it doesn't work that great and can be annoying
-      
+
       let showedTrial = localStorage.getItem("showedTrial")
       if (this.user?.trial_available === true && (showedTrial === null || showedTrial === "false")) {
         return true
       }
       return false
       */
-     return false
+      return false
     }
 }

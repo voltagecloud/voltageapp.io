@@ -46,7 +46,7 @@ v-form(
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' style='padding-right: 5px;' inset color='highlight')
               span
-                | Automatically runs an automated compaction on the node's database at startup. 
+                | Automatically runs an automated compaction on the node's database at startup.
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -205,8 +205,8 @@ export default defineComponent({
       console.log('Confirming the settings')
       let webhookValid = false
       let chansizeValid = false
-      if (settings.value.webhook !== "") {
-        if (settings.value.webhook.includes("http") && settings.value.webhook.includes(".")) {
+      if (settings.value.webhook !== '') {
+        if (settings.value.webhook.includes('http') && settings.value.webhook.includes('.')) {
           if (form.value?.validate()) {
             webhookValid = true
           }
