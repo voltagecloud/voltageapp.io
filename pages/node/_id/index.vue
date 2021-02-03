@@ -54,7 +54,7 @@ v-container
               v-tab-item
                 dashboard-data(:nodeID='nodeID')
               v-tab-item
-                node-settings(:node='nodeData' @updated='$fetch')
+                node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
             v-container(v-if='errorText !== ""')
