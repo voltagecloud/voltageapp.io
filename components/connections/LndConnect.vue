@@ -26,8 +26,6 @@ v-card.text-center.align-center(style='padding: 20px;')
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from '@vue/composition-api'
-import { Node } from '~/types/apiResponse'
-import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
   components: {
