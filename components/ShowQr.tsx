@@ -8,7 +8,7 @@ export default defineComponent({
   components: {
     LndConnect: () => import('~/components/connections/LNDConnect.tsx'),
     Manual: () => import('~/components/connections/Manual.tsx'),
-    Zap: () => import('~/components/connections/Zap.vue'),
+    Zap: () => import('~/components/connections/Zap.tsx'),
     Zeus: () => import('~/components/connections/Zeus.vue'),
     Lncli: () => import('~/components/connections/Lncli.vue'),
     ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
@@ -54,7 +54,7 @@ export default defineComponent({
           <manual node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <zap />
+          <zap node={props.node} />
         </v-tab-item>
         <v-tab-item>
           <zeus />
