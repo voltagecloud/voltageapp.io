@@ -41,11 +41,11 @@ export default defineComponent({
         <base-connect connectUri={uri.value} node={props.node} />
         <v-container>
             <v-row align="center" justify="space-between">
-              <v-col cols="6">
+              <v-col cols="6" class="d-flex flex-column align-center">
                 <api-toggle value={selectedApi.value} onInput={(val: 'GRPC'|'REST') => { console.log(val); selectedApi.value = val }} node={props.node} />
               </v-col>
               <v-spacer></v-spacer>
-              <v-col cols="6">
+              <v-col cols="6" class="d-flex flex-column align-center">
                 <cert-toggle value={includeCert.value} onInput={(val: boolean) => includeCert.value = val } cert={cert.value} />
               </v-col>
             </v-row>
