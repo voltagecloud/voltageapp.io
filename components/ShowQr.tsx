@@ -7,7 +7,7 @@ const h = createElement
 export default defineComponent({
   components: {
     LndConnect: () => import('~/components/connections/LNDConnect.tsx'),
-    Manual: () => import('~/components/connections/Manual.vue'),
+    Manual: () => import('~/components/connections/Manual.tsx'),
     Zap: () => import('~/components/connections/Zap.vue'),
     Zeus: () => import('~/components/connections/Zeus.vue'),
     Lncli: () => import('~/components/connections/Lncli.vue'),
@@ -34,7 +34,16 @@ export default defineComponent({
     const curTab = ref(0)
 
     return () => <v-sheet>
-      <v-tabs v-model={curTab.value}>
+      <v-tabs
+        value={curTab.value}
+        onChange={(val: number) => curTab.value = val} 
+        background-color="highlight"
+        color="primary"
+        centered
+        dark
+        grow
+        show-arrows
+      >
         {tabs.value.map((name, i) => <v-tab key={i}>{name}</v-tab>)}
       </v-tabs>
       <v-tabs-items v-model={curTab.value}>
@@ -42,7 +51,7 @@ export default defineComponent({
           <lnd-connect node={props.node}/>
         </v-tab-item>
         <v-tab-item>
-          <manual />
+          <manual node={props.node} />
         </v-tab-item>
         <v-tab-item>
           <zap />
