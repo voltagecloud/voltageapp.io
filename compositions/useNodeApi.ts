@@ -280,6 +280,17 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function sphinxConnString (node_id: string) {
+    loading.value = true
+    try {
+      return await $axios.post('/node/sphinx', { node_id })
+    } catch (e) {
+      error({ statusCode: 500 })
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -298,6 +309,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     saveSeed,
     getPurchaseSession,
     getDashboards,
-    createDashboard
+    createDashboard,
+    sphinxConnString
   }
 }
