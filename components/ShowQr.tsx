@@ -14,7 +14,7 @@ export default defineComponent({
     ThunderHub: () => import('~/components/connections/ThunderHub.tsx'),
     Joule: () => import('~/components/connections/Joule.tsx'),
     Btcpay: () => import('~/components/connections/BTCPay.tsx'),
-    Sphinx: () => import('~/components/connections/Sphinx')
+    Sphinx: () => import('~/components/connections/Sphinx'),
     VTabs,
     VTab,
     VTabsItems,
