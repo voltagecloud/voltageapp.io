@@ -1,6 +1,6 @@
 import { defineComponent, createElement, PropType, computed, ref } from '@vue/composition-api'
 import { Node } from '~/types/apiResponse'
-import { VTabs, VTab, VTabsItems, VTabItem, VSheet } from 'vuetify/lib'
+import { VTabs, VTab, VTabsItems, VTabItem, VSheet, VContainer } from 'vuetify/lib'
 
 const h = createElement
 
@@ -9,8 +9,8 @@ export default defineComponent({
     LndConnect: () => import('~/components/connections/LNDConnect.tsx'),
     Manual: () => import('~/components/connections/Manual.tsx'),
     Zap: () => import('~/components/connections/Zap.tsx'),
-    Zeus: () => import('~/components/connections/Zeus.vue'),
-    Lncli: () => import('~/components/connections/Lncli.vue'),
+    Zeus: () => import('~/components/connections/Zeus.tsx'),
+    Lncli: () => import('~/components/connections/Lncli.tsx'),
     ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
     Joule: () => import('~/components/connections/Joule.vue'),
     Btcpay: () => import('~/components/connections/BTCPay.vue'),
@@ -18,7 +18,8 @@ export default defineComponent({
     VTab,
     VTabsItems,
     VTabItem,
-    VSheet
+    VSheet,
+    VContainer
   },
   props: {
     node: {
@@ -27,7 +28,7 @@ export default defineComponent({
     }
   },
   setup: (props) => {
-    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server']
+    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server']
     // determine if sphinx tab should display
     const tabs = computed(() => props.node.settings.sphinx ? [...standardTabs, 'Sphinx'] : [...standardTabs])
     // hold state of current tab
@@ -57,22 +58,22 @@ export default defineComponent({
           <zap node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <zeus />
+          <zeus node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <lncli />
+          <lncli node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <thunder-hub />
+          <thunder-hub node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <joule />
+          <joule node={props.node} />
         </v-tab-item>
         <v-tab-item>
-          <btcpay />
+          <btcpay node={props.node} />
         </v-tab-item>
       </v-tabs-items>
-      <div class="font-weight-light text--darken-1 text-center align-center pa-md">
+      <v-container class="font-weight-light text--darken-1 text-center align-center">
         <p>
           These codes contain sensitive data used to connect to your node. Guard them carefully
         </p>
@@ -88,7 +89,7 @@ export default defineComponent({
         <a href="https://getvoltage.io/faq.html#applications" target="_blank">
           Popular apps to connect to your node.
         </a>
-      </div>
+      </v-container>
     </v-sheet>
   }
 })
