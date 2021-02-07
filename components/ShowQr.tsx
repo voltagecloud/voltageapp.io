@@ -11,9 +11,10 @@ export default defineComponent({
     Zap: () => import('~/components/connections/Zap.tsx'),
     Zeus: () => import('~/components/connections/Zeus.tsx'),
     Lncli: () => import('~/components/connections/Lncli.tsx'),
-    ThunderHub: () => import('~/components/connections/ThunderHub.vue'),
-    Joule: () => import('~/components/connections/Joule.vue'),
-    Btcpay: () => import('~/components/connections/BTCPay.vue'),
+    ThunderHub: () => import('~/components/connections/ThunderHub.tsx'),
+    Joule: () => import('~/components/connections/Joule.tsx'),
+    Btcpay: () => import('~/components/connections/BTCPay.tsx'),
+    Sphinx: () => import('~/components/connections/Sphinx')
     VTabs,
     VTab,
     VTabsItems,
@@ -30,7 +31,8 @@ export default defineComponent({
   setup: (props) => {
     const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server']
     // determine if sphinx tab should display
-    const tabs = computed(() => props.node.settings.sphinx ? [...standardTabs, 'Sphinx'] : [...standardTabs])
+    const hasSphinx = computed(() => props.node.settings.sphinx)
+    const tabs = computed(() => hasSphinx.value ? [...standardTabs, 'Sphinx'] : [...standardTabs])
     // hold state of current tab
     const curTab = ref(0)
 
@@ -72,6 +74,9 @@ export default defineComponent({
         <v-tab-item>
           <btcpay node={props.node} />
         </v-tab-item>
+        { !hasSphinx.value || <v-tab-item>
+          <sphinx node={props.node} />
+        </v-tab-item> }
       </v-tabs-items>
       <v-container class="font-weight-light text--darken-1 text-center align-center">
         <p>
