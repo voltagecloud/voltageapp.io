@@ -1,4 +1,4 @@
-import { defineComponent, createElement, PropType, computed } from '@vue/composition-api'
+import { defineComponent, createElement, PropType, ref } from '@vue/composition-api'
 import { Node } from '~/types/apiResponse'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
 import useBuildUri, { selectedApi, includeCert } from '~/compositions/useBuildUri'
@@ -24,11 +24,11 @@ export default defineComponent({
     }
   },
   setup: (props, ctx) => {
-    const { macaroon, apiEndpoint, cert } = useDecryptMacaroon(ctx, props.node.node_id)
+    const { macaroon, apiEndpoint } = useDecryptMacaroon(ctx, props.node.node_id)
     const { uri } = useBuildUri({
       endpoint: apiEndpoint,
       macaroon,
-      cert,
+      cert: ref(false),
       api: selectedApi
     })
 
@@ -42,11 +42,7 @@ export default defineComponent({
         <v-container>
             <v-row align="center" justify="space-between">
               <v-col cols="6" class="d-flex flex-column align-center">
-                <api-toggle value={selectedApi.value} onInput={(val: 'GRPC'|'REST') => { console.log(val); selectedApi.value = val }} node={props.node} />
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col cols="6" class="d-flex flex-column align-center">
-                <cert-toggle value={includeCert.value} onInput={(val: boolean) => includeCert.value = val } cert={cert.value} />
+                <api-toggle value={selectedApi.value} onInput={(val: 'GRPC'|'REST') => {selectedApi.value = val}} node={props.node} />
               </v-col>
             </v-row>
         </v-container>
