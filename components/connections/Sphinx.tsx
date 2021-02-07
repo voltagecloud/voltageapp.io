@@ -24,6 +24,9 @@ export default defineComponent({
 
     watchEffect(async () => {
       const res = await sphinxConnString(props.node.node_id)
+      if (res && res.data) {
+        state.connectionString = res.data
+      }
     })
 
     return () => <v-container clas="text-center">
