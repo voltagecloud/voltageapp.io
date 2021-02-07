@@ -1,6 +1,6 @@
 import { reactive, SetupContext, computed, toRefs } from '@vue/composition-api'
-import crypto from 'crypto-js'
 import useNodeApi from './useNodeApi'
+import { base64ToHex, decryptMacaroon } from '~/utils/crypto'
 
 const state = reactive({
   apiEndpoint: '',
@@ -8,31 +8,13 @@ const state = reactive({
   encrypted: '',
   error: '',
   macaroon: '',
-  nodeId: ''
+  nodeId: '',
+  password: ''
 })
 
 const isMacaroonDecrypted = computed(() => !!state.macaroon)
 
-function base64ToHex (str: string) {
-  const raw = atob(str)
-  let result = ''
-  for (let i = 0; i < raw.length; i++) {
-    const hex = raw.charCodeAt(i).toString(16)
-    result += (hex.length === 2 ? hex : '0' + hex)
-  }
-  return result.toUpperCase()
-}
-
 const macaroonHex = computed(() => state.macaroon ? base64ToHex(state.macaroon) : '')
-
-function isBase64 (str: string) {
-  if (str === '' || str.trim() === '') { return false }
-  try {
-    return btoa(atob(str)) === str
-  } catch (err) {
-    return false
-  }
-}
 
 export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: string) {
   const { connectNode } = useNodeApi(root.$nuxt.context)
@@ -45,9 +27,10 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
     state.apiEndpoint = ''
     state.error = ''
     state.cert = ''
+    state.password = ''
   }
 
-  async function decryptMacaroon (
+  async function handleDecryptMacaroon (
     { password }:
     { password: string; }
   ) {
@@ -73,23 +56,14 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
       return
     }
     // attempt to decrypt macaroon
-    try {
-      const decrypted = crypto.AES.decrypt(state.encrypted || '', password).toString(crypto.enc.Base64)
-      const decryptResult = atob(decrypted)
-      if (isBase64(decryptResult)) {
-        state.macaroon = decryptResult
-      } else {
-        state.error = 'Incorrect password'
-      }
-    } catch (e) {
-      console.error('cipher mismatch, macaroon decryption failed')
-      console.error(e)
-      state.error = e.toString()
-    }
+    const { macaroon: decrypted, error } = decryptMacaroon({ password, encrypted: state.encrypted })
+    state.macaroon = decrypted
+    state.error = error
+    state.password = error ? '' : password
   }
 
   return {
-    decryptMacaroon,
+    handleDecryptMacaroon,
     isMacaroonDecrypted,
     macaroonHex,
     ...toRefs(state)
