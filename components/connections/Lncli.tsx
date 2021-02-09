@@ -9,7 +9,8 @@ export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue'),
-    VContainer: () => import('vuetify/lib').then(m => m.VContainer)
+    VContainer: () => import('vuetify/lib').then(m => m.VContainer),
+    VBtn: () => import('vuetify/lib').then(m => m.VBtn)
   },
   props: {
     node: {
