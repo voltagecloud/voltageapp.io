@@ -1,6 +1,6 @@
 import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
 import { authStore } from '~/store'
-import { VBtn } from 'vuetify/lib'
+import { VBtn, VIcon } from 'vuetify/lib'
 
 const h = createElement
 
@@ -13,7 +13,6 @@ export default defineComponent({
     VCol: () => import('vuetify/lib').then(m => m.VCol),
     VList: () => import('vuetify/lib').then(m => m.VList),
     VListItem: () => import('vuetify/lib').then(m => m.VListItem),
-    VIcon: () => import('vuetify/lib').then(m => m.VIcon),
     VSpacer: () => import('vuetify/lib').then(m => m.VIcon),
     VAppBar: () => import('vuetify/lib').then(m => m.VAppBar),
     VImg: () => import('vuetify/lib').then(m => m.VImg),
@@ -36,7 +35,9 @@ export default defineComponent({
       { text: 'Documentation', href: 'https://docs.voltageapp.io' }
     ]
 
-    // const username = computed(() => authStore.username)
+    // aws amplify typescript typings are incorrect smh jeff bezos
+    // @ts-ignore
+    const username = computed(() => authStore?.user?.attributes?.email || '')
 
     return () => <v-app>
       <v-navigation-drawer
@@ -70,7 +71,10 @@ export default defineComponent({
           scopedSlots={{
             //vuetify doesnt support tsx 
             // @ts-ignore
-            activator: ({ attrs, on }: {attrs: any; on:any;}) => <VBtn text {...attrs} {...{ on }}>Username</VBtn>,
+            activator: ({ attrs, on }: {attrs: any; on:any;}) => <VBtn text {...attrs} {...{ on }}>
+              {username.value}
+              <VIcon class="ml-3">mdi-account</VIcon>
+            </VBtn>,
           }}
         >
           <v-card>TESTING</v-card>
