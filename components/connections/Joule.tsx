@@ -1,3 +1,4 @@
+import crypto from 'crypto-js'
 import { defineComponent, createElement, PropType, computed, reactive } from '@vue/composition-api'
 import type { Node } from '~/types/apiResponse'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
@@ -10,7 +11,9 @@ const h = createElement
 
 export default defineComponent({
   components: {
-    VContainer: () => import('vuetify/lib').then(m => m.VContainer)
+    VContainer: () => import('vuetify/lib').then(m => m.VContainer),
+    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    VBtn: () => import('vuetify/lib').then(m => m.VBtn),
   },
   props: {
     node: {
@@ -19,6 +22,7 @@ export default defineComponent({
     }
   },
   setup: (props, ctx) => {
+    const { postMacaroon, connectNode } = useNodeApi(ctx.root.$nuxt.context)
     const { macaroon, apiEndpoint, macaroonHex, password } = useDecryptMacaroon(ctx, props.node.node_id)
     const nodename = computed(() => apiEndpoint.value.split('.')[0])
 
@@ -31,11 +35,10 @@ export default defineComponent({
     const readOnlyMacaroonB64 = computed(() => state.readOnlyMacaroonRaw ? hexToBase64(state.readOnlyMacaroonRaw) : '')
     const readOnlyMacaroonHex = computed(() => state.readOnlyMacaroonRaw.toUpperCase())
 
-    
     state.loading = true
     try {
-      // @ts-ignore
-      connectNode(root.$nuxt.$route.params.id, 'readonly').then(({ macaroon }) => {
+      connectNode(props.node.node_id, 'readonly').then(({ macaroon }) => {
+        console.log({ macaroon })
         state.checkedForReadOnly = true
         if (macaroon) {
           const { macaroon: decrypted, error } = decryptMacaroon({ password: password.value, encrypted: macaroon })
@@ -57,7 +60,7 @@ export default defineComponent({
       try {
         const res = await axios({
           method: 'POST',
-          url: `https://${apiEndpoint}:8080/v1/macaroon`,
+          url: `https://${apiEndpoint.value}:8080/v1/macaroon`,
           data: {
             permissions: [
               {
@@ -90,13 +93,10 @@ export default defineComponent({
             'Grpc-Metadata-macaroon': macaroonHex.value
           }
         })
-        // @ts-ignore
-        state.readOnlyMacaroonRaw = res.data
+        state.readOnlyMacaroonRaw = res.data.macaroon
         state.loading = false
-        // @ts-ignore
-        const encrypted = crypto.AES.encrypt(b64ByteMac, props.pass).toString()
-        const { postMacaroon } = useNodeApi(ctx.root.$nuxt.context)
-        await postMacaroon(ctx.root.$route.params.id, 'readonly', encrypted)
+        const encrypted = crypto.AES.encrypt(res.data.macaroon, password.value).toString()
+        await postMacaroon(props.node.node_id, 'readonly', encrypted)
       } catch (err) {
         state.error = `${err}`
       } finally {
@@ -147,8 +147,9 @@ export default defineComponent({
           <copy-pill class="text-break" text={macaroonHex.value} color="accent" text-color="warning" />
           <p class="font-weight-light">click to copy</p>
           <p class="text--darken-1 v-card__title justify-center align-center">Readonly Macaroon</p>
-          { !!state.readOnlyMacaroonRaw 
-            ? <v-btn
+          { (!!state.readOnlyMacaroonRaw)
+            ? (<div>
+              <v-btn
                 class="info--text"
                 color="warning"
                 href={`data:application/octet-stream;base64,${readOnlyMacaroonB64.value}`}
@@ -158,19 +159,20 @@ export default defineComponent({
               >
                 Download Macaroon
               </v-btn>
-            : <v-btn
+              <p>Hex:</p>
+              <copy-pill class="text-break" text={readOnlyMacaroonHex.value}color="accent" text-color="warning" />
+              <p class="font-weight-light">click to copy</p>
+            </div>)
+            : (<v-btn
                 class="info--text"
                 color="warning"
                 onClick={createReadonlyMac}
                 loading={state.loading}
               >
                 Create Macaroon
-              </v-btn>
+              </v-btn>)
           }
           <div>{ state.error }</div>
-          <p>Hex:</p>
-          <copy-pill class="text-break" text={readOnlyMacaroonHex.value}color="accent" text-color="warning" />
-          <p class="font-weight-light">click to copy</p>
         </div>)
       }
       <a href="https://lightningjoule.com/faq" target="_blank">Joule Documentation.</a>
