@@ -39,14 +39,22 @@ export default defineComponent({
     // @ts-ignore
     const username = computed(() => authStore?.user?.attributes?.email || '')
 
+    const btnContent = () => (<div>
+      {username.value}
+      <VIcon class="ml-3">mdi-account</VIcon>
+    </div>)
+
+    const isBig = computed(() => ctx.root.$vuetify.breakpoint.mdAndUp)
+
     return () => <v-app>
       <v-navigation-drawer
         app
         clipped
         right
-        value={state.showDrawer}
+        value={state.showDrawer && !isBig.value}
         onInput={(v: boolean) => { state.showDrawer = v }}
-        class="d-md-none"
+        disable-resize-watcher
+        class=""
       >
         Navigation Drawer Inside
       </v-navigation-drawer>
@@ -66,19 +74,20 @@ export default defineComponent({
           >{elem.text}</v-tab>)
           }
         </v-tabs>
-        <v-menu
-          offset-y
-          scopedSlots={{
-            //vuetify doesnt support tsx 
-            // @ts-ignore
-            activator: ({ attrs, on }: {attrs: any; on:any;}) => <VBtn text {...attrs} {...{ on }}>
-              {username.value}
-              <VIcon class="ml-3">mdi-account</VIcon>
-            </VBtn>,
-          }}
-        >
-          <v-card>TESTING</v-card>
-        </v-menu>
+        { isBig.value
+          ? <v-menu
+              offset-y
+              scopedSlots={{activator: ({ attrs, on }: {attrs: any; on:any;}) => <VBtn key="sm" text {...attrs} {...{ on }}>
+                {btnContent()}
+              </VBtn>}}
+            >
+              <v-card>TESTING</v-card>
+            </v-menu>
+          : <VBtn onClick={() => { state.showDrawer = true }} text key="lg">
+            {btnContent()}
+          </VBtn>
+        }
+        
       </v-app-bar>
       <v-content class={{background: ctx.root.$route.path !== 'settings'}}>
         <nuxt />
