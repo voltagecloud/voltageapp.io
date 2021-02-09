@@ -7,7 +7,9 @@ const h = createElement
 
 export default defineComponent({
   components: {
-    VContainer: () => import('vuetify/lib').then(m => m.VContainer)
+    VContainer: () => import('vuetify/lib').then(m => m.VContainer),
+    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    QrcodeVue: () => import('qrcode.vue')
   },
   props: {
     node: {
@@ -22,14 +24,15 @@ export default defineComponent({
       connectionString: ''
     })
 
-    watchEffect(async () => {
+    async function getConnString () {
       const res = await sphinxConnString(props.node.node_id)
       if (res && res.data) {
-        state.connectionString = res.data
+        state.connectionString = res.data.connection_string
       }
-    })
+    }
+    getConnString()
 
-    return () => <v-container clas="text-center">
+    return () => <v-container class="text-center">
         <p class="font-weight-light text--darken-1 v-card__title justify-center align-center">Sphinx</p>
         { state.connectionString
           ? (<div>
