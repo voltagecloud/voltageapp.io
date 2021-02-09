@@ -4,6 +4,8 @@ import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
 import { Node } from '~/types/apiResponse'
 import {base64ToHex, decryptMacaroon} from '~/utils/crypto'
 import useNodeApi from '~/compositions/useNodeApi'
+import axios from 'axios'
+import crypto from 'crypto-js'
 
 const h = createElement
 
@@ -11,7 +13,8 @@ export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     QrcodeVue: () => import('qrcode.vue'),
-    VContainer: () => import('vuetify/lib').then(m => m.VContainer)
+    VContainer: () => import('vuetify/lib').then(m => m.VContainer),
+    VBtn: () => import('vuetify/lib').then(m => m.VBtn)
   },
   props: {
     node: {
@@ -20,7 +23,7 @@ export default defineComponent({
     }
   },
   setup: (props, ctx) => {
-    const { macaroon, apiEndpoint, password } = useDecryptMacaroon(ctx, props.node.node_id)
+    const { macaroon, apiEndpoint, password, macaroonHex } = useDecryptMacaroon(ctx, props.node.node_id)
     const { uri } = useBuildUri({
       endpoint: apiEndpoint,
       macaroon,
@@ -47,18 +50,69 @@ export default defineComponent({
       : ''
     )
 
-    const { connectNode } = useNodeApi(ctx.root.$nuxt.context)
+    const { connectNode, postMacaroon } = useNodeApi(ctx.root.$nuxt.context)
     
 
-    async function createBtcpayMac () {
+    async function getMac () {
       state.loading = true
       try {
-        const { macaroon } = await connectNode(ctx.root.$route.params.id, 'btcpayserver')
+        const { macaroon } = await connectNode(props.node.node_id, 'btcpayserver')
         state.rawMacaroon = macaroon
       } catch (e) {
         state.error = e.toString()
       }
       finally {
+        state.loading = false
+      }
+    }
+    getMac()
+
+
+    async function createBtcpayMac () {
+      state.loading = true
+      try {
+        const res = await axios({
+          method: 'POST',
+          url: `https://${apiEndpoint.value}:8080/v1/macaroon`,
+          data: {
+            permissions: [
+              {
+                entity: 'info',
+                action: 'read'
+              },
+              {
+                entity: 'address',
+                action: 'read'
+              },
+              {
+                entity: 'address',
+                action: 'write'
+              },
+              {
+                entity: 'onchain',
+                action: 'read'
+              },
+              {
+                entity: 'invoices',
+                action: 'read'
+              },
+              {
+                entity: 'invoices',
+                action: 'write'
+              }
+            ]
+          },
+          headers: {
+            'Grpc-Metadata-macaroon': macaroonHex.value
+          }
+        })
+        state.rawMacaroon = res.data.macaroon
+        state.loading = false
+        const encrypted = crypto.AES.encrypt(res.data.macaroon, password.value).toString()
+        await postMacaroon(props.node.node_id, 'btcpayserver', encrypted)
+      } catch (err) {
+        state.error = `${err}`
+      } finally {
         state.loading = false
       }
     }
