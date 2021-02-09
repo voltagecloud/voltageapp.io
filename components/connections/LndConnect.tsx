@@ -39,12 +39,8 @@ export default defineComponent({
       return <div>
         <p class="font-weight-light text--darken-1 v-card__title justify-center align-center">LNDConnect</p>
         <base-connect connectUri={uri.value} node={props.node} />
-        <v-container>
-            <v-row align="center" justify="space-between">
-              <v-col cols="6" class="d-flex flex-column align-center">
-                <api-toggle value={selectedApi.value} onInput={(val: 'GRPC'|'REST') => {selectedApi.value = val}} node={props.node} />
-              </v-col>
-            </v-row>
+        <v-container class="d-flex flex-column align-center">
+          <api-toggle value={selectedApi.value} onInput={(val: 'GRPC'|'REST') => {selectedApi.value = val}} node={props.node} />
         </v-container>
       </div>
     }
