@@ -15,4 +15,8 @@ export default class AuthModule extends VuexModule {
       this.user = user
       this.exp = user?.getSignInUserSession()?.getAccessToken().getExpiration() || 0
     }
+
+    get username () {
+      return this.user ? this.user.getUsername() : ''
+    }
 }
