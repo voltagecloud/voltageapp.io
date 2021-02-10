@@ -91,6 +91,7 @@ export default defineComponent({
         <a href="https://getvoltage.io/faq.html#connect" target="_blank">
           How to connect to your node
         </a>
+        <br />
         <a href="https://getvoltage.io/faq.html#applications" target="_blank">
           Popular apps to connect to your node.
         </a>

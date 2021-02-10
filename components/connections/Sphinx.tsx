@@ -48,9 +48,10 @@ export default defineComponent({
             <qrcode-vue value={state.connectionString} size="300" class="mx-auto" />
           </div>)
           : loading.value
-          ? (<div>Fetching Sphinx conenction information</div>)
+          ? (<div>Fetching Sphinx connection information</div>)
           : (<div>
-            <span>An error occured while fetching the spinx connection information</span>
+            <span>An error occured while fetching the Sphinx connection information</span>
+            <br />
             <v-btn onClick={getConnString} loading={loading.value} color="accent" class="warning--text">Retry</v-btn>
           </div>)
         }
