@@ -22,9 +22,7 @@ export default defineComponent({
     const { isMacaroonDecrypted, handleDecryptMacaroon, error } = useDecryptMacaroon(ctx, props.node.node_id)
 
     return () => {
-      if (props.node.status !== 'running') {
-        return <div>You can only connect to a running node. Please turn this node on before connecting</div> 
-      } else if (!isMacaroonDecrypted.value) {
+      if (!isMacaroonDecrypted.value) {
         return <node-password-input text="Connect" onDone={(password: string) => handleDecryptMacaroon({ password })}  error={error.value}/>
       } else if (!!isMacaroonDecrypted.value) {
         return <show-qr node={props.node} />
