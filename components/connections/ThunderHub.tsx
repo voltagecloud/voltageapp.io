@@ -17,13 +17,11 @@ export default defineComponent({
   },
   setup: (props, ctx) => {
     const { macaroon, apiEndpoint } = useDecryptMacaroon(ctx, props.node.node_id)
-    const nodename = computed(() => apiEndpoint.value.split('.')[0])
-
 
     const snippetText = computed(() => `
   masterPassword: somerandompassword
   accounts:
-  - name: '{ nodename.value }'
+  - name: '${ props.node.node_name }'
   serverUrl: '${ apiEndpoint.value }:10009'
   macaroon: '${ macaroon.value }'
     `)
