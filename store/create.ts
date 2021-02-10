@@ -22,7 +22,8 @@ const defaultSettings = {
   minchansize: '',
   maxchansize: '',
   autocompaction: false,
-  defaultfeerate: ''
+  defaultfeerate: '',
+  sphinx: false
 }
 
 @Module({
@@ -36,7 +37,7 @@ export default class CreateModule extends VuexModule {
     trial = false
     type: string = ''
     seed: string[] = []
-    password: string = ""
+    password: string = ''
     macaroon_backup = true
     settings: Settings = Object.assign({}, defaultSettings)
 
@@ -49,7 +50,7 @@ export default class CreateModule extends VuexModule {
     }
 
     @Mutation
-    PASSWORD(password: string) {
+    PASSWORD (password: string) {
       this.password = password
     }
 
@@ -90,7 +91,7 @@ export default class CreateModule extends VuexModule {
 
     @Mutation
     AUTOFILL_WHITELIST (ip: string) {
-      this.settings.whitelist = [ip as unknown as Address4]
+      this.settings.whitelist = [ip as unknown as Address4|Address6]
     }
 
     @Mutation
@@ -99,7 +100,7 @@ export default class CreateModule extends VuexModule {
     }
 
     @Mutation
-    WIPE_PASSWORD() {
+    WIPE_PASSWORD () {
       this.password = ''
     }
 

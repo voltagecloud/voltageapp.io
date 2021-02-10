@@ -134,7 +134,7 @@ export default defineComponent({
     ExportData: () => import('~/components/ExportData.vue'),
     DashboardData: () => import('~/components/DashboardData.vue'),
     Network,
-    ConnectTab: () => import('~/components/viewnode/Connect.vue'),
+    ConnectTab: () => import('~/components/viewnode/Connect'),
     Logs: () => import('~/components/viewnode/Logs.vue'),
     CoreDialog: () => import('~/components/core/Dialog.vue'),
     NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
@@ -301,6 +301,7 @@ export default defineComponent({
       unlocking.value = true
       try {
         const node = lndStore.currentNode as Node
+        // call to unlock lnd
         await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
@@ -310,8 +311,20 @@ export default defineComponent({
           },
           timeout: 45000
         })
+        // update the status of the node in the api
         await updateStatus(nodeData.value.node_id, 'unlocking')
-        postNode(nodeID.value)
+        // check if sphinx relay needs to be unlocked
+        if (nodeData.value.settings.sphinx) {
+          console.log('SPHINX UNLOCK')
+          const api = nodeData.value.api_endpoint.replace('voltageapp.io', 'relay.voltageapp.io')
+          // call to unlock sphinx
+          await axios({
+            url: `https://${api}:3001/unlock`,
+            method: 'POST',
+            data: { password }
+          })
+        }
+        await postNode(nodeID.value)
         unlockDialog.value = false
       } catch (err) {
         error.value = `${err.response.data.message}`
