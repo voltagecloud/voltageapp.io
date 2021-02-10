@@ -6,7 +6,8 @@ const h = createElement
 
 export default defineComponent({
   components: {
-    VContainer: () => import('vuetify/lib').then(m => m.VContainer)
+    VContainer: () => import('vuetify/lib').then(m => m.VContainer),
+    CodeSnippet: () => import('~/components/core/CodeSnippet')
   },
   props: {
     node: {
@@ -17,6 +18,15 @@ export default defineComponent({
   setup: (props, ctx) => {
     const { macaroon, apiEndpoint } = useDecryptMacaroon(ctx, props.node.node_id)
     const nodename = computed(() => apiEndpoint.value.split('.')[0])
+
+
+    const snippetText = computed(() => `
+  masterPassword: somerandompassword
+  accounts:
+  - name: '{ nodename.value }'
+  serverUrl: '${ apiEndpoint.value }:10009'
+  macaroon: '${ macaroon.value }'
+    `)
 
     return () => <v-container class="text-center">
       <p class="font-weight-light text--darken-1 v-card__title justify-center align-center">
@@ -37,15 +47,7 @@ export default defineComponent({
         : (<div>
           <p>To connect with ThunderHub, copy and paste the follow contents into your Account Config file.</p>
           <div>Account Config File:</div>
-          <pre
-            style="text-align: left; overflow: scroll; white-space: pre; background-color: #505050; font-family: monospace; color: #ffffff; border-radius: 5px; padding: 10px; max-width: 85%; margin: auto;"
-          >
-              masterPassword: somerandompassword
-              accounts:
-              - name: '{ nodename.value }'
-              serverUrl: '{ apiEndpoint.value }:10009'
-              macaroon: '{ macaroon.value }'
-          </pre>
+          <code-snippet>{snippetText.value}</code-snippet>
         </div>)
       }
       <a href="https://github.com/apotdevin/thunderhub#server-accounts" target="_blank">ThunderHub Documentation.</a>

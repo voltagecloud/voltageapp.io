@@ -8,6 +8,7 @@ const h = createElement
 export default defineComponent({
   components: {
     CopyPill: () => import('~/components/core/CopyPill.vue'),
+    CodeSnippet: () => import('~/components/core/CodeSnippet'),
     QrcodeVue: () => import('qrcode.vue'),
     VContainer: () => import('vuetify/lib').then(m => m.VContainer),
     VBtn: () => import('vuetify/lib').then(m => m.VBtn)
@@ -30,6 +31,13 @@ export default defineComponent({
     const certValid = computed(() => cert.value && cert.value !== 'pending')
     const certButtonText = computed(() => certValid.value ? 'Download Certificate' : 'Certificate is Pending' )
 
+    const snippetText = computed(() => `
+  --rpcserver=${apiEndpoint.value}:10009 \\
+  --macaroonpath=/path/to/admin.macaroon \\
+  --tlscertpath=/path/to/tls.cert \\
+  getinfo
+    `)
+
     return () => <v-container class="text-center">
       <p class="font-weight-light text--darken-1 v-card__title justify-center align-center">
         <a href="https://github.com/lightningnetwork/lnd" target="_blank">lncli</a>
@@ -50,12 +58,7 @@ export default defineComponent({
             After you have downloaded the necessary files, simply point your CLI to their location.
           </p>
           <div>Command Line:</div>
-          <div style="text-align: left; overflow: scroll; white-space: pre; background-color: #505050; font-family: monospace; color: #ffffff; border-radius: 5px; padding: 10px; max-width: 85%; margin: auto;">$ lncli \
-              --rpcserver={apiEndpoint.value}:10009 \
-              --macaroonpath=/path/to/admin.macaroon \
-              --tlscertpath=/path/to/tls.cert \
-              getinfo
-          </div>
+          <code-snippet>{snippetText.value}</code-snippet>
           <div>RPC Server</div>
           <copy-pill class="text-break" text={`${apiEndpoint.value}:10009`} color="accent" text-color="warning"></copy-pill>
           <p class="font-weight-light">click to copy</p>
