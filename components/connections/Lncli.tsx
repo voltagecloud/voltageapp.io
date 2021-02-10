@@ -32,6 +32,7 @@ export default defineComponent({
     const certButtonText = computed(() => certValid.value ? 'Download Certificate' : 'Certificate is Pending' )
 
     const snippetText = computed(() => `
+  lncli
   --rpcserver=${apiEndpoint.value}:10009 \\
   --macaroonpath=/path/to/admin.macaroon \\
   --tlscertpath=/path/to/tls.cert \\
