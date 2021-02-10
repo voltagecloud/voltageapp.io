@@ -301,7 +301,8 @@ export default defineComponent({
       unlocking.value = true
       try {
         const node = lndStore.currentNode as Node
-        const nodeUnlock = axios({
+        // call to unlock lnd
+        await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
           method: 'POST',
           data: {
@@ -310,19 +311,19 @@ export default defineComponent({
           },
           timeout: 45000
         })
-        const statusUpdate = updateStatus(nodeData.value.node_id, 'unlocking')
+        // update the status of the node in the api
+        await updateStatus(nodeData.value.node_id, 'unlocking')
         // check if sphinx relay needs to be unlocked
-        let sphinxUnlock = null
         if (nodeData.value.settings.sphinx) {
           console.log('SPHINX UNLOCK')
           const api = nodeData.value.api_endpoint.replace('voltageapp.io', 'relay.voltageapp.io')
-          sphinxUnlock = axios({
+          // call to unlock sphinx
+          await axios({
             url: `https://${api}:3001/unlock`,
             method: 'POST',
             data: { password }
           })
         }
-        await Promise.all([nodeUnlock, statusUpdate, sphinxUnlock])
         await postNode(nodeID.value)
         unlockDialog.value = false
       } catch (err) {
