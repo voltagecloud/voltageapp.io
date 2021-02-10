@@ -285,7 +285,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     try {
       return await $axios.post('/node/sphinx', { node_id })
     } catch (e) {
-      error({ statusCode: 500 })
+      return null
     } finally {
       loading.value = false
     }

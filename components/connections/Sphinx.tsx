@@ -9,7 +9,8 @@ export default defineComponent({
   components: {
     VContainer: () => import('vuetify/lib').then(m => m.VContainer),
     CopyPill: () => import('~/components/core/CopyPill.vue'),
-    QrcodeVue: () => import('qrcode.vue')
+    QrcodeVue: () => import('qrcode.vue'),
+    VBtn: () => import('vuetify/lib').then(m => m.VBtn)
   },
   props: {
     node: {
@@ -21,13 +22,14 @@ export default defineComponent({
     const { sphinxConnString, loading } = useNodeApi(ctx.root.$nuxt.context)
 
     const state = reactive({
-      connectionString: ''
+      connectionString: '',
     })
 
     async function getConnString () {
       const res = await sphinxConnString(props.node.node_id)
       if (res && res.data) {
         state.connectionString = res.data.connection_string
+      } else {
       }
     }
     getConnString()
@@ -47,7 +49,10 @@ export default defineComponent({
           </div>)
           : loading.value
           ? (<div>Fetching Sphinx conenction information</div>)
-          : (<div>An error occured while fetching the spinx connection information</div>)
+          : (<div>
+            <span>An error occured while fetching the spinx connection information</span>
+            <v-btn onClick={getConnString} loading={loading.value} color="accent" class="warning--text">Retry</v-btn>
+          </div>)
         }
     </v-container>
   }
