@@ -68,7 +68,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
         macaroon_backup: backup,
         settings
       })
-      nodeStore.ADD_NODE(res.data)
+      nodeStore.UPDATE_NODE(res.data)
       loading.value = false
       return res
     } catch (e) {
@@ -280,6 +280,17 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function sphinxConnString (node_id: string) {
+    loading.value = true
+    try {
+      return await $axios.post('/node/sphinx', { node_id })
+    } catch (e) {
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -298,6 +309,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     saveSeed,
     getPurchaseSession,
     getDashboards,
-    createDashboard
+    createDashboard,
+    sphinxConnString
   }
 }

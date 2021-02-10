@@ -1,6 +1,6 @@
 import { reactive, SetupContext, computed, toRefs } from '@vue/composition-api'
-import crypto from 'crypto-js'
 import useNodeApi from './useNodeApi'
+import { base64ToHex, decryptMacaroon } from '~/utils/crypto'
 
 const state = reactive({
   apiEndpoint: '',
@@ -8,48 +8,13 @@ const state = reactive({
   encrypted: '',
   error: '',
   macaroon: '',
-  connectURI: '',
-  pass: '',
-  nodeId: ''
+  nodeId: '',
+  password: ''
 })
 
 const isMacaroonDecrypted = computed(() => !!state.macaroon)
 
-function base64ToHex (str: string) {
-  const raw = atob(str)
-  let result = ''
-  for (let i = 0; i < raw.length; i++) {
-    const hex = raw.charCodeAt(i).toString(16)
-    result += (hex.length === 2 ? hex : '0' + hex)
-  }
-  return result.toUpperCase()
-}
-
 const macaroonHex = computed(() => state.macaroon ? base64ToHex(state.macaroon) : '')
-
-function isBase64 (str: string) {
-  if (str === '' || str.trim() === '') { return false }
-  try {
-    return btoa(atob(str)) === str
-  } catch (err) {
-    return false
-  }
-}
-
-// convert b64 to b64url
-function safeUrl (data: string) {
-  data = data.replace(/\+/g, '-')
-  data = data.replace(/\//g, '_')
-  data = data.replace(/=/g, '')
-  return data
-}
-
-function buildUri (api: string, port: string, tls_cert: string, macaroon: string) {
-  macaroon = safeUrl(macaroon)
-  return (tls_cert)
-    ? `lndconnect://${api}:${port}?cert=${tls_cert}&macaroon=${macaroon}`
-    : `lndconnect://${api}:${port}?macaroon=${macaroon}`
-}
 
 export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: string) {
   const { connectNode } = useNodeApi(root.$nuxt.context)
@@ -61,18 +26,21 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
     state.macaroon = ''
     state.apiEndpoint = ''
     state.error = ''
-    state.connectURI = ''
-    state.pass = ''
     state.cert = ''
+    state.password = ''
   }
 
-  async function handleConnectNode (
-    { password, api }:
-    { password: string; api: string; }
+  async function handleDecryptMacaroon (
+    { password }:
+    { password: string; }
   ) {
     // get encrypted macaroon from api
     try {
       const res = await connectNode(nodeId, 'admin')
+      if (!res) {
+        state.error = 'An error occured while retrieving your macaroon'
+        return
+      }
       const { endpoint, macaroon, tls_cert } = res
       if (macaroon) {
         state.apiEndpoint = endpoint
@@ -85,30 +53,18 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
       }
     } catch (e) {
       state.error = e.toString()
+      return
     }
-    const port = (api === 'rest') ? '8080' : '10009'
     // attempt to decrypt macaroon
-    try {
-      const decrypted = crypto.AES.decrypt(state.encrypted || '', password).toString(crypto.enc.Base64)
-      const decryptResult = atob(decrypted)
-      if (isBase64(decryptResult)) {
-        state.macaroon = decryptResult
-        state.connectURI = buildUri(state.apiEndpoint, port, '', decryptResult)
-        state.pass = password
-      } else {
-        state.error = 'Incorrect password'
-      }
-    } catch (e) {
-      console.error('cipher mismatch, macaroon decryption failed')
-      console.error(e)
-      state.error = e.toString()
-    }
+    const { macaroon: decrypted, error } = decryptMacaroon({ password, encrypted: state.encrypted })
+    state.macaroon = decrypted
+    state.error = error
+    state.password = error ? '' : password
   }
 
   return {
-    handleConnectNode,
+    handleDecryptMacaroon,
     isMacaroonDecrypted,
-    buildUri,
     macaroonHex,
     ...toRefs(state)
   }

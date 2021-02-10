@@ -42,6 +42,7 @@ export interface Settings {
     maxchansize: string
     autocompaction: boolean
     defaultfeerate: string
+    sphinx: boolean
 }
 
 export enum MacaroonLevel {
@@ -70,4 +71,3 @@ export enum ExportData {
 export enum DashboardData {
     thunderhub = 'thunderhub'
 }
-
