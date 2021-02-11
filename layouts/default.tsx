@@ -23,6 +23,7 @@ export default defineComponent({
     VTab: () => import('vuetify/lib').then(m => m.VTab),
     VCard: () => import('vuetify/lib').then(m => m.VCard),
     VContent: () => import('vuetify/lib').then(m => m.VContent),
+    VDivider: () => import('vuetify/lib').then(m => m.VDivider),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue'),
     CoreFooter: () => import('~/components/core/Footer.vue'),
   },
@@ -100,6 +101,27 @@ export default defineComponent({
         disable-resize-watcher
         class=""
       >
+        <v-list>
+          {tabs.map(e => <v-list-item
+            to={e.to}
+            href={e.href}
+            target={e.href ? '_blank' : ''}
+            class="font-weight-bold"
+          >
+            {e.text}
+          </v-list-item>)}
+        </v-list>
+        <v-divider class="font-weight-bold"/>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>
+              {username.value}
+            </v-list-item-title>
+            <v-list-item-action>
+              <VIcon>mdi-account</VIcon>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
         {list()}
       </v-navigation-drawer>
       <v-app-bar app clipped-right color="warning" dark>
@@ -128,7 +150,7 @@ export default defineComponent({
               <v-card>{list()}</v-card>
             </v-menu>
           : <VBtn onClick={() => { state.showDrawer = true }} text key="lg">
-            {btnContent()}
+            <VIcon>mdi-menu</VIcon>
           </VBtn>
         }
         
