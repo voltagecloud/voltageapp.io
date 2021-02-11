@@ -1,4 +1,5 @@
 import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
+import useAuthentication from '~/compositions/useAuthentication'
 import { authStore } from '~/store'
 import { VBtn, VIcon } from 'vuetify/lib'
 
@@ -13,7 +14,8 @@ export default defineComponent({
     VCol: () => import('vuetify/lib').then(m => m.VCol),
     VList: () => import('vuetify/lib').then(m => m.VList),
     VListItem: () => import('vuetify/lib').then(m => m.VListItem),
-    VSpacer: () => import('vuetify/lib').then(m => m.VIcon),
+    VListItemAction: () => import('vuetify/lib').then(m => m.VListItemAction),
+    VListItemTitle: () => import('vuetify/lib').then(m => m.VListItemTitle),
     VAppBar: () => import('vuetify/lib').then(m => m.VAppBar),
     VImg: () => import('vuetify/lib').then(m => m.VImg),
     VMenu: () => import('vuetify/lib').then(m => m.VMenu),
@@ -39,14 +41,56 @@ export default defineComponent({
     // @ts-ignore
     const username = computed(() => authStore?.user?.attributes?.email || '')
 
-    const btnContent = () => (<div>
-      {username.value}
-      <VIcon class="ml-3">mdi-account</VIcon>
-    </div>)
 
     const isBig = computed(() => ctx.root.$vuetify.breakpoint.mdAndUp)
 
-    return () => <v-app>
+    const { logout } = useAuthentication()
+    const bottomItems = reactive([
+      {
+        title: 'Dashboards',
+        icon: 'mdi-laptop',
+        fct: () => ctx.root.$router.push('/dashboards')
+      },
+      {
+        title: 'Exports',
+        icon: 'mdi-file-export-outline',
+        fct: () => ctx.root.$router.push('/exports')
+      },
+      {
+        title: 'Settings',
+        icon: 'mdi-cog-outline',
+        fct: () => ctx.root.$router.push('/settings')
+      },
+      {
+        title: 'Logout',
+        icon: 'mdi-logout',
+        fct: async () => {
+          await logout()
+          ctx.root.$router.push('/login')
+        }
+      }
+    ])
+
+    return () => {
+      const btnContent = () => (<div>
+        {username.value}
+        <VIcon class="ml-3">mdi-account</VIcon>
+      </div>)
+
+      const list = () => (<div>
+        <v-list>
+          {bottomItems.map(e => <v-list-item key={e.title} onClick={e.fct}>
+            <v-list-item-action>
+              <VIcon color="warning darken-1">{e.icon}</VIcon>
+            </v-list-item-action>
+            <v-list-item-title class="warning--text text--darken-1">
+              {e.title}
+            </v-list-item-title>
+          </v-list-item>)}
+        </v-list>
+      </div>)
+
+      return <v-app>
       <v-navigation-drawer
         app
         clipped
@@ -56,7 +100,7 @@ export default defineComponent({
         disable-resize-watcher
         class=""
       >
-        Navigation Drawer Inside
+        {list()}
       </v-navigation-drawer>
       <v-app-bar app clipped-right color="warning" dark>
         <nuxt-link to="/">
@@ -81,7 +125,7 @@ export default defineComponent({
                 {btnContent()}
               </VBtn>}}
             >
-              <v-card>TESTING</v-card>
+              <v-card>{list()}</v-card>
             </v-menu>
           : <VBtn onClick={() => { state.showDrawer = true }} text key="lg">
             {btnContent()}
@@ -94,6 +138,6 @@ export default defineComponent({
       </v-content>
       <error-snackbar />
       <core-footer />
-    </v-app>
+    </v-app>}
   }
 })
