@@ -24,31 +24,37 @@ export default defineComponent({
     const { isMacaroonDecrypted, handleDecryptMacaroon, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.nodeId)
 
     const payload = ref<Record<string, any>>({})
+    const responseError = ref('') 
 
     watchEffect(async () => {
       if (!macaroonHex.value) return
-      const res = await fetch(`https://${apiEndpoint.value}:8080/v1/getinfo`, {
-        method: 'GET',
-        headers: new Headers({
-          'Grpc-Metadata-macaroon': macaroonHex.value,
-          'Content-Type': 'application/json'
+
+      try {
+        const res = await fetch(`https://${apiEndpoint.value}:8080/v1/getinfo`, {
+          method: 'GET',
+          headers: new Headers({
+            'Grpc-Metadata-macaroon': macaroonHex.value,
+            'Content-Type': 'application/json'
+          })
         })
-      })
-      const json = await res.json()
-      payload.value = {
-        'Identity Pubkey': json.identity_pubkey,
-        Alias: json.alias,
-        Color: json.color,
-        'Pending Channels': json.num_pending_channels,
-        'Active Channels': json.num_active_channels,
-        'Inactive Channels': json.num_inactive_channels,
-        Peers: json.num_peers,
-        'Block Height': json.block_height,
-        'Synced to Chain': json.synced_to_chain,
-        'Synced to Graph': json.synced_to_graph,
-        URIs: json.uris
+        const json = await res.json()
+        payload.value = {
+          'Identity Pubkey': json.identity_pubkey,
+          Alias: json.alias,
+          Color: json.color,
+          'Pending Channels': json.num_pending_channels,
+          'Active Channels': json.num_active_channels,
+          'Inactive Channels': json.num_inactive_channels,
+          Peers: json.num_peers,
+          'Block Height': json.block_height,
+          'Synced to Chain': json.synced_to_chain,
+          'Synced to Graph': json.synced_to_graph,
+          URIs: json.uris
+        }
+        console.log({ json })
+      } catch (e) {
+        responseError.value = e.message
       }
-      console.log({ json })
     })
 
     const normalizedPayload = computed(() => {
@@ -71,9 +77,14 @@ export default defineComponent({
             text={'Decrypt Macaroon'}
             error={error.value}
         />
-      } else {
+      } else if (Object.keys(payload.value).length > 0) {
         return <v-container>
           <json-table data={() => payload.value} />
+        </v-container>
+      } else if (responseError.value) {
+        return <v-container class="text-center">
+          <div>{ responseError.value }</div>
+          <div>Failed to fetch information from LND. Please make sure you have your current IP whitelisted in the node's settings</div>
         </v-container>
       }
     }
