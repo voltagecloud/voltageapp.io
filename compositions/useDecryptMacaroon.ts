@@ -9,7 +9,8 @@ const state = reactive({
   error: '',
   macaroon: '',
   nodeId: '',
-  password: ''
+  password: '',
+  loading: false
 })
 
 const isMacaroonDecrypted = computed(() => !!state.macaroon)
@@ -34,6 +35,7 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
     { password }:
     { password: string; }
   ) {
+    state.loading = true
     // get encrypted macaroon from api
     try {
       const res = await connectNode(nodeId, 'admin')
@@ -54,6 +56,8 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
     } catch (e) {
       state.error = e.toString()
       return
+    } finally {
+      state.loading = false
     }
     // attempt to decrypt macaroon
     const { macaroon: decrypted, error } = decryptMacaroon({ password, encrypted: state.encrypted })
@@ -64,7 +68,7 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
 
   // if composition has been called on component where password is known, unlock automatically
   watchEffect(() => {
-    if (state.password && !state.macaroon) {
+    if (state.password && !state.macaroon && !state.loading) {
       handleDecryptMacaroon({ password: state.password })
     }
   })
