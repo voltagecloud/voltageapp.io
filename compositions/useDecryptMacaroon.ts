@@ -1,4 +1,4 @@
-import { reactive, SetupContext, computed, toRefs } from '@vue/composition-api'
+import { reactive, SetupContext, computed, toRefs, watchEffect } from '@vue/composition-api'
 import useNodeApi from './useNodeApi'
 import { base64ToHex, decryptMacaroon } from '~/utils/crypto'
 
@@ -61,6 +61,13 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
     state.error = error
     state.password = error ? '' : password
   }
+
+  // if composition has been called on component where password is known, unlock automatically
+  watchEffect(() => {
+    if (state.password && !state.macaroon) {
+      handleDecryptMacaroon({ password: state.password })
+    }
+  })
 
   return {
     handleDecryptMacaroon,
