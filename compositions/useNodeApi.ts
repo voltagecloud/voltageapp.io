@@ -36,7 +36,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
         {
           node_id: createStore.newNodeID,
           name: createStore.nodeName,
-          settings: createStore.settings
+          // force sphinx creation as false for now
+          settings: Object.assign(createStore.settings, { sphinx: false }) as Settings
         }
       )
       loading.value = false
@@ -280,6 +281,17 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function sphinxConnString (node_id: string) {
+    loading.value = true
+    try {
+      return await $axios.post('/node/sphinx', { node_id })
+    } catch (e) {
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     createNode,
     populateNode,
@@ -298,6 +310,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     saveSeed,
     getPurchaseSession,
     getDashboards,
-    createDashboard
+    createDashboard,
+    sphinxConnString
   }
 }

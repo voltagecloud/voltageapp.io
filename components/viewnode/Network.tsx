@@ -21,7 +21,7 @@ export default defineComponent({
     }
   },
   setup: (props, ctx) => {
-    const { isMacaroonDecrypted, handleConnectNode, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.nodeId)
+    const { isMacaroonDecrypted, handleDecryptMacaroon, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.nodeId)
 
     const payload = ref<Record<string, any>>({})
 
@@ -67,7 +67,7 @@ export default defineComponent({
         </div>
       } else if (!isMacaroonDecrypted.value) {
         return <node-password-input
-            onDone={(password: string) => handleConnectNode({password, api: 'rest' })}
+            onDone={(password: string) => handleDecryptMacaroon({ password })}
             text={'Decrypt Macaroon'}
             error={error.value}
         />

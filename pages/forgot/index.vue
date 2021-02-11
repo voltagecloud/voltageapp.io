@@ -12,8 +12,8 @@
               v-fade-transition(mode='out-in')
                 v-form(v-if='currentStep === 0' key='1' ref='form' v-model='valid' @submit.prevent='handleForm1')
                   v-text-field(v-model='email' :rules='[required, validEmail]' label='Email' required)
-                  v-col(cols='12' v-if='error').error--text
-                    | {{ error.message }}
+                  div(v-show='error').error--text
+                    | {{ error }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Request Reset
                   a(@click='currentStep += 1') Use Existing Code
@@ -24,8 +24,8 @@
                   v-text-field(v-model='code' label='Confirmation Code' :rules='[required]' required='')
                   v-text-field(v-model='password' :rules='[char6, required]' :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" label='Password' required @click:append='showPassword = !showPassword')
                   v-text-field(v-model='confirmPassword' :rules='[char6, matchPassword, required]' :type="showPassword ? 'text' : 'password'" label='Confirm Password' required)
-                  v-col(cols='12' v-if='error').error--text
-                    | {{ error.message }}
+                  div(v-show='error').error--text
+                    | {{ error }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Reset
                   a(@click='$router.push("/login")') Back to Login
@@ -64,7 +64,9 @@ export default defineComponent({
     }
 
     async function handleForm2 () {
-      await confirmNewPassword(email.value.trim(), code.value, confirmPassword.value)
+      const res = await confirmNewPassword(email.value.trim(), code.value, confirmPassword.value)
+      console.log({ res })
+      if (!res) { return }
       await login(email.value.trim(), confirmPassword.value)
       root.$router.push('/')
     }

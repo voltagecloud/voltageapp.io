@@ -24,7 +24,7 @@ export default function useAuthentication () {
         e.code === 'NotAuthorizedException') {
         error.value = 'Invalid Login'
       } else {
-        error.value = e
+        error.value = e.message
       }
     } finally {
       loading.value = false
@@ -38,7 +38,7 @@ export default function useAuthentication () {
         authStore.SET_USER(user)
         return user
       } catch (e) {
-        error.value = e
+        error.value = e.message
         console.error(e)
       }
     }
@@ -52,7 +52,7 @@ export default function useAuthentication () {
         password
       })
     } catch (e) {
-      error.value = e
+      error.value = e.message
     } finally {
       loading.value = false
     }
@@ -66,7 +66,7 @@ export default function useAuthentication () {
       return user
     } catch (e) {
       console.log({ e })
-      error.value = e
+      error.value = e.message
     } finally {
       loading.value = false
     }
@@ -85,7 +85,7 @@ export default function useAuthentication () {
     try {
       return await Auth.resendSignUp(email)
     } catch (e) {
-      error.value = e
+      error.value = e.message
     } finally {
       loading.value = false
     }
@@ -96,7 +96,7 @@ export default function useAuthentication () {
     try {
       return await Auth.confirmSignUp(email, code)
     } catch (e) {
-      error.value = e
+      error.value = e.message
     } finally {
       loading.value = false
     }
@@ -110,18 +110,24 @@ export default function useAuthentication () {
       if (e.code === 'UserNotFoundException') {
         error.value = 'Email not found'
       } else {
-        error.value = e
+        error.value = e.message
       }
     } finally {
       loading.value = false
     }
   }
 
-  async function confirmNewPassword (email: string, code: string, newPw: string) {
+  async function confirmNewPassword (email: string, code: string, newPw: string): Promise<boolean> {
     loading.value = true
-    const res = await Auth.forgotPasswordSubmit(email, code, newPw)
-    loading.value = false
-    return res
+    try {
+      await Auth.forgotPasswordSubmit(email, code, newPw)
+      return true
+    } catch (e) {
+      error.value = e.message
+      return false
+    } finally {
+      loading.value = false
+    }
   }
 
   return {

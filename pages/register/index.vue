@@ -15,9 +15,9 @@
                   v-text-field(v-model='password' :rules='[char6, required]' :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" label='Password' required @click:append='showPassword = !showPassword')
                   v-text-field(v-model='confirmPassword' :rules='[char6, matchPassword, required]' :type="showPassword ? 'text' : 'password'" label='Confirm Password' required)
                   v-col(cols='12' v-if='error').error--text
-                    | {{ error.message }}
+                    | {{ error }}
                   p.font-weight-light(style='font-size: 12px;')
-                    | By creating an account you agree to our 
+                    | By creating an account you agree to our
                     a(href="https://getvoltage.io/terms.html" target="_blank") Terms of Service.
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
@@ -28,7 +28,7 @@
                   v-text-field(v-model='email' label='Email' :rules='[required, validEmail]' required='')
                   v-text-field(v-model='confirmCode' label='Confirmation Code' :rules='[required]' required='')
                   v-col(cols='12' v-if='error').error--text
-                    | {{ error.message }}
+                    | {{ error }}
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Confirm
                   a(@click='resend(email)') Resend Code

@@ -19,7 +19,7 @@
                   @click:append='showPassword = !showPassword'
                 )
                 v-col(cols='12' v-if='error').error--text
-                  | {{ error.message || error }}
+                  | {{ error }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light='' :loading='loading')
                   span.warning--text Login
                 a(@click='$router.push("/register")')
@@ -32,7 +32,7 @@
                   :rules='[char6]'
                 )
                 v-col(cols='12' v-if='error').error--text
-                  | {{ error.message || error }}
+                  | {{ error }}
                 v-btn.mr-4(type='submit' :disabled='!valid' color='primary' light :loading='loading')
                   span.warning--text Confirm
                 a(@click='showMFA=false').ml-3 Back to Login
