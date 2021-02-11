@@ -35,7 +35,7 @@ export default defineComponent({
     const tabs: { text: string; to?: string; href?: string; }[] = [
       { text: 'Nodes', to: '/' },
       // { text: 'BTCPay Server', to: '/btcpay' },
-      { text: 'Documentation', href: 'https://docs.voltageapp.io' }
+      { text: 'Documentation', href: 'https://docs.voltageapp.io' },
     ]
 
     // aws amplify typescript typings are incorrect smh jeff bezos
@@ -46,7 +46,7 @@ export default defineComponent({
     const isBig = computed(() => ctx.root.$vuetify.breakpoint.mdAndUp)
 
     const { logout } = useAuthentication()
-    const bottomItems = reactive([
+    const bottomItems = [
       {
         title: 'Dashboards',
         icon: 'mdi-laptop',
@@ -70,7 +70,13 @@ export default defineComponent({
           ctx.root.$router.push('/login')
         }
       }
-    ])
+    ]
+
+    // these buttons are considered deprecated and should be remove when setup flow is redone
+    const deprecatedButtons: { text: string; to: string; icon: string; }[] = [
+      { text: 'Purchase', to: '/purchase', icon: 'mdi-currency-usd-circle-outline' },
+      { text: 'Create', to: '/create', icon: 'mdi-plus' }
+    ]
 
     return () => {
       const btnContent = () => (<div>
@@ -121,6 +127,14 @@ export default defineComponent({
               <VIcon>mdi-account</VIcon>
             </v-list-item-action>
           </v-list-item>
+          {deprecatedButtons.map(e => <v-list-item to={e.to}>
+            <v-list-item-title>
+              {e.text}
+            </v-list-item-title>
+            <v-list-item-action>
+              <VIcon>{e.icon}</VIcon>
+            </v-list-item-action>
+          </v-list-item>)}
         </v-list>
         {list()}
       </v-navigation-drawer>
@@ -139,6 +153,12 @@ export default defineComponent({
             target={elem.href ? '_blank' : ''}
           >{elem.text}</v-tab>)
           }
+          {deprecatedButtons.map(e => <div class="d-none d-md-flex flex-column justify-center">
+            <VBtn text to={e.to} >
+              {e.text}
+              <VIcon>{e.icon}</VIcon>
+            </VBtn>
+          </div>)}
         </v-tabs>
         { isBig.value
           ? <v-menu
