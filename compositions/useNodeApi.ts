@@ -36,7 +36,8 @@ export default function useNodeApi ({ $axios, error }: Context) {
         {
           node_id: createStore.newNodeID,
           name: createStore.nodeName,
-          settings: createStore.settings
+          // force sphinx creation as false for now
+          settings: Object.assign(createStore.settings, { sphinx: false }) as Settings
         }
       )
       loading.value = false
