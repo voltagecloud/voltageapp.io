@@ -81,6 +81,8 @@ export default defineComponent({
     return () => {
       const btnContent = () => (<div>
         {username.value}
+        { /*
+        // @ts-ignore */}
         <VIcon class="ml-3">mdi-account</VIcon>
       </div>)
 
@@ -88,6 +90,8 @@ export default defineComponent({
         <v-list>
           {bottomItems.map(e => <v-list-item key={e.title} onClick={e.fct}>
             <v-list-item-action>
+              { /*
+              // @ts-ignore */}
               <VIcon color="warning darken-1">{e.icon}</VIcon>
             </v-list-item-action>
             <v-list-item-title class="warning--text text--darken-1">
@@ -124,6 +128,8 @@ export default defineComponent({
               {username.value}
             </v-list-item-title>
             <v-list-item-action>
+              { /*
+              // @ts-ignore */}
               <VIcon>mdi-account</VIcon>
             </v-list-item-action>
           </v-list-item>
@@ -132,6 +138,8 @@ export default defineComponent({
               {e.text}
             </v-list-item-title>
             <v-list-item-action>
+              { /*
+              // @ts-ignore */}
               <VIcon>{e.icon}</VIcon>
             </v-list-item-action>
           </v-list-item>)}
@@ -154,8 +162,12 @@ export default defineComponent({
           >{elem.text}</v-tab>)
           }
           {deprecatedButtons.map(e => <div class="d-none d-md-flex flex-column justify-center">
+            { /*
+            // @ts-ignore */}
             <VBtn text to={e.to} >
               {e.text}
+              { /*
+              // @ts-ignore */}
               <VIcon>{e.icon}</VIcon>
             </VBtn>
           </div>)}
@@ -163,13 +175,16 @@ export default defineComponent({
         { isBig.value
           ? <v-menu
               offset-y
+              // @ts-ignore
               scopedSlots={{activator: ({ attrs, on }: {attrs: any; on:any;}) => <VBtn key="sm" text {...attrs} {...{ on }}>
                 {btnContent()}
               </VBtn>}}
             >
               <v-card>{list()}</v-card>
             </v-menu>
+            // @ts-ignore
           : <VBtn onClick={() => { state.showDrawer = true }} text key="lg">
+            // @ts-ignore
             <VIcon>mdi-menu</VIcon>
           </VBtn>
         }
