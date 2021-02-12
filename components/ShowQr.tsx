@@ -13,7 +13,7 @@ export default defineComponent({
     Lncli: () => import('~/components/connections/Lncli.tsx'),
     ThunderHub: () => import('~/components/connections/ThunderHub.tsx'),
     Joule: () => import('~/components/connections/Joule.tsx'),
-    Btcpay: () => import('~/components/connections/BtcPay.tsx'),
+    Btcpay: () => import('~/components/connections/Btcpay.tsx'),
     Sphinx: () => import('~/components/connections/Sphinx'),
     VTabs,
     VTab,
