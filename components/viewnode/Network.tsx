@@ -67,13 +67,13 @@ export default defineComponent({
 
     return () => {
       if (props.node.status !== 'running') {
-        return <v-container>
-          This not is not running. Your node must be running to retrieve this info
+        return <v-container class="text-center">
+          <div>This not is not running. Your node must be running to retrieve this info</div>
           <v-btn onClick={getNetworkInfo}>Retry</v-btn>
         </v-container>
       } else if (!props.node.settings.rest) {
-        return <v-container>
-          This node does not have the REST api enabled. You must enable REST to view network information inside Voltage
+        return <v-container class="text-center">
+          <div>This node does not have the REST api enabled. You must enable REST to view network information inside Voltage</div>
           <v-btn onClick={getNetworkInfo}>Retry</v-btn>
         </v-container>
       } else if (!isMacaroonDecrypted.value) {
@@ -83,7 +83,7 @@ export default defineComponent({
             error={error.value}
         />
       } else if (Object.keys(payload.value).length > 0) {
-        return <v-container>
+        return <v-container class="text-center">
           <json-table data={() => payload.value} />
         </v-container>
       } else if (responseError.value) {
