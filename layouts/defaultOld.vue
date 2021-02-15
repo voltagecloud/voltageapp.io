@@ -20,7 +20,7 @@
                 | {{ item.icon }}
             v-list-item-title.warning--text.text--darken-1
               | {{ item.title }}
-    v-app-bar(app clipped-left color='warning' dark)
+    v-app-bar(app clipped-left color='warning' dark style='padding-top: env(--safe-area-inset-top);')
       v-btn(icon @click='showDrawer = !showDrawer')
         v-icon mdi-menu
       v-img(:src='require("~/assets/logo/name-white.svg")' max-height='18' max-width='100' contain )

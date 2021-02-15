@@ -95,6 +95,11 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa'
   ],
+  pwa: {
+    meta: {
+      appleStatusBarStyle: 'black-translucent'
+    }
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
