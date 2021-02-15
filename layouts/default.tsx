@@ -58,6 +58,11 @@ export default defineComponent({
         fct: () => ctx.root.$router.push('/exports')
       },
       {
+        title: 'Billing',
+        icon: 'mdi-currency-usd',
+        fct: () => ctx.root.$router.push('/billing')
+      },
+      {
         title: 'Settings',
         icon: 'mdi-cog-outline',
         fct: () => ctx.root.$router.push('/settings')
