@@ -1,13 +1,13 @@
 import { defineComponent, reactive, createElement } from '@vue/composition-api'
 import JsonTable, { JsonData } from '~/components/core/JsonTable'
 import useNodeApi from '~/compositions/useNodeApi'
-import { VContainer, VRow, VCol } from 'vuetify/lib'
+import { VContainer, VRow, VCol, VCard } from 'vuetify/lib'
 
 const h = createElement
 
 export default defineComponent({
   components: {
-    VContainer, VRow, VCol
+    VContainer, VRow, VCol, VCard
   },
   setup: (_, ctx) => {
 
@@ -30,8 +30,8 @@ export default defineComponent({
     return () => <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10" lg="8">
-          <div>{state.error}</div>
-          { !state.data  || <JsonTable data={() => state.data as JsonData}/> }
+          { state.error && <v-card class="pa-3">{state.error}</v-card> }
+          { state.data  && <JsonTable data={() => state.data as JsonData}/> }
         </v-col>
       </v-row>
     </v-container>
