@@ -1,6 +1,6 @@
 import { defineComponent, reactive, computed, ref, watchEffect, createElement } from '@vue/composition-api'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
-import { VContainer } from 'vuetify/lib'
+import { VContainer, VBtn } from 'vuetify/lib'
 
 const h = createElement
 
@@ -8,7 +8,8 @@ export default defineComponent({
   components: {
     NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
     JsonTable: () => import('~/components/core/JsonTable'),
-    VContainer
+    VContainer,
+    VBtn
   },
   props: {
     enabledREST: {
@@ -26,7 +27,7 @@ export default defineComponent({
     const payload = ref<Record<string, any>>({})
     const responseError = ref('') 
 
-    watchEffect(async () => {
+    async function getNetworkInfo () {
       if (!macaroonHex.value) return
 
       try {
@@ -55,6 +56,11 @@ export default defineComponent({
       } catch (e) {
         responseError.value = e.message
       }
+    }
+
+    watchEffect(async () => {
+      if (!macaroonHex.value) return
+      await getNetworkInfo()
     })
 
     const normalizedPayload = computed(() => {
@@ -85,6 +91,7 @@ export default defineComponent({
         return <v-container class="text-center">
           <div>{ responseError.value }</div>
           <div>Failed to fetch information from LND. Please make sure you have your current IP whitelisted in the node's settings</div>
+          <v-btn onClick={getNetworkInfo}>Retry</v-btn>
         </v-container>
       }
     }
