@@ -1,6 +1,7 @@
-import { defineComponent, reactive, computed, ref, watchEffect, createElement } from '@vue/composition-api'
+import { defineComponent, PropType, computed, ref, watchEffect, createElement } from '@vue/composition-api'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
 import { VContainer, VBtn } from 'vuetify/lib'
+import type { Node } from '~/types/apiResponse'
 
 const h = createElement
 
@@ -12,23 +13,24 @@ export default defineComponent({
     VBtn
   },
   props: {
-    enabledREST: {
-      type: Boolean,
-      required: true
-    },
-    nodeId: {
-      type: String,
+    node: {
+      type: Object as PropType<Node>,
       required: true
     }
   },
   setup: (props, ctx) => {
-    const { isMacaroonDecrypted, handleDecryptMacaroon, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.nodeId)
+    const { isMacaroonDecrypted, handleDecryptMacaroon, macaroonHex, apiEndpoint, error } = useDecryptMacaroon(ctx, props.node.node_id)
 
     const payload = ref<Record<string, any>>({})
     const responseError = ref('') 
 
+    function canFetch () {
+      return props.node.status === 'running' && macaroonHex.value
+    }
+
     async function getNetworkInfo () {
-      if (!macaroonHex.value) return
+      if (!canFetch()) return
+      
 
       try {
         const res = await fetch(`https://${apiEndpoint.value}:8080/v1/getinfo`, {
@@ -63,20 +65,17 @@ export default defineComponent({
       await getNetworkInfo()
     })
 
-    const normalizedPayload = computed(() => {
-      if (payload.value.keys().length === 0) return []
-      const { chains, uris, features, ...simpleKeys } = payload.value
-      return Object.entries(simpleKeys).map(([key, value]) => ({
-        key: key as string,
-        value: value as string
-      }))
-    })
-
     return () => {
-      if (!props.enabledREST) {
-        return <div>
+      if (props.node.status !== 'running') {
+        return <v-container>
+          This not is not running. Your node must be running to retrieve this info
+          <v-btn onClick={getNetworkInfo}>Retry</v-btn>
+        </v-container>
+      } else if (!props.node.settings.rest) {
+        return <v-container>
           This node does not have the REST api enabled. You must enable REST to view network information inside Voltage
-        </div>
+          <v-btn onClick={getNetworkInfo}>Retry</v-btn>
+        </v-container>
       } else if (!isMacaroonDecrypted.value) {
         return <node-password-input
             onDone={(password: string) => handleDecryptMacaroon({ password })}
