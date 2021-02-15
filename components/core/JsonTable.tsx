@@ -7,7 +7,7 @@ const h = createElement
 type Primitive = String|Number|Boolean
 type JsonObject = Record<string, Primitive|JsonArray>
 type JsonArray = Array<Primitive|JsonObject>
-type JsonData = Primitive|JsonObject|JsonArray
+export type JsonData = Primitive|JsonObject|JsonArray
 
 
 export default defineComponent({
