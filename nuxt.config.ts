@@ -28,7 +28,7 @@ export default {
     title: 'Voltage Dashboard',
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
       { property: 'og:site_name', content: 'Voltage Dashboard' },
       { property: 'og:title', content: 'Voltage Dashboard' },
