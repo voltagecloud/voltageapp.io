@@ -18,7 +18,10 @@ export default {
     // POSSIBLE VALUES
     // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
     // [] --> disables maintenance mode
-    middleware: []
+    middleware: [
+      // capture podcast referal code to store on every route
+      'captureReferral'
+    ]
   },
   /*
   ** Headers of the page
