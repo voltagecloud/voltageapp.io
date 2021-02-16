@@ -71,10 +71,10 @@ export default defineComponent({
             <tbody>
               {Object.entries(data.value).map(([key, val]) => (
                 <tr>
-                  <td style="width: 20vw;">
-                    <div style="width: 20vw;">{key}</div>
+                  <td>
+                    <div>{key}</div>
                   </td>
-                  <td class="text-end">
+                  <td class="text-end" style="max-width: 40vw;">
                     <json-table data={() => val} />
                   </td>
                 </tr>
