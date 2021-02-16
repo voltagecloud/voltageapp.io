@@ -86,11 +86,19 @@ export default defineComponent({
                 </tr>
                 <tr>
                   <td>Standard Nodes</td>
-                  <td>{renderLinkedNodes(sub.nodes)}</td>
+                  <td>{sub.items.reduce((acc: number, cur: any) => {
+                    return cur.item === 'standard_node' ? cur.quantity + acc : acc
+                  }, 0)}</td>
                 </tr>
                 <tr>
                   <td>Lite Nodes</td>
-                  <td>{renderLinkedNodes(sub.lite_nodes)}</td>
+                  <td>{sub.items.reduce((acc: number, cur: any) => {
+                    return cur.item === 'lite_node' ? cur.quantity + acc : acc
+                  }, 0)}</td>
+                </tr>
+                <tr>
+                  <td>Linked Items</td>
+                  <td>{renderLinkedNodes([...sub.lite_nodes, ...sub.nodes])}</td>
                 </tr>
               </tbody>
             </v-simple-table>
