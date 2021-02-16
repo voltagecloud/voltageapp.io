@@ -184,7 +184,8 @@ export default defineComponent({
             </v-menu>
             // @ts-ignore
           : <VBtn onClick={() => { state.showDrawer = true }} text key="lg">
-            // @ts-ignore
+            { /*
+            // @ts-ignore */}
             <VIcon>mdi-menu</VIcon>
           </VBtn>
         }
