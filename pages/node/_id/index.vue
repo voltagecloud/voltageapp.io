@@ -126,6 +126,7 @@ import type { Node } from '~/types/apiResponse'
 import type LogsComponent from '~/components/viewnode/Logs.vue'
 import Network from '~/components/viewnode/Network'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
+import usePodcastReferral from '~/compositions/usePodcastReferral'
 
 export default defineComponent({
   components: {
@@ -218,6 +219,15 @@ export default defineComponent({
       return new Promise(resolve => setTimeout(resolve, ms))
     }
 
+    // get handle to macaroon state for this node
+    const { macaroon, macaroonHex } = useDecryptMacaroon(ctx, ctx.root.$route.params.id)
+    // apply watchers to macaroon state if podcast code is present
+    usePodcastReferral({
+      macaroonHex,
+      nodeId: ctx.root.$route.params.id,
+      podcastCode: createStore.referralCode
+    })
+
     async function initialize () {
       lndStore.CURRENT_NODE(nodeData.value)
       initializing.value = true
@@ -253,6 +263,8 @@ export default defineComponent({
             stateless_init: true
           }
         })
+        // write the bare macaroon to useDecryptMacaroon state
+        macaroon.value = res.data.admin_macaroon
         createText.value = 'encrypting data'
         if (node.macaroon_backup) {
           // @ts-ignore
