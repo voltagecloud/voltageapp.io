@@ -69,7 +69,6 @@ export default defineComponent({
       if (props.node.status !== 'running') {
         return <v-container class="text-center">
           <div>This not is not running. Your node must be running to retrieve this info</div>
-          <v-btn onClick={getNetworkInfo}>Retry</v-btn>
         </v-container>
       } else if (!props.node.settings.rest) {
         return <v-container class="text-center">
@@ -83,7 +82,7 @@ export default defineComponent({
             error={error.value}
         />
       } else if (Object.keys(payload.value).length > 0) {
-        return <v-container class="text-center">
+        return <v-container>
           <json-table data={() => payload.value} />
         </v-container>
       } else if (responseError.value) {
