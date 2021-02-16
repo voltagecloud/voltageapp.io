@@ -48,6 +48,18 @@ export default defineComponent({
       return linkedNodes.length ? linkedNodes : <div>None</div>
     }
 
+    const renderPurchasedNodes = ({ title, match, items }: { title: string; match: string; items: any[] }) => {
+      const purchased = items.reduce((acc: number, cur: any) => {
+        return cur.item === match ? cur.quantity + acc : acc
+      }, 0)
+      if (purchased) {
+        return <tr>
+          <td>{title}</td>
+          <td>{purchased}</td>
+        </tr>
+      }
+    }
+
     return () => <v-container>
       <v-row justify="center">
         <v-col cols="12" lg="10">
@@ -84,18 +96,16 @@ export default defineComponent({
                   <td>Renewal Type</td>
                   <td>{sub.renewal_type}</td>
                 </tr>
-                <tr>
-                  <td>Standard Nodes</td>
-                  <td>{sub.items.reduce((acc: number, cur: any) => {
-                    return cur.item === 'standard_node' ? cur.quantity + acc : acc
-                  }, 0)}</td>
-                </tr>
-                <tr>
-                  <td>Lite Nodes</td>
-                  <td>{sub.items.reduce((acc: number, cur: any) => {
-                    return cur.item === 'lite_node' ? cur.quantity + acc : acc
-                  }, 0)}</td>
-                </tr>
+                {renderPurchasedNodes({
+                  title: 'Standard Nodes',
+                  match: 'standard_node',
+                  items: sub.items
+                })}
+                {renderPurchasedNodes({
+                  title: 'Lite Nodes',
+                  match: 'lite_node',
+                  items: sub.items
+                })}
                 <tr>
                   <td>Linked Items</td>
                   <td>{renderLinkedNodes([...sub.lite_nodes, ...sub.nodes])}</td>
