@@ -105,7 +105,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: endpoint
+    browserBaseURL: endpoint,
     https: true,
     progress: true,
     debug: !!(dev)
