@@ -64,7 +64,7 @@ export default defineComponent({
       <v-row justify="center">
         <v-col cols="12" lg="10">
           { state.error && <v-card class="pa-3 text-h4">{state.error}</v-card> }
-          { state.data && state.data.status === 'active' && <v-card class="pa-3 text-center">
+          { state.data && state.data.status !== 'active' && <v-card class="pa-3 text-center">
             Warning, your account status is: { state.data.status }
           </v-card>}
           { state.data  && state.data.subscriptions.map((sub: any)  => <v-card color="info" class="pa-3 my-3" >
