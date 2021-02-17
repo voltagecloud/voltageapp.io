@@ -87,7 +87,6 @@ export default defineComponent({
         </v-container>
       } else if (responseError.value) {
         return <v-container class="text-center">
-          <div>{ responseError.value }</div>
           <div>Failed to fetch information from LND. Please make sure you have your current IP whitelisted in the node's settings</div>
           <v-btn onClick={getNetworkInfo}>Retry</v-btn>
         </v-container>
