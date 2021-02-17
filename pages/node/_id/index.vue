@@ -48,7 +48,7 @@ v-container
                     export-data(:nodeID='nodeID' :nodeStatus='status')
               //- WIP network tab
               v-tab-item
-                network(:enabledREST='nodeData.settings.rest' :nodeId='nodeData.node_id')
+                network(:node='nodeData')
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item

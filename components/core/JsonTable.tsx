@@ -74,7 +74,7 @@ export default defineComponent({
                   <td>
                     <div>{key}</div>
                   </td>
-                  <td class="text-end">
+                  <td class="text-end" style="max-width: 40vw;">
                     <json-table data={() => val} />
                   </td>
                 </tr>
