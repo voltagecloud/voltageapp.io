@@ -12,18 +12,16 @@ export default function useFetch <T>(endpoint: string) {
     const accessToken = user.getSignInUserSession().getAccessToken()
     const jwt = accessToken.getJwtToken()
 
-    const { ...otherOpts, headers } === opts
     
     loading.value = true
-    const res = await fetch(`${process.env.apiEndpoint}${endpoint}`, {
+    const res = await fetch(`${process.env.apiEndpoint}${endpoint}`, Object.assign(opts, {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwt}`,
         ...(opts?.headers || {})
-      },
-      ...otherOpts
-    })
+      }
+    }))
 
     try {
       data.value = await res.json() as T
