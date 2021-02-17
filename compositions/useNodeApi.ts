@@ -292,7 +292,20 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function billing () {
+    loading.value = true
+    try {
+      return await $axios.get('/billing')
+    } catch (e) {
+      console.error(e)
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
+    billing,
     createNode,
     populateNode,
     postNode,
