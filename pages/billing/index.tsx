@@ -54,7 +54,7 @@ export default defineComponent({
       }, 0)
       if (purchased) {
         return <tr>
-          <td>{title}</td>
+          <td><b>{title}</b></td>
           <td>{purchased}</td>
         </tr>
       }
@@ -73,27 +73,27 @@ export default defineComponent({
             >
               <tbody>
                 <tr>
-                  <td>Status</td>
+                  <td><b>Status</b></td>
                   <td>{sub.status}</td>
                 </tr>
                 <tr>
-                  <td>Method</td>
+                  <td><b>Method</b></td>
                   <td>{sub.payment_method}</td>
                 </tr>
                 <tr>
-                  <td>Billing Interval</td>
+                  <td><b>Billing Interval</b></td>
                   <td>{sub.interval}</td>
                 </tr>
                 <tr>
-                  <td>Price</td>
+                  <td><b>Price</b></td>
                   <td>{sub.price}</td>
                 </tr>
                 <tr>
-                  <td>Renewal Date</td>
+                  <td><b>Renewal Date</b></td>
                   <td>{sub.renewal_date}</td>
                 </tr>
                 <tr>
-                  <td>Renewal Type</td>
+                  <td><b>Renewal Type</b></td>
                   <td>{sub.renewal_type}</td>
                 </tr>
                 {renderPurchasedNodes({
@@ -107,7 +107,7 @@ export default defineComponent({
                   items: sub.items
                 })}
                 <tr>
-                  <td>Linked Items</td>
+                  <td><b>Linked Items</b></td>
                   <td>{renderLinkedNodes([...sub.lite_nodes, ...sub.nodes])}</td>
                 </tr>
               </tbody>
