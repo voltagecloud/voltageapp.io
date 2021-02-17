@@ -2,6 +2,7 @@ import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
 const dev = process.env.NODE_ENV !== 'prod' || process.env.NETLIFY
+const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io',
 
 export default {
   mode: 'spa',
@@ -12,13 +13,17 @@ export default {
   env: {
     poolId: (dev) ? 'us-west-2_QBaQFtzDy' : 'us-west-2_n7m64jCzU',
     webClientId: (dev) ? '4n1knfj0o7c473ult1qeqtv9u2' : '16hidm6n73l20ses41ruukko6t',
-    stripeKey: (dev) ? 'pk_test_51HAHUBFE3QI8QkHeTr6oaBLIUUobHjxy3OeV2hVfhumWpJv8o0aZl7nsVPyOi2PbvuUhD0heQxxtwxsFbPRZhBbB00sTGDK9of' : 'pk_live_51HAHUBFE3QI8QkHeJoBERYx7cvgsbqcvVZdzGw4YC9e5aCCTOBOOZGjGj7pVeFatlZzi4OvG9qDNvphGBGd4tD5S00d7ZkkPzx'
+    stripeKey: (dev) ? 'pk_test_51HAHUBFE3QI8QkHeTr6oaBLIUUobHjxy3OeV2hVfhumWpJv8o0aZl7nsVPyOi2PbvuUhD0heQxxtwxsFbPRZhBbB00sTGDK9of' : 'pk_live_51HAHUBFE3QI8QkHeJoBERYx7cvgsbqcvVZdzGw4YC9e5aCCTOBOOZGjGj7pVeFatlZzi4OvG9qDNvphGBGd4tD5S00d7ZkkPzx',
+    apiEndpoint: endpoint
   },
   router: {
     // POSSIBLE VALUES
     // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
     // [] --> disables maintenance mode
-    middleware: []
+    middleware: [
+      // capture podcast referal code to store on every route
+      'captureReferral'
+    ]
   },
   /*
   ** Headers of the page
@@ -105,7 +110,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    browserBaseURL: (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io',
+    browserBaseURL: endpoint,
     https: true,
     progress: true,
     debug: !!(dev)

@@ -18,13 +18,13 @@ export default function useNodeApi ({ $axios, error }: Context) {
           type: createStore.type
         }
       )
-      await createStore.NEW_NODE_ID(node.data?.['node_id'])
-      await createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
-      loading.value = false
+      createStore.NEW_NODE_ID(node.data?.['node_id'])
+      createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
       return node
     } catch (e) {
-      loading.value = false
       throw e
+    } finally {
+      loading.value = false
     }
   }
 
