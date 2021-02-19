@@ -1,4 +1,4 @@
-import { defineComponent, createElement, computed } from '@nuxtjs/composition-api'
+import { defineComponent, createElement, computed } from '@vue/composition-api'
 import { nodeStore } from '~/store'
 
 const h = createElement
