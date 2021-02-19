@@ -34,7 +34,7 @@
       v-btn(text to='/purchase')
         span(v-if='$vuetify.breakpoint.mdAndUp') Purchase&nbsp;
         v-icon mdi-currency-usd-circle-outline
-    v-content(:class='{background: $route.path != "/settings"}')
+    v-main(:class='{background: $route.path != "/settings"}')
       nuxt
     error-snackbar
     core-footer

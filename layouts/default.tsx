@@ -22,7 +22,7 @@ export default defineComponent({
     VTabs: () => import('vuetify/lib').then(m => m.VTabs),
     VTab: () => import('vuetify/lib').then(m => m.VTab),
     VCard: () => import('vuetify/lib').then(m => m.VCard),
-    VContent: () => import('vuetify/lib').then(m => m.VContent),
+    VMain: () => import('vuetify/lib').then(m => m.VMain),
     VDivider: () => import('vuetify/lib').then(m => m.VDivider),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue'),
     CoreFooter: () => import('~/components/core/Footer.vue'),
@@ -196,9 +196,9 @@ export default defineComponent({
         }
         
       </v-app-bar>
-      <v-content class={{background: ctx.root.$route.path !== 'settings'}}>
+      <v-main class={{background: ctx.root.$route.path !== 'settings'}}>
         <nuxt />
-      </v-content>
+      </v-main>
       <error-snackbar />
       <core-footer />
     </v-app>}
