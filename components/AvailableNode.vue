@@ -33,15 +33,8 @@ export default defineComponent({
       return (props.network === 'testnet') ? nodeStore.testnetAvailable : nodeStore.mainnetAvailable
     })
 
-    // function setupNode () {
-    //   createStore.SEED([])
-    //   createStore.NETWORK(network)
-    //   root.$router.push('/create')
-    // }
-
     return {
       capitalized,
-      // setupNode,
       available
     }
   }

@@ -80,7 +80,7 @@ export default defineComponent({
     // these buttons are considered deprecated and should be remove when setup flow is redone
     const deprecatedButtons: { text: string; to: string; icon: string; }[] = [
       { text: 'Purchase', to: '/purchase', icon: 'mdi-currency-usd-circle-outline' },
-      { text: 'Create', to: '/create', icon: 'mdi-plus' }
+      { text: 'Create', to: '/create/lnd', icon: 'mdi-plus' }
     ]
 
     return () => {

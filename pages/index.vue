@@ -210,12 +210,12 @@ export default defineComponent({
       {
         title: 'Lightning Node',
         src: require('~/assets/lnd-logo.png'),
-        to: '/create'
+        to: '/create/lnd'
       },
       {
         title: 'BTCPay Server',
         src: require('~/assets/btcpay-logo.png'),
-        to: '/createbtc'
+        to: '/create/btcpay'
       }
     ]
 

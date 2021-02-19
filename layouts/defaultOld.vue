@@ -11,7 +11,7 @@
         v-row(align='center' justify='center' style='height: 100%;')
           v-col.text-center.grey--text.text--darken-1
             |You dont have any running nodes.&nbsp;
-            nuxt-link(to='/create') Create one
+            nuxt-link(to='/create/lnd') Create one
       template(v-slot:append)
         v-list.mt-12(expand='' nav='')
           v-list-item(v-for='item in bottomItems' :key='item.title' @click='item.fct()')
@@ -28,7 +28,7 @@
       v-btn(text to='/')
         span(v-if='$vuetify.breakpoint.mdAndUp') Home&nbsp;
         v-icon mdi-home
-      v-btn(text to='/create')
+      v-btn(text to='/create/lnd')
         span(v-if='$vuetify.breakpoint.mdAndUp') Create&nbsp;
         v-icon mdi-plus
       v-btn(text to='/purchase')
