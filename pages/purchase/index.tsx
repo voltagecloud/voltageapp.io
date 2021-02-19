@@ -102,11 +102,14 @@ export default defineComponent({
 
     const planQty = ref(1)
     const includeBtcPay = ref(false)
+    const btcPayAddonMonthly = computed(() => planState.value.plan === Plan.monthly
+      ? 9.99 : 7.99
+    )
 
     const cart = computed(() => {
       const isBtcPay = planState.value.nodeType === NodeType.btcPay
       const timeMultiplier = planState.value.plan === Plan.monthly ? 1 : 12
-      const addonPrice = (includeBtcPay.value && !isBtcPay) ? (timeMultiplier * 9.99) : 0
+      const addonPrice = (includeBtcPay.value && !isBtcPay) ? (timeMultiplier * btcPayAddonMonthly.value) : 0
       const multiplier = planState.value.nodeType === NodeType.btcPay ? 1 : planQty.value
       const totalPrice = (timeMultiplier * multiplier * planState.value.cost + addonPrice).toFixed(2)
       const items: {plan: string; quantity: number; type: string;}[] = [
@@ -243,7 +246,7 @@ export default defineComponent({
               <div class="d-flex pa-2 justify-space-between">
                 <div class="text-h6 d-flex flex-column">
                   <div>Add BTCPay Server</div>
-                  <div>$9.99</div>
+                  <div>${btcPayAddonMonthly.value}/mo</div>
                 </div>
                 <div class="d-flex flex-column align-center" >
                   <div>Include</div>
