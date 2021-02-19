@@ -34,7 +34,7 @@ export default defineComponent({
 
     const tabs: { text: string; to?: string; href?: string; }[] = [
       { text: 'Nodes', to: '/' },
-      // { text: 'BTCPay Server', to: '/btcpay' },
+      { text: 'BTCPay Server', to: '/btcpay' },
       { text: 'Documentation', href: 'https://docs.voltageapp.io' },
     ]
 
