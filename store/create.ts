@@ -44,6 +44,9 @@ export default class CreateModule extends VuexModule {
     newNodeID = ''
     currentStep = 0
 
+    // referral code from podcasts
+    referralCode = ''
+
     @Mutation
     NODE_NAME (name: string) {
       this.nodeName = name
@@ -109,5 +112,10 @@ export default class CreateModule extends VuexModule {
       this.settings = Object.assign(this.settings, defaultSettings)
       this.nodeName = ''
       this.newNodeID = ''
+    }
+
+    @Mutation
+    REFERRAL (code: string) {
+      this.referralCode = code
     }
 }

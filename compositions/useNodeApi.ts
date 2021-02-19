@@ -18,13 +18,13 @@ export default function useNodeApi ({ $axios, error }: Context) {
           type: createStore.type
         }
       )
-      await createStore.NEW_NODE_ID(node.data?.['node_id'])
-      await createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
-      loading.value = false
+      createStore.NEW_NODE_ID(node.data?.['node_id'])
+      createStore.AUTOFILL_WHITELIST(node.data?.['user_ip'])
       return node
     } catch (e) {
-      loading.value = false
       throw e
+    } finally {
+      loading.value = false
     }
   }
 
@@ -292,7 +292,20 @@ export default function useNodeApi ({ $axios, error }: Context) {
     }
   }
 
+  async function billing () {
+    loading.value = true
+    try {
+      return await $axios.get('/billing')
+    } catch (e) {
+      console.error(e)
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
+    billing,
     createNode,
     populateNode,
     postNode,
