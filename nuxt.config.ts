@@ -6,6 +6,7 @@ const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com
 
 export default {
   ssr: false,
+  target: 'static',
   server: {
     host: '0.0.0.0',
     port: '3000'
