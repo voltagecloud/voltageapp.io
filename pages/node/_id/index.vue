@@ -48,7 +48,7 @@ v-container
                     export-data(:nodeID='nodeID' :nodeStatus='status')
               //- WIP network tab
               v-tab-item
-                network(:enabledREST='nodeData.settings.rest' :nodeId='nodeData.node_id')
+                network(:node='nodeData')
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
@@ -125,6 +125,8 @@ import useFormValidation from '~/compositions/useFormValidation'
 import type { Node } from '~/types/apiResponse'
 import type LogsComponent from '~/components/viewnode/Logs.vue'
 import Network from '~/components/viewnode/Network'
+import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
+import usePodcastReferral from '~/compositions/usePodcastReferral'
 
 export default defineComponent({
   components: {
@@ -193,11 +195,11 @@ export default defineComponent({
       firstRun = false
     }, 5000)
   },
-  setup (_, { root }) {
-    const nodeID = ref(root.$nuxt.context.params.id)
+  setup (_, ctx) {
+    const nodeID = ref(ctx.root.$nuxt.context.params.id)
     const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
     const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus, postNode } = useNodeApi(root.$nuxt.context)
+    const { updateNode, updateStatus, postNode } = useNodeApi(ctx.root.$nuxt.context)
     const timer = ref<NodeJS.Timeout|null>(null)
     const errorText = ref('')
     const initializing = ref(false)
@@ -216,6 +218,15 @@ export default defineComponent({
     function sleep (ms: number) {
       return new Promise(resolve => setTimeout(resolve, ms))
     }
+
+    // get handle to macaroon state for this node
+    const { macaroon, macaroonHex } = useDecryptMacaroon(ctx, ctx.root.$route.params.id)
+    // apply watchers to macaroon state if podcast code is present
+    usePodcastReferral({
+      macaroonHex,
+      nodeId: ctx.root.$route.params.id,
+      podcastCode: createStore.referralCode
+    })
 
     async function initialize () {
       lndStore.CURRENT_NODE(nodeData.value)
@@ -252,13 +263,15 @@ export default defineComponent({
             stateless_init: true
           }
         })
+        // write the bare macaroon to useDecryptMacaroon state
+        macaroon.value = res.data.admin_macaroon
         createText.value = 'encrypting data'
         if (node.macaroon_backup) {
           // @ts-ignore
           const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
           // @ts-ignore
           const encryptedSeed = crypto.AES.encrypt(btoa(seed.data.cipher_seed_mnemonic.join(',')), initPassword.value).toString()
-          const { postMacaroon, saveSeed } = useNodeApi(root.$nuxt.context)
+          const { postMacaroon, saveSeed } = useNodeApi(ctx.root.$nuxt.context)
           await postMacaroon(node.node_id, 'admin', encryptedMacaroon)
           await saveSeed(node.node_id, encryptedSeed)
         }
@@ -295,6 +308,9 @@ export default defineComponent({
     const unlockDialog = ref(false)
     const unlocking = ref(false)
     const error = ref('')
+
+    // get node password state
+    const { password: pwState } = useDecryptMacaroon(ctx, ctx.root.$route.params.id)
     async function unlockNode (password: string) {
       error.value = ''
       lndStore.CURRENT_NODE(nodeData.value)
@@ -311,6 +327,8 @@ export default defineComponent({
           },
           timeout: 45000
         })
+        // node has been unlocked so password is correct write to state
+        pwState.value = password
         // update the status of the node in the api
         await updateStatus(nodeData.value.node_id, 'unlocking')
         // check if sphinx relay needs to be unlocked
@@ -325,7 +343,6 @@ export default defineComponent({
           })
         }
         await postNode(nodeID.value)
-        unlockDialog.value = false
       } catch (err) {
         error.value = `${err.response.data.message}`
       } finally {
@@ -336,7 +353,7 @@ export default defineComponent({
     async function update () {
       await updateNode(nodeData.value.node_id)
       // @ts-ignore
-      root.$nuxt.$router.go()
+      ctx.root.$nuxt.$router.go()
     }
 
     // clear errors on typing in password field

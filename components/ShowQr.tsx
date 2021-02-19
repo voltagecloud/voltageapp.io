@@ -6,14 +6,14 @@ const h = createElement
 
 export default defineComponent({
   components: {
-    LndConnect: () => import('~/components/connections/LNDConnect.tsx'),
+    LndConnect: () => import('~/components/connections/LndConnect.tsx'),
     Manual: () => import('~/components/connections/Manual.tsx'),
     Zap: () => import('~/components/connections/Zap.tsx'),
     Zeus: () => import('~/components/connections/Zeus.tsx'),
     Lncli: () => import('~/components/connections/Lncli.tsx'),
     ThunderHub: () => import('~/components/connections/ThunderHub.tsx'),
     Joule: () => import('~/components/connections/Joule.tsx'),
-    Btcpay: () => import('~/components/connections/BTCPay.tsx'),
+    Btcpay: () => import('~/components/connections/Btcpay.tsx'),
     Sphinx: () => import('~/components/connections/Sphinx'),
     VTabs,
     VTab,
