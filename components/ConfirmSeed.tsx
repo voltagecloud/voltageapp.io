@@ -74,7 +74,7 @@ export default defineComponent({
       >
         I have written down my seed phrase
       </v-btn>
-      <v-dialog v-model="confirmModal" max-width="800">
+      <v-dialog value={confirmModal.value} onInput={(v: boolean) => {confirmModal.value = v}} max-width="800">
         <v-card>
           <v-card-text
             class="pt-3 font-weight-light warning--text text--darken-1"
@@ -98,7 +98,3 @@ export default defineComponent({
     </div>
   }
 })
-<style lang="scss" scoped>
-.seed-word {
-}
-</style>
