@@ -4,8 +4,8 @@ import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
 import { Node } from '~/types/apiResponse'
 import {base64ToHex, decryptMacaroon} from '~/utils/crypto'
 import useNodeApi from '~/compositions/useNodeApi'
-import axios from 'axios'
-import crypto from 'crypto-js'
+import { MacaroonType, bakeMacaroon } from '~/utils/bakeMacaroon'
+import backupMacaroon from '~/utils/backupMacaroon'
 
 const h = createElement
 
@@ -71,45 +71,20 @@ export default defineComponent({
     async function createBtcpayMac () {
       state.loading = true
       try {
-        const res = await axios({
-          method: 'POST',
-          url: `https://${apiEndpoint.value}:8080/v1/macaroon`,
-          data: {
-            permissions: [
-              {
-                entity: 'info',
-                action: 'read'
-              },
-              {
-                entity: 'address',
-                action: 'read'
-              },
-              {
-                entity: 'address',
-                action: 'write'
-              },
-              {
-                entity: 'onchain',
-                action: 'read'
-              },
-              {
-                entity: 'invoices',
-                action: 'read'
-              },
-              {
-                entity: 'invoices',
-                action: 'write'
-              }
-            ]
-          },
-          headers: {
-            'Grpc-Metadata-macaroon': macaroonHex.value
-          }
+        const res = await bakeMacaroon({
+          endpoint: apiEndpoint.value,
+          macaroonHex: macaroonHex.value,
+          macaroonType: MacaroonType.btcpayserver
         })
-        state.rawMacaroon = res.data.macaroon
+        const json = await res.json()
+        state.rawMacaroon = json.macaroon
         state.loading = false
-        const encrypted = crypto.AES.encrypt(res.data.macaroon, password.value).toString()
-        await postMacaroon(props.node.node_id, 'btcpayserver', encrypted)
+        await backupMacaroon({
+          macaroonText: json.macaroon,
+          macaroonType: 'btcpayserver',
+          nodeId: props.node.node_id,
+          password: password.value
+        })
       } catch (err) {
         state.error = `${err}`
       } finally {
