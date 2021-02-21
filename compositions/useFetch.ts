@@ -1,5 +1,5 @@
-import { Auth } from '@aws-amplify/auth'
 import { ref } from '@vue/composition-api'
+import voltageFetch from '~/utils/fetchClient'
 
 export default function useFetch <T>(endpoint: string) {
   const data = ref<T|null>(null)
@@ -8,21 +8,8 @@ export default function useFetch <T>(endpoint: string) {
   const loading = ref(false)
 
   async function dispatch(opts: RequestInit) {
-    const user = await Auth.currentAuthenticatedUser()
-    const accessToken = user.getSignInUserSession().getAccessToken()
-    const jwt = accessToken.getJwtToken()
-
-    
     loading.value = true
-    const res = await fetch(`${process.env.apiEndpoint}${endpoint}`, Object.assign(opts, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwt}`,
-        ...(opts?.headers || {})
-      }
-    }))
-
+    const res = await voltageFetch(endpoint, opts)
     try {
       data.value = await res.json() as T
     } catch (e) {
