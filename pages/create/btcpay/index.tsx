@@ -116,11 +116,6 @@ export default defineComponent({
                           color="highlight"
                           background-color="secondary"
                           outlined
-                          rules={[
-                            (nodeId: string) => {
-                              return !!nodeId || 'You must select a node'
-                            }
-                          ]}
                         />
                       </v-col>
                       <v-container>
