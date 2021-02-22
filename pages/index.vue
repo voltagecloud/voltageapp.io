@@ -1,4 +1,4 @@
-<template lang="pug">
+<template>
 <v-container>
   <v-container v-if="showTrialBox" color="primary">
     <v-dialog max-width="800" color="secondary" :value="showTrialBox" @click:outside="clear">
@@ -54,7 +54,7 @@
     <v-col cols="12" lg="10" xl="8" v-if="!noNodes">
       <v-fade-transition group="group">
         <template v-if="display && nodes.length">
-          <div v-for="(node, i) in nodes" :key="node.node_id">
+          <div v-for="node in nodes" :key="node.node_id">
             <v-col class="px-0" cols="12">
               <node-controls :nodeID="node.node_id"></node-controls>
             </v-col>
@@ -63,11 +63,11 @@
       </v-fade-transition>
     </v-col>
     <v-col cols="12" md="8" v-else>
-      <v-card key="no-nodes">
-        <v-card-title>
-          <div class="mx-auto">Welcome to Voltage! Let's get started.</div>
+      <v-card key="no-nodes" color="info">
+        <v-card-title class="justify-center">
+          <span style="word-break: normal;">Welcome to Voltage! Let's get started.</span>
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="text-center">
           <div>Voltage offers products that make using Bitcoin with the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
         </v-card-text>
         <v-card-text class="mt-6 text-center">
