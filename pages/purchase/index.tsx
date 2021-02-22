@@ -1,7 +1,8 @@
 import { defineComponent, createElement, ref, computed, reactive } from '@vue/composition-api'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCheckbox, VDialog } from 'vuetify/lib'
 import { loadStripe } from '@stripe/stripe-js'
-import axios from 'axios'
+import { voltageFetch } from '~/utils/fetchClient'
+import useFetch from '~/compositions/useFetch'
 
 const h = createElement
 
@@ -30,6 +31,15 @@ export default defineComponent({
     VContainer, VRow, VCol, VCard, VBtn, VSlider, VDivider, VCheckbox, VCardTitle, VDialog
   },
   setup: (_, ctx) => {
+    // add typed api calls
+    const { dispatch, data, loading } = useFetch<any>('/btcpayserver')
+    dispatch({ method: 'GET' })
+
+    const btcpayDisabled = computed(() => {
+      if (!data.value || loading.value ) return true
+      return !!data.value.btcpayservers.find((server: any) => server.purchase_status !== 'trial')
+    })
+
 
     const litePlans: Subscription[] = [
       {
@@ -92,6 +102,7 @@ export default defineComponent({
             large
             onClick={() => { planState.value = Object.assign(plan) }}
             style={active ? {border: 'solid', borderColor: '#1d437b', background: '#ffffff'} : {background: '#e4e4e4' }}
+            disabled={plan.nodeType === NodeType.btcPay && btcpayDisabled.value}
           >
             <div class="d-flex flex-grow-1">{plan.name}</div>
             <div class="my-3">${plan.cost}</div>
@@ -145,10 +156,13 @@ export default defineComponent({
     async function cardCheckout () {
       state.loading = true
       try {
-        const res = await ctx.root.$axios.post('/stripe/session', {
-          items: cart.value.items
+        const res = await voltageFetch('/stripe/session', {
+          method: 'POST',
+          body: JSON.stringify({
+            items: cart.value.items
+          })
         })
-        const sessionId = res.data.session_id
+        const { session_id } = await res.json()
         const stripe = await stripePromise
 
         if (!stripe) {
@@ -157,7 +171,7 @@ export default defineComponent({
         }
         
         const { error } = await stripe.redirectToCheckout({
-          sessionId
+          sessionId: session_id
         })
         state.errorMessage = error.message || ''
       } catch (e) {
@@ -243,7 +257,7 @@ export default defineComponent({
                 />
               </div>
               <v-divider />
-              <div class="d-flex pa-2 justify-space-between">
+              {btcpayDisabled.value || <div class="d-flex pa-2 justify-space-between">
                 <div class="text-h6 d-flex flex-column">
                   <div>Add BTCPay Server</div>
                   <div>${btcPayAddonMonthly.value}/mo</div>
@@ -252,7 +266,7 @@ export default defineComponent({
                   <div>Include</div>
                   <v-checkbox class="mt-0" onChange={(val: boolean) => { includeBtcPay.value = val }} value={includeBtcPay.value}/>
                 </div>
-              </div>
+              </div>}
               </div>)}
               <div class="d-flex justify-space-between">
                 <div>Total:</div>
