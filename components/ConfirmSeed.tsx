@@ -1,16 +1,22 @@
-import { defineComponent, ref, PropType } from '@vue/composition-api'
+import { defineComponent, ref, PropType, createElement } from '@vue/composition-api'
 import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
 import useClipboard from '~/compositions/useClipboard'
+import { VDivider, VFadeTransition, VChip, VBtn, VCard, VCardText, VCardActions, VDialog } from 'vuetify/lib'
+
+const h = createElement
 
 export default defineComponent({
+  components: {
+    VDivider, VFadeTransition, VChip, VBtn, VCard, VCardText, VCardActions, VDialog
+  },
   props: {
     seed: {
-      type: Array as PropType<Array<string>>,
+      type: Array as PropType<Array<string>>|PropType<Readonly<Array<string>>>,
       required: true
     }
   },
-  setup (props, { root, emit }) {
+  setup: (props, { root, emit }) => {
     const confirmModal = ref(false)
 
     async function closeAndConfirm () {
@@ -44,7 +50,6 @@ export default defineComponent({
       >
         {props.seed.map((word, i) =>
           <span class="display-3 font-weight-thin warning--text px-3"
-             v-for="(word, i) in lndStore.cipher_seed_mnemonic"
              key={i}
              data-index={i}
              style="transition: all 0.5s ease-in-out; word-spacing: 1rem;"
