@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import voltageFetch from '~/utils/fetchClient' 
+import { voltageFetch } from '~/utils/fetchClient' 
 import { decryptMacaroon, base64ToHex } from '~/utils/crypto'
 
 interface NodePassword {
@@ -20,6 +20,8 @@ interface NodeMacaroon {
 }
 
 function reduceArray<T extends { nodeId: string; }> (arr: T[], elem: T, match: string): T[] {
+  // if the current array is empty just return array with appended elem
+  if (arr.length === 0) return [elem]
   // track whether this data has been added while reducing
   let hasAdded = false
   return arr.reduce((acc: T[], cur: T, i: number, full: T[]) => {
@@ -50,7 +52,9 @@ export default class MacaroonModule extends VuexModule {
 
   @Mutation
   NODE_PASSWORD ({ password, nodeId }: { password: string; nodeId: string }) {
-    this.nodePasswords = reduceArray(this.nodePasswords, { password, nodeId }, nodeId)
+    const nextState = reduceArray(this.nodePasswords, { password, nodeId }, nodeId)
+    console.log({ nextState })
+    this.nodePasswords = nextState
   }
 
   @Mutation
@@ -73,22 +77,33 @@ export default class MacaroonModule extends VuexModule {
     { nodeId, macaroonType, password }:
     { nodeId: string; macaroonType: string; password?: string }
   ) {
+    console.log('enter action')
     if (password) {
+      console.log({ password })
       this.context.commit('NODE_PASSWORD', { nodeId, password })
     }
-    const res = await voltageFetch('/node/connect', {
-      body: JSON.stringify({
-        node_id: nodeId,
-        name: macaroonType
+    console.log('sending request')
+    try {
+      const res = await voltageFetch('/node/connect', {
+        method: 'POST',
+        body: JSON.stringify({
+          node_id: nodeId,
+          name: macaroonType
+        })
       })
-    })
-    if (!res.ok) throw Error('Failed to retrieve macaroon from endpoint') 
-    const { macaroon, endpoint, tls_cert } = await res.json()
-    if (!macaroon) throw Error ('Macaroon was not found')
-    // write node meta to store
-    this.context.commit('NODE_META', { nodeId, tlsCert: tls_cert, endpoint })
-    // write encrypted macaroon to store
-    this.context.commit('MACAROON', { nodeId, type: macaroonType, macaroon })
+      if (!res.ok) return 'Error retrieving the macaroon'
+      const json = await res.json()
+      console.log({ json })
+      const { macaroon, endpoint, tls_cert } = json
+      if (!macaroon) return 'Could not find macaroon'
+      // write node meta to store
+      this.context.commit('NODE_META', { nodeId, tlsCert: tls_cert, endpoint })
+      // write encrypted macaroon to store
+      this.context.commit('MACAROON', { nodeId, type: macaroonType, macaroon })
+    } catch (e) {
+      console.error(e)
+      return e
+    }
   }
 
   get findNodeMeta() {
