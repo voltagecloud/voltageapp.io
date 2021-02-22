@@ -142,7 +142,7 @@ export default defineComponent({
                           <v-col cols="12" sm="6">
                             <v-btn
                               block
-                              onClick={() => { state.createKeys = 'useown' }}
+                              onClick={() => { state.createKeys = 'useown'; state.walletPayload = null; }}
                               dark={state.createKeys === 'useown' }
                               color={ state.createKeys === 'useown' ? 'highlight' : '' }
                             >
@@ -166,6 +166,7 @@ export default defineComponent({
                   </v-container>
                   <v-container>
                     <v-btn onClick={validateForm}>Create Store</v-btn>
+                    <div>{state.error}</div>
                   </v-container>
                 </v-form>
               </v-card-actions>
