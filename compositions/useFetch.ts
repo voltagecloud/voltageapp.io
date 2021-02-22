@@ -1,5 +1,5 @@
 import { ref } from '@vue/composition-api'
-import voltageFetch from '~/utils/fetchClient'
+import { voltageFetch } from '~/utils/fetchClient'
 
 export default function useFetch <T>(endpoint: string) {
   const data = ref<T|null>(null)
