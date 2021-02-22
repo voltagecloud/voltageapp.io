@@ -1,11 +1,11 @@
 <template lang="pug">
 v-card.text-center(style='padding: 20px;')
-  v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center
-    | Enter the node's password
+  v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center {{ topText || "Enter the node's password" }}
   v-card-actions
     v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done')
       v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
       v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
+      slot
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch } from '@vue/composition-api'
@@ -25,6 +25,10 @@ export default defineComponent({
     text: {
       type: String,
       required: true
+    },
+    topText: {
+      type: String,
+      required: false
     }
   },
   setup (props, { emit }) {

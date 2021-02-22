@@ -45,6 +45,7 @@ export default defineComponent({
     })
 
     async function finalize (password?: string) {
+      console.log({ password })
       const emitOutput = {
         xPub: state.xPubString,
         accountKeyPath: accountKeyPath.value
@@ -66,11 +67,12 @@ export default defineComponent({
       } else if (state.currentStep === 0) {
         return <ConfirmSeed seed={seedArray.value} onNext={() => { state.currentStep = 1}}/>
       } else {
-        return <div text="center">
-          <div>You can backup an encrypted copy of your seed mnemonic if you would like. Encryption happens in the browser and Voltage does not have the ability to read your seed.
-          This is for convenience purposes only. You should still write down your seed phrase.</div>
-          <node-password-input text="Backup and Create" onDone={finalize} />
-          <v-btn onClick={finalize}>Skip backup and create</v-btn>
+        return <div class="text-center">
+          <node-password-input topText="Create an encryption password" text="Backup and Create" onDone={finalize}>
+            <v-btn onClick={() => finalize()} block class="my-4 info--text" color="highlight">Skip Backup</v-btn>
+            <div>You can backup an encrypted copy of your seed mnemonic if you would like. Encryption happens in the browser and Voltage does not have the ability to read your seed.
+            This is for convenience purposes only. You should still write down your seed phrase.</div>
+          </node-password-input>
         </div>
       }
     }
