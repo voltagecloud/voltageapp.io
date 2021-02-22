@@ -1,9 +1,10 @@
 import { defineComponent, createElement, computed, reactive, ref } from '@vue/composition-api'
 import { nodeStore } from '~/store'
-import { IDName } from '~/types/api'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions,  VForm, VTextField, VAutocomplete, VBtn, VIcon } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'
-import ConfirmSeed from '~/components/ConfirmSeed'
+import CreateBTCWallet from '~/components/CreateBTCWallet'
+import { macaroonStore } from '~/store'
+import { voltageFetch } from '~/utils/fetchClient'
 
 const h = createElement
 
@@ -13,41 +14,67 @@ export default defineComponent({
     VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VForm, VTextField, VAutocomplete, VBtn, VIcon
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  setup: () => {
+  // @ts-ignore
+  setup: (_, { refs }) => {
     // form ref 
-    const form = ref<HTMLFormElement|null>(null)
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
     console.log({ mainnetNodes })
 
     // keypath used to generate addresses
-    const accountKeyPath = `m/84'/0'/0'`
     const state = reactive<{
       name: string;
-      selectedNode: IDName|null;
+      selectedNode: string;
       createKeys: boolean
       currentStep: number
     }>({
       name: '',
-      selectedNode: null,
+      selectedNode: '',
       createKeys: true,
       currentStep: 0
     })
 
-    async function initStore() {
-      
-    }
-    
-    async function validateStore () {
+    function validateForm () {
       // return if form is not valid
-      if (!form.value?.validate()) return
+      const formValid = refs.form.validate()
+      console.log({ formValid })
+      if (!formValid) return
+      state.currentStep = 1
+    }
 
-      // if we need to create keys, move to next step
+    async function handleMacaroon () {
       if (state.createKeys) {
-        state.currentStep = 1
-      // else send the creation request
+        state.currentStep = 2
       } else {
-        await initStore()
+        // user has opted out of wallet generation
+        // create store without details
+        await createBtcPay({})
       }
+    }
+
+    async function createBtcPay (
+      { xPub, accountKeyPath, seedBackup }:
+      { xPub?: string; accountKeyPath?: string; seedBackup?: string; }
+    ) {
+      const nodeId = state.selectedNode
+      const { macaroon } = macaroonStore.macaroonState({ nodeId, type: 'btcpayserver' })
+      const payload = {
+        node_id: nodeId,
+        node_macaroon: macaroon,
+        store_name: state.name,
+        derivation_scheme: xPub,
+        account_key_path: accountKeyPath,
+        bitcoin_seed_backup: seedBackup
+      }
+
+      const res = await voltageFetch('/btcpayserver/create', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+
+      const json = await res.json()
+      console.log({ json })
+
+      window.open(json.url, '_blank')
     }
 
     return () => <v-container>
@@ -60,7 +87,7 @@ export default defineComponent({
               </v-card-title>
               <v-card-actions>
                 <v-form style="width: 100%;"
-                  ref={form}
+                  ref="form"
                   lazy-validation
                 >
                   <v-container>
@@ -80,8 +107,8 @@ export default defineComponent({
                       </v-col>
                       <v-col cols="12">
                         <v-autocomplete
-                          onInput={(val: IDName) => {state.selectedNode = val }}
-                          value={state.selectedNode?.node_name || ''}
+                          onInput={(val: string) => {state.selectedNode = val }}
+                          value={state.selectedNode || ''}
                           items={mainnetNodes.value}
                           item-text="node_name"
                           item-value="node_id"
@@ -90,44 +117,48 @@ export default defineComponent({
                           background-color="secondary"
                           outlined
                           rules={[
-                            (val: IDName) => !!val.node_id || 'You must select a node'
+                            (nodeId: string) => {
+                              return !!nodeId || 'You must select a node'
+                            }
                           ]}
                         />
                       </v-col>
-                      <v-row>
-                        <v-col cols="12">
-                          <div class="ml-3">Bitcoin Keys</div>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-btn
-                            block
-                            onClick={() => { state.createKeys = true }}
-                            dark={state.createKeys}
-                            color={ state.createKeys ? 'highlight' : '' }
-                          >
-                            Generate keys for me
-                          </v-btn>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-btn
-                            block
-                            onClick={() => { state.createKeys = false }}
-                            dark={!state.createKeys}
-                            color={ state.createKeys ? '' : 'highlight' }
-                          >
-                            I'll create my own
-                          </v-btn>
-                        </v-col>
-                      </v-row>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="12">
+                            <div class="ml-3">Bitcoin Keys</div>
+                          </v-col>
+                          <v-col cols="12" sm="6">
+                            <v-btn
+                              block
+                              onClick={() => { state.createKeys = true }}
+                              dark={state.createKeys}
+                              color={ state.createKeys ? 'highlight' : '' }
+                            >
+                              Generate keys for me
+                            </v-btn>
+                          </v-col>
+                          <v-col cols="12" sm="6">
+                            <v-btn
+                              block
+                              onClick={() => { state.createKeys = false }}
+                              dark={!state.createKeys}
+                              color={ state.createKeys ? '' : 'highlight' }
+                            >
+                              I'll create my own
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-container>
                     </v-row>
                   </v-container>
                   <v-container>
-                    <v-btn onClick={validateStore}>Create Store</v-btn>
+                    <v-btn onClick={validateForm}>Create Store</v-btn>
                   </v-container>
                 </v-form>
               </v-card-actions>
             </v-card>}
-            { /* generate seed step */}
+            { /* acquire macaroon step */}
             { state.selectedNode && state.currentStep === 1 && <v-card color="info" key="1">
               <v-card-actions>
                 <v-btn onClick={() => { state.currentStep = 0}} icon>
@@ -135,8 +166,13 @@ export default defineComponent({
                 </v-btn>
               </v-card-actions>
               <v-card-text>
-                <SetupBtcPay onDone={() => state.currentStep = 2} nodeId={state.selectedNode.node_id} />
+                <SetupBtcPay onDone={handleMacaroon} nodeId={state.selectedNode} />
               </v-card-text>
+            </v-card>}
+            { /* generate seed step */ }
+            { state.currentStep === 2 && <v-card color="info" key="2">
+              <div>wallet</div>
+              <CreateBTCWallet onFinalize={createBtcPay} />
             </v-card>}
           </v-container>
         </v-col>
