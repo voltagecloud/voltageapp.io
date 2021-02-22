@@ -1,12 +1,18 @@
 import { defineComponent, createElement, computed, watch, reactive } from '@vue/composition-api'
-import NodePasswordInput from '~/components/NodePasswordInput'
 import { macaroonStore } from '~/store'
 import { MacaroonType, bakeMacaroon } from '~/utils/bakeMacaroon'
-import backupMacaroon from '~/utils/backupMacaroon'
+import { VProgressCircular, VBtn } from 'vuetify/lib'
+import crypto from 'crypto-js'
+import { voltageFetch } from '~/utils/fetchClient'
 
 const h = createElement
 
 export default defineComponent({
+  components: {
+    VProgressCircular,
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
+    VBtn
+  },
   props: {
     nodeId: {
       type: String,
@@ -15,28 +21,34 @@ export default defineComponent({
   },
   setup: (props, ctx) => {
     const macaroonState = computed(() => macaroonStore.macaroonState({ nodeId: props.nodeId, type: 'btcpayserver' }))
-    const adminMacaroon = computed(() => macaroonStore.macaroonState({ nodeId: props.nodeId, type: 'admin' }))
     const nodeEndpoint = computed(() => macaroonStore.findNodeMeta({ nodeId: props.nodeId }))
+    
 
     const state = reactive({
       loading: false,
-      error: ''
+      error: '',
+      retry: false
     })
 
-    async function macaroonHandler () {
+    async function handlePassword (password: string) {
+      state.retry = false
       const nodeId = props.nodeId
-      // we cant do anything with node password
-      if (!macaroonState.value.password) return
       state.loading = true
-      try {
-        // if password exists but macaron not in state try to fetch
-        if (!macaroonState.value.encrypted && !macaroonState.value.error) {
-          await macaroonStore.FETCH_MACAROON({ nodeId, macaroonType: 'btcpayserver' })
+      const error = await macaroonStore.FETCH_MACAROON({ nodeId, macaroonType: 'btcpayserver', password })
+      state.loading = false
+      // handle case where btcpay macaroon doesnt exits yet
+      if (error) {
+        // coundlt get pay server macaroon, try admin one
+        const adminErr = await macaroonStore.FETCH_MACAROON({ nodeId, macaroonType: 'admin' })
+        const adminMacaroon = macaroonStore.macaroonState({ nodeId, type: 'admin' })
+        if (adminErr) {
+          state.error = 'Could not retrieve admin macaroon. Please make sure this node has been initialized'
           return
         }
-        // if admin macaroon is in state we need to bake a btcpay macaroon
         const endpoint = nodeEndpoint.value?.endpoint
-        const macaroonHex = adminMacaroon.value.macaroonHex
+        const macaroonHex = adminMacaroon.macaroonHex
+        const password = macaroonState.value.password
+        console.log({ macaroonHex })
         if (macaroonHex && endpoint) {
           const res = await bakeMacaroon({
             endpoint,
@@ -44,43 +56,42 @@ export default defineComponent({
             macaroonHex
           })
           const { macaroon }: { macaroon: string } = await res.json()
-          macaroonStore.MACAROON({ nodeId, macaroon, type: 'btcpayserver' })
+
           // encrypt btcpayserver macaroon and back it up
-          await backupMacaroon({
-            macaroonText: macaroon,
-            macaroonType: 'btcpayserver',
-            password: adminMacaroon.value.password,
-            nodeId
+          const encrypted = crypto.AES.encrypt(macaroon, password).toString()
+          macaroonStore.MACAROON({ nodeId, macaroon: encrypted, type: 'btcpayserver' })
+          await voltageFetch('/node/macaroon', {
+            method: 'POST',
+            body: JSON.stringify({
+              node_id: nodeId,
+              name: 'btcpayserver',
+              macaroon: encrypted
+            })
           })
           ctx.emit('done')
-          return
         }
-
-        // if admin macaroon doesnt exist, fetch it
-        if (!macaroonHex) {
-          await macaroonStore.FETCH_MACAROON({ nodeId, macaroonType: 'admin' })
-          return
-        }
-      } catch (e) {
-        state.error = e.message
-      } finally {
-        state.loading = false
+      }
+      // btc pay macaroon is in store make sure it was decrypted properly
+      else if (!macaroonState.value.error) {
+        ctx.emit('done')
+      // there was an error decrpyting macaroon
+      } else {
+        state.error = macaroonState.value.error
       }
     }
 
-    watch([macaroonState, adminMacaroon], macaroonHandler)
-
-    function writePassword (password: string) {
-      macaroonStore.NODE_PASSWORD({ nodeId: props.nodeId, password })
-    }
 
     return () => {
-      if (!macaroonState.value.password) {
-        return <NodePasswordInput onDone={writePassword} />
+      if (!macaroonState.value.password || state.retry) {
+        return <node-password-input onDone={handlePassword} text="Enter node password"/>
       } else if (state.loading || state.error) {
-        return <div>
-          <v-progress-circular indeterminate />
-          <div>{state.error}</div>
+        return <div class="text-center">
+          {state.loading && <v-progress-circular indeterminate />}
+          <div>Retrieving Macaroons</div>
+          {state.error && <div>
+            {state.error}
+            <v-btn onClick={() => state.retry = true}>Retry</v-btn>
+          </div>}
         </div>
       }
     }
