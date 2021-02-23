@@ -47,8 +47,8 @@ export default defineComponent({
       const formValid = refs.form.validate()
       console.log({ formValid })
       // make sure form is valid and a key method is selected & valid
-      const keysValid = state.createKeys === 'generate' && state.walletPayload || state.createKeys === 'useown'
-      if (!formValid && keysValid) return
+      const keysValid = (state.createKeys === 'generate' && state.walletPayload) || state.createKeys === 'useown'
+      if (!formValid || !keysValid) return
       // if there is a selected node get the macaroon
       if (state.selectedNode) {
         state.currentStep = 1
@@ -176,7 +176,7 @@ export default defineComponent({
               <v-card color="info">
                 <v-card-actions>
                   <v-btn onClick={() => { state.currentStep = 0}} icon>
-                    <v-icon>mdi-back</v-icon>
+                    <v-icon>mdi-arrow-left</v-icon>
                   </v-btn>
                 </v-card-actions>
                 <v-card-text>
