@@ -83,7 +83,11 @@ export default defineComponent({
 
     return () => {
       if (!macaroonState.value.password || state.retry) {
-        return <node-password-input onDone={handlePassword} text="Enter node password"/>
+        return <node-password-input
+          onDone={handlePassword}
+          topText="Authorize BTCPay Server to communicate with your node"
+          text="Enter node password"
+        />
       } else if (state.loading || state.error) {
         return <div class="text-center">
           {state.loading && <v-progress-circular indeterminate />}
