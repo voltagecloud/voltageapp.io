@@ -60,7 +60,8 @@ export default defineComponent({
 
     const btcpayState = reactive({
       password: '',
-      url: ''
+      url: '',
+      instanceId: ''
     })
 
     async function createBtcPay () {
@@ -87,6 +88,7 @@ export default defineComponent({
       } else {
         btcpayState.password = json.password
         btcpayState.url = json.url
+        btcpayState.instanceId = json.btcpayserver_id
         state.currentStep = 2
       }
     }
@@ -94,6 +96,12 @@ export default defineComponent({
     // aws amplify typescript typings are incorrect smh jeff bezos
     // @ts-ignore
     const username = computed(() => authStore?.user?.attributes?.email || '')
+
+    // function to call when user is done creating and should leave this page
+    function finish () {
+      window.open(btcpayState.url, '_blank')
+      root.$router.push(`/btcpay/${btcpayState.instanceId}`)
+    }
 
     return () => <v-container>
       <v-row justify="center" align="start">
@@ -208,7 +216,7 @@ export default defineComponent({
                   <div class="d-flex flex-grow-1">Password: {btcpayState.password}</div>
                 </div>
                 <div class="my-4 font-italic">Please change the default password as soon as you login</div>
-                <v-btn color="highlight" dark large href={btcpayState.url} target="_blank">Login to Account</v-btn>
+                <v-btn color="highlight" dark large onClick={finish}>Login to Account</v-btn>
               </v-card>
             </v-dialog>
           </v-container>
