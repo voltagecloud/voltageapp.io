@@ -1,5 +1,5 @@
 import { defineComponent, createElement, computed, reactive, ref } from '@vue/composition-api'
-import { nodeStore } from '~/store'
+import { nodeStore, authStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions,  VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'
 import CreateBTCWallet from '~/components/CreateBTCWallet'
@@ -40,7 +40,7 @@ export default defineComponent({
       currentStep: 0,
       walletPayload: null,
       error: '',
-      loading: false
+      loading: false,
     })
 
     async function validateForm () {
@@ -57,6 +57,11 @@ export default defineComponent({
         await createBtcPay()
       }
     }
+
+    const btcpayState = reactive({
+      password: '',
+      url: ''
+    })
 
     async function createBtcPay () {
       state.loading = true
@@ -77,13 +82,18 @@ export default defineComponent({
       })
       const json = await res.json()
       state.loading = false
-      console.log({ json })
       if (!res.ok) {
         state.error = json.message
       } else {
-        root.$router.push(`/btcpay/${json.btcpayserver_id}`)
+        btcpayState.password = json.password
+        btcpayState.url = json.url
+        state.currentStep = 2
       }
     }
+
+    // aws amplify typescript typings are incorrect smh jeff bezos
+    // @ts-ignore
+    const username = computed(() => authStore?.user?.attributes?.email || '')
 
     return () => <v-container>
       <v-row justify="center" align="start">
@@ -176,7 +186,7 @@ export default defineComponent({
             </v-card>
             { /* acquire macaroon step */}
             <v-dialog value={state.currentStep === 1}>
-              <v-card color="info">
+              <v-card>
                 <v-card-actions>
                   <v-btn onClick={() => { state.currentStep = 0}} icon>
                     <v-icon>mdi-arrow-left</v-icon>
@@ -185,6 +195,20 @@ export default defineComponent({
                 <v-card-text>
                   <SetupBtcPay onDone={createBtcPay} nodeId={state.selectedNode} />
                 </v-card-text>
+              </v-card>
+            </v-dialog>
+            { /* finished dialog info */}
+            <v-dialog value={state.currentStep === 2}>
+              <v-card class="text-center">
+                <div class="text-h4">BTCPay Server Account Created!</div>
+                <div class="text-h6">Your BTCPay Server Account has successfully been created.</div>
+                <div class="my-4">
+                  <div class="d-flex flex-grow-1 font-weight-bold">Login Information:</div>
+                  <div class="d-flex flex-grow-1">Username: {username.value}</div>
+                  <div class="d-flex flex-grow-1">Password: {btcpayState.password}</div>
+                </div>
+                <div class="my-4 font-italic">Please change the default password as soon as you login</div>
+                <v-btn color="highlight" dark large href={btcpayState.url} target="_blank">Login to Account</v-btn>
               </v-card>
             </v-dialog>
           </v-container>
