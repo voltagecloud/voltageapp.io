@@ -21,7 +21,6 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   // @ts-ignore
   setup: (_, { refs, root }) => {
-    // form ref 
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
     console.log({ mainnetNodes })
 
@@ -33,13 +32,15 @@ export default defineComponent({
       currentStep: number;
       walletPayload: null|WalletPayload;
       error: string;
+      loading: boolean;
     }>({
       name: '',
       selectedNode: '',
       createKeys: null,
       currentStep: 0,
       walletPayload: null,
-      error: ''
+      error: '',
+      loading: false
     })
 
     async function validateForm () {
@@ -58,6 +59,7 @@ export default defineComponent({
     }
 
     async function createBtcPay () {
+      state.loading = true
       const nodeId = state.selectedNode
       const { macaroon } = macaroonStore.macaroonState({ nodeId, type: 'btcpayserver' })
       const payload = {
@@ -74,6 +76,7 @@ export default defineComponent({
         body: JSON.stringify(payload)
       })
       const json = await res.json()
+      state.loading = false
       console.log({ json })
       if (!res.ok) {
         state.error = json.message
@@ -165,7 +168,7 @@ export default defineComponent({
                     </v-row>
                   </v-container>
                   <v-container>
-                    <v-btn onClick={validateForm}>Create Store</v-btn>
+                    <v-btn onClick={validateForm} loading={state.loading}>Create Store</v-btn>
                     <div>{state.error}</div>
                   </v-container>
                 </v-form>
