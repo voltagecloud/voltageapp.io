@@ -97,6 +97,7 @@ import { Address4 } from 'ip-address'
 import { layoutStore, nodeStore, createStore } from '~/store'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
+import useFetch from '~/compositions/useFetch'
 
 import { Network } from '~/types/api'
 
@@ -206,7 +207,10 @@ export default defineComponent({
       }
     }
 
-    const products = [
+    const { data, dispatch } = useFetch<any>('/user')
+    dispatch({ method: 'GET' })
+
+    const products = computed(() => [
       {
         title: 'Lightning Node',
         src: require('~/assets/lnd-logo.png'),
@@ -215,9 +219,9 @@ export default defineComponent({
       {
         title: 'BTCPay Server',
         src: require('~/assets/btcpay-logo.svg'),
-        to: '/create/btcpay'
+        to: data.value?.btcpayservers ? '/btcpay' : '/create/btcpay'
       }
-    ]
+    ])
 
     return {
       display,
