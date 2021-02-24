@@ -3,7 +3,6 @@ import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCh
 import { loadStripe } from '@stripe/stripe-js'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
-import { authStore } from '~/store'
 
 const h = createElement
 
@@ -31,17 +30,13 @@ export default defineComponent({
   components: {
     VContainer, VRow, VCol, VCard, VBtn, VSlider, VDivider, VCheckbox, VCardTitle, VDialog
   },
+  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     // add typed api calls
     const { dispatch, data, loading } = useFetch<any>('/btcpayserver')
     const { dispatch: userDispatch, data: userData, loading: userLoading } = useFetch<any>('/user')
     dispatch({ method: 'GET' })
-    userDispatch({
-      method: 'POST',
-      body: JSON.stringify({
-        user_id: authStore.user?.getUsername()
-      })
-    })
+    userDispatch({ method: 'GET' })
 
     const btcpayDisabled = computed(() => {
       if (!data.value || loading.value || userLoading.value) return true
