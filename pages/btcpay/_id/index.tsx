@@ -4,6 +4,7 @@ import useFetch from '~/compositions/useFetch'
 import JsonTable from '~/components/core/JsonTable'
 import { nodeStore, macaroonStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog, VAutocomplete } from 'vuetify/lib'
+import GetSeedBackup from '~/components/GetSeedBackup'
 
 const h = createElement
 
@@ -22,7 +23,6 @@ export default defineComponent({
     VProgressCircular,
     VDialog,
     VAutocomplete,
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
@@ -108,13 +108,9 @@ export default defineComponent({
       }
     }
 
-    function handleSeed (password: string) {
-
-    }
-
     return () => <v-container>
       <v-row justify="center">
-        <v-col cols="12" md="10" lg="8">
+        <v-col cols="12" md="10" lg="9">
           <v-card color="info">
             <v-tabs
               value={state.tab}
@@ -125,8 +121,9 @@ export default defineComponent({
               {tabs.map(t => <v-tab active-class="highlight">{t}</v-tab>)}
             </v-tabs>
             { loading.value
-              ? <v-progress-circular indeterminate>
-              </v-progress-circular> 
+              ? <div class="d-flex justify-center">
+                <v-progress-circular indeterminate />
+              </div> 
               : <v-tabs-items value={state.tab}>
                 <v-container class="d-flex info">
                   <div class="flex-grow-1 text-left d-flex align-center">
@@ -140,7 +137,7 @@ export default defineComponent({
                   <JsonTable data={() => data.value} />
                 </v-tab-item>
                 <v-tab-item>
-                  <v-container class="secondary">
+                  <v-container>
                     <v-row justify="center">
                       <v-col cols="8">
                         <v-autocomplete
@@ -151,7 +148,6 @@ export default defineComponent({
                           item-value="node_id"
                           label="Select a Node"
                           color="highlight"
-                          background-color="secondary"
                           outlined
                           clearable
                         />
@@ -165,13 +161,7 @@ export default defineComponent({
                   </v-container>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-container class="secondary">
-                    <node-password-input
-                      onDone={handleSeed}
-                      text="Get Seed Backup"
-                      topText="Enter the password you used to encrpyt your seed"
-                    />
-                  </v-container>
+                  <GetSeedBackup serverId={root.$route.params.id}/>
                 </v-tab-item>
               </v-tabs-items>
             }
