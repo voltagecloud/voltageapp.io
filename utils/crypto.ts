@@ -27,18 +27,21 @@ export function isBase64 (str: string) {
   }
 }
 
-export function decryptMacaroon ({ encrypted, password }:{ encrypted: string; password: string; }) {
+export function decryptString (
+  { encrypted, password }:
+  { encrypted: string; password: string; }
+): {decrypted:string; error: string;} {
   try {
     const decrypted = crypto.AES.decrypt(encrypted || '', password).toString(crypto.enc.Base64)
     const decryptResult = atob(decrypted)
     if (isBase64(decryptResult)) {
-      return { macaroon: decryptResult, error: '' }
+      return { decrypted: decryptResult, error: '' }
     } else {
-      return { macaroon: '', error: 'Incorrect password' }
+      return { decrypted: '', error: 'Incorrect password' }
     }
   } catch (e) {
     console.error('cipher mismatch, macaroon decryption failed')
     console.error(e)
-    return { macaroon: '', error: e.toString() }
+    return { decrypted: '', error: e.toString() }
   }
 }
