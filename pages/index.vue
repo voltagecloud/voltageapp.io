@@ -68,7 +68,7 @@
           <span style="word-break: normal;">Welcome to Voltage! Let's get started.</span>
         </v-card-title>
         <v-card-text class="text-center">
-          <div>Voltage offers products that make using Bitcoin with the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
+          <div>Voltage offers products that make using Bitcoin and the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
         </v-card-text>
         <v-card-text class="mt-6 text-center">
           <div>What would you like to create?</div>
@@ -214,7 +214,7 @@ export default defineComponent({
       },
       {
         title: 'BTCPay Server',
-        src: require('~/assets/btcpay-logo.png'),
+        src: require('~/assets/btcpay-logo.svg'),
         to: '/create/btcpay'
       }
     ]
