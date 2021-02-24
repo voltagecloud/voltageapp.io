@@ -16,8 +16,9 @@ export default defineComponent({
 
     const to = computed(() => {
       if (!data.value?.user_id) return ''
+      console.log({ data: data.value })
       const json = data.value
-      const needsPurchase = json.available_btcpayserver === 0
+      const needsPurchase = json.available_btcpayservers === 0
         && !json.btcpayserver_trial && !json.btcpayservers.length
 
       return needsPurchase ? '/purchase' : '/create/btcpay'
