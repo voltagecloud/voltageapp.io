@@ -28,7 +28,7 @@ export default defineComponent({
             </v-col>
           </v-row>
         </v-container>
-      } else if (!data.value?.btcpayservers?.length) {
+      } else if (data.value?.btcpayservers?.length) {
         console.log({ data: data.value })
         return <v-container>
           <v-row>
