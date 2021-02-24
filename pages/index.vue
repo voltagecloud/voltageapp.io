@@ -64,8 +64,8 @@
     </v-col>
     <v-col cols="12" md="8" v-else>
       <v-card key="no-nodes" color="info">
-        <v-card-title class="justify-center text-h5">
-          <span style="word-break: normal;">Welcome to Voltage! Let's get started.</span>
+        <v-card-title class="justify-center text-h5" style="word-break: normal;">
+          <div class="text-center">Welcome to Voltage! Let's get started.</div>
         </v-card-title>
         <v-card-text class="text-center">
           <div>Voltage offers products that make using Bitcoin and the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
