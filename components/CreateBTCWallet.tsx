@@ -89,11 +89,8 @@ export default defineComponent({
              */ }
           <div class="text-h5">Bitcoin Keys</div>
           <div>
-            Warning: Generating this information in the browser is considered less secure than generating it yourself.
+            <a href="https://docs.voltageapp.io/btcpay-server/btcpay-server-faq#is-generating-my-bitcoin-wallet-in-your-dashboard-safe">Learn about the security model of creating the keys in our dashboard.</a>
             <br />
-            <a href="">Learn how to do it yourself</a>
-            <br />
-            Write down your seed phrase and password (if used)! This is the only way to recover your funds. Voltage is never able read this sensitive data and we cannot help you recover it.
           </div>
           <div class="text-left my-3">
             <div class="d-flex flex-grow-1">
@@ -103,7 +100,7 @@ export default defineComponent({
               <span class="font-weight-bold">Account Key Path:</span>{` ${accountKeyPath.value}`}
             </div>
             <div class="d-flex flex-grow-1">
-              <span class="font-weight-bold">Derivation Path:</span>{` ${state.mnemonic}`}
+              <span class="font-weight-bold">Seed Phrase:</span>{` ${state.mnemonic}`}
             </div>
           </div>
           <v-form ref="form" lazy-validation>
@@ -123,6 +120,10 @@ export default defineComponent({
                 (v: string) => !state.backupSeed || v.length >= 8 || 'Password must be at least 8 characters'
               ]}
             />
+            <div>
+              <i>You must write down your seed phrase and password somewhere outside of Voltage. Your funds will be lost if you don't keep a copy of your seed phrase. Not even Voltage can recover them for you.</i>
+              <br />
+            </div>
             <v-btn onClick={finalize} color="highlight" dark>Use Keys</v-btn> 
           </ v-form>
         </v-container>

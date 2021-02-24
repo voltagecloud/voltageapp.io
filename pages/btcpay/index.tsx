@@ -18,7 +18,7 @@ export default defineComponent({
             </v-card-title>
             <v-card-text>
               <div class="text-center">
-                No setup, no waiting, and no KYC. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
+                No setup, no waiting, and no transaction fees. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
               </div>
               <v-img
                 src={require('~/assets/btcpay-logo.png')}
