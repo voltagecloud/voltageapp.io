@@ -51,7 +51,7 @@
     </v-dialog>
   </v-container>
   <v-row justify="center" align="center" no-gutters="no-gutters">
-    <v-col cols="12" lg="10" xl="8" v-if="!noNodes">
+    <v-col cols="12" lg="10" xl="8" v-if="noNodes">
       <v-fade-transition group="group">
         <template v-if="display && nodes.length">
           <div v-for="node in nodes" :key="node.node_id">
@@ -64,13 +64,13 @@
     </v-col>
     <v-col cols="12" md="8" v-else>
       <v-card key="no-nodes" color="info">
-        <v-card-title class="justify-center">
+        <v-card-title class="justify-center text-h5">
           <span style="word-break: normal;">Welcome to Voltage! Let's get started.</span>
         </v-card-title>
         <v-card-text class="text-center">
           <div>Voltage offers products that make using Bitcoin and the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
         </v-card-text>
-        <v-card-text class="mt-6 text-center">
+        <v-card-text class="mt-6 text-center font-weight-bold text-h6">
           <div>What would you like to create?</div>
         </v-card-text>
         <v-card-actions class="text-center">
