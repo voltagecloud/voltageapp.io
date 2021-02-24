@@ -123,6 +123,11 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     treeShake: true,
+    defaultAssets: {
+      font: {
+        family: 'Noto Sans TC'
+      }
+    },
     options: {
       customProperties: true
     },
