@@ -1,8 +1,7 @@
 import { defineComponent, createElement, ref, PropType, computed, reactive } from '@vue/composition-api'
-import useBuildUri from '~/compositions/useBuildUri'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
 import { Node } from '~/types/apiResponse'
-import {base64ToHex, decryptMacaroon} from '~/utils/crypto'
+import { base64ToHex, decryptString } from '~/utils/crypto'
 import useNodeApi from '~/compositions/useNodeApi'
 import { MacaroonType, bakeMacaroon } from '~/utils/bakeMacaroon'
 import backupMacaroon from '~/utils/backupMacaroon'
@@ -23,13 +22,7 @@ export default defineComponent({
     }
   },
   setup: (props, ctx) => {
-    const { macaroon, apiEndpoint, password, macaroonHex } = useDecryptMacaroon(ctx, props.node.node_id)
-    const { uri } = useBuildUri({
-      endpoint: apiEndpoint,
-      macaroon,
-      cert: ref(false),
-      api: ref('GRPC')
-    })
+    const { apiEndpoint, password, macaroonHex } = useDecryptMacaroon(ctx, props.node.node_id)
 
     const state = reactive({
       loading: false,
@@ -39,9 +32,9 @@ export default defineComponent({
 
     const btcpayMac = computed(() => {
       if (state.rawMacaroon) {
-        const { macaroon, error } = decryptMacaroon({ password: password.value, encrypted: state.rawMacaroon })
+        const { decrypted, error } = decryptString({ password: password.value, encrypted: state.rawMacaroon })
         if (error) { state.error = error; return }
-        return base64ToHex(macaroon)
+        return base64ToHex(decrypted)
       }
       return ''
     })
@@ -50,7 +43,7 @@ export default defineComponent({
       : ''
     )
 
-    const { connectNode, postMacaroon } = useNodeApi(ctx.root.$nuxt.context)
+    const { connectNode } = useNodeApi(ctx.root.$nuxt.context)
     
 
     async function getMac () {

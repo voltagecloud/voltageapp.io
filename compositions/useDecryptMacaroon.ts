@@ -1,6 +1,6 @@
 import { reactive, SetupContext, computed, toRefs, watchEffect } from '@vue/composition-api'
 import useNodeApi from './useNodeApi'
-import { base64ToHex, decryptMacaroon } from '~/utils/crypto'
+import { base64ToHex, decryptString } from '~/utils/crypto'
 
 const state = reactive({
   apiEndpoint: '',
@@ -60,7 +60,7 @@ export default function useDecryptMacaroon ({ root }: SetupContext, nodeId: stri
       state.loading = false
     }
     // attempt to decrypt macaroon
-    const { macaroon: decrypted, error } = decryptMacaroon({ password, encrypted: state.encrypted })
+    const { decrypted, error } = decryptString({ password, encrypted: state.encrypted })
     state.macaroon = decrypted
     state.error = error
     state.password = error ? '' : password

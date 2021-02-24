@@ -2,7 +2,7 @@ import crypto from 'crypto-js'
 import { defineComponent, createElement, PropType, computed, reactive } from '@vue/composition-api'
 import type { Node } from '~/types/apiResponse'
 import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
-import { decryptMacaroon } from '~/utils/crypto'
+import { decryptString } from '~/utils/crypto'
 import { hexToBase64 } from '~/utils/crypto'
 import axios from 'axios'
 import useNodeApi from '~/compositions/useNodeApi'
@@ -24,7 +24,6 @@ export default defineComponent({
   setup: (props, ctx) => {
     const { postMacaroon, connectNode } = useNodeApi(ctx.root.$nuxt.context)
     const { macaroon, apiEndpoint, macaroonHex, password } = useDecryptMacaroon(ctx, props.node.node_id)
-    const nodename = computed(() => apiEndpoint.value.split('.')[0])
 
     const state = reactive({
       loading: false,
@@ -41,7 +40,7 @@ export default defineComponent({
         console.log({ macaroon })
         state.checkedForReadOnly = true
         if (macaroon) {
-          const { macaroon: decrypted, error } = decryptMacaroon({ password: password.value, encrypted: macaroon })
+          const { decrypted, error } = decryptString({ password: password.value, encrypted: macaroon })
           state.error = error
           state.readOnlyMacaroonRaw = decrypted
         } else {

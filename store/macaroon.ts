@@ -1,6 +1,6 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { voltageFetch } from '~/utils/fetchClient' 
-import { decryptMacaroon, base64ToHex } from '~/utils/crypto'
+import { decryptString, base64ToHex } from '~/utils/crypto'
 
 interface NodePassword {
   nodeId: string;
@@ -122,13 +122,13 @@ export default class MacaroonModule extends VuexModule {
       const password = pwObj?.password || ''
       const encrypted = this.macaroons.find(elem => elem.nodeId === nodeId && elem.type === type) || ''
       if (password && encrypted) {
-        const payload = decryptMacaroon({
+        const payload = decryptString({
           encrypted: encrypted.macaroon,
           password: password
         })
         error = payload.error
-        macaroon = payload.macaroon
-        if (payload.macaroon) { macaroonHex = base64ToHex(payload.macaroon) }
+        macaroon = payload.decrypted
+        if (payload.decrypted) { macaroonHex = base64ToHex(payload.decrypted) }
       }
       return {
         error,
