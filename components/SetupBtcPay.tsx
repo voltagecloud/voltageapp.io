@@ -4,6 +4,7 @@ import { MacaroonType, bakeMacaroon } from '~/utils/bakeMacaroon'
 import { VProgressCircular, VBtn } from 'vuetify/lib'
 import crypto from 'crypto-js'
 import { voltageFetch } from '~/utils/fetchClient'
+import useFetch from '~/compositions/useFetch'
 
 const h = createElement
 
@@ -17,12 +18,19 @@ export default defineComponent({
     nodeId: {
       type: String,
       required: true
-    }
+    },
   },
   setup: (props, ctx) => {
     const macaroonState = computed(() => macaroonStore.macaroonState({ nodeId: props.nodeId, type: 'btcpayserver' }))
     const nodeEndpoint = computed(() => macaroonStore.findNodeMeta({ nodeId: props.nodeId }))
-    
+
+    const { dispatch, data } = useFetch<any>('/node')
+    dispatch({
+      method: 'POST',
+      body: JSON.stringify({
+        node_id: props.nodeId || ''
+      })
+    })
 
     const state = reactive({
       loading: false,
@@ -31,6 +39,7 @@ export default defineComponent({
     })
 
     async function handlePassword (password: string) {
+      state.error = ''
       state.retry = false
       const nodeId = props.nodeId
       state.loading = true
@@ -86,6 +95,7 @@ export default defineComponent({
         return <node-password-input
           onDone={handlePassword}
           topText="Authorize BTCPay Server to communicate with your node"
+          subText={data.value?.node_name ? `Enter the password for ${data.value.node_name}` : ''}
           text="Enter node password"
         />
       } else if (state.loading || state.error) {
@@ -94,7 +104,7 @@ export default defineComponent({
           <div>Retrieving Macaroons</div>
           {state.error && <div>
             {state.error}
-            <v-btn onClick={() => state.retry = true}>Retry</v-btn>
+            <v-btn block onClick={() => state.retry = true}>Retry</v-btn>
           </div>}
         </div>
       }

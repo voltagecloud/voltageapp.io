@@ -70,6 +70,7 @@ export default defineComponent({
     })
 
     async function createBtcPay () {
+      state.currentStep = 0
       state.loading = true
       const nodeId = state.selectedNode
       const { macaroon } = macaroonStore.macaroonState({ nodeId, type: 'btcpayserver' })
@@ -104,7 +105,7 @@ export default defineComponent({
 
     // function to call when user is done creating and should leave this page
     function finish () {
-      window.open(btcpayState.url, '_blank')
+      window.open(`https://${btcpayState.url}`, '_blank')
       root.$router.push(`/btcpay/${btcpayState.instanceId}`)
     }
 
@@ -223,15 +224,17 @@ export default defineComponent({
             { /* finished dialog info */}
             <v-dialog value={state.currentStep === 2}>
               <v-card class="text-center">
-                <div class="text-h4">BTCPay Server Account Created!</div>
-                <div class="text-h6">Your BTCPay Server Account has successfully been created.</div>
-                <div class="my-4">
-                  <div class="d-flex flex-grow-1 font-weight-bold">Login Information:</div>
-                  <div class="d-flex flex-grow-1">Username: {username.value}</div>
-                  <div class="d-flex flex-grow-1">Password: {btcpayState.password}</div>
-                </div>
-                <div class="my-4 font-italic">Please change the default password as soon as you login</div>
-                <v-btn color="highlight" dark large onClick={finish}>Login to Account</v-btn>
+                <v-container>
+                  <div class="text-h4">BTCPay Server Account Created!</div>
+                  <div class="text-h6">Your BTCPay Server Account has successfully been created.</div>
+                  <v-row class="my-4">
+                    <v-col cols="12" class="font-weight-bold">Login Information:</v-col>
+                    <v-col cols="12">Username: {username.value}</v-col>
+                    <v-col cols="12">Password: {btcpayState.password}</v-col>
+                  </v-row>
+                  <div class="my-4 font-italic">Please change the default password as soon as you login</div>
+                  <v-btn color="highlight" dark large onClick={finish}>Login to Account</v-btn>
+                </v-container>
               </v-card>
             </v-dialog>
           </v-container>

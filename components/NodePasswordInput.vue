@@ -1,7 +1,7 @@
 <template lang="pug">
 v-card.text-center(style='padding: 20px;')
-  v-card-text.font-weight-light.text--darken-1.v-card__title.justify-center.align-center {{ topText || "Enter the node's password" }}
-  v-card-actions
+  v-card-text(style='word-break: normal;').font-weight-light.text--darken-1.v-card__title.justify-center.align-center {{ topText || "Enter the node's password" }}
+  div.font-weight-light.text--darken-1.justify-center.align-center {{ subText }}
     v-form(style='width: 100%' ref='form' v-model='valid' @submit.prevent='done')
       v-text-field(v-model='nodePassword' type='password' placeholder='Password' :rules='[char8]' :error-messages='newError')
       v-btn(type='submit' :disabled='!valid' color='highlight' :loading='loading' block).info--text {{text}}
@@ -29,6 +29,11 @@ export default defineComponent({
     topText: {
       type: String,
       required: false
+    },
+    subText: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   setup (props, { emit }) {
