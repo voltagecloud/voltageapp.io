@@ -20,10 +20,10 @@ export default defineComponent({
     const bulletText = computed(() => '•'.repeat(props.password.length))
 
     return () => <v-chip onClick={() => show.value = !show.value} color="accent" text-color="warning">
-      { show.value ? props.password : bulletText.value }
-      <v-icon right>
+      <v-icon left>
         {icon.value}
       </v-icon>
+      { show.value ? props.password : bulletText.value }
     </v-chip>
   }
 })
