@@ -1,7 +1,7 @@
 import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
 import { generateNewXPub } from '~/utils/btc'
 import { SHA256, AES, RIPEMD160 } from 'crypto-js'
-import { VProgressCircular, VBtn, VForm, VTextField, VCheckbox, VContainer } from 'vuetify/lib'
+import { VProgressCircular, VBtn, VForm, VTextField, VCheckbox, VContainer, VCol, VRow, VDialog, VCard, VCardActions, VCardText } from 'vuetify/lib'
 
 const h = createElement
 
@@ -13,7 +13,13 @@ export default defineComponent({
     VForm,
     VTextField,
     VCheckbox,
-    VContainer
+    VContainer,
+    VCol,
+    VRow,
+    VDialog,
+    VCard,
+    VCardActions,
+    VCardText
   },
   // @ts-ignore
   setup: (_, { emit, refs }) => {
@@ -26,10 +32,10 @@ export default defineComponent({
       loading: true,
       error: '',
       backupSeed: false,
-      password: ''
+      password: '',
+      confirmDialog: false
     })
 
-    const seedArray = computed(() => state.mnemonic.split(' '))
     const accountKeyPath = computed(() => {
       if (!state.xPubString) return ''
       const shaHash = SHA256(state.xPubString)
@@ -80,29 +86,49 @@ export default defineComponent({
           <div>{state.error || 'Generating Bitcoin mnemonic seed phrase'}</div>
         </div>
       } else {
-        return <v-container class="text-center">
+        return <v-container class="text-center pt-0">
           { /*<node-password-input topText="Create an encryption password" text="Backup and Create" onDone={finalize}>
             <v-btn onClick={() => finalize()} block class="my-4 info--text" color="highlight">Skip Backup</v-btn>
             <div>You can backup an encrypted copy of your seed mnemonic if you would like. Encryption happens in the browser and Voltage does not have the ability to read your seed.
             This is for convenience purposes only. You should still write down your seed phrase.</div>
           </node-password-input>
              */ }
-          <div class="text-h5">Bitcoin Keys</div>
+          <div class="text-h5">Generated Bitcoin Wallet</div>
           <div>
-            <a href="https://docs.voltageapp.io/btcpay-server/btcpay-server-faq#is-generating-my-bitcoin-wallet-in-your-dashboard-safe">Learn about the security model of creating the keys in our dashboard.</a>
+            <a
+              href="https://docs.voltageapp.io/btcpay-server/btcpay-server-faq#is-generating-my-bitcoin-wallet-in-your-dashboard-safe"
+              target="_blank"
+            >
+              Learn about the security model of creating the keys in our dashboard.
+            </a>
             <br />
           </div>
-          <div class="text-left my-3">
-            <div class="d-flex flex-grow-1">
-              <span class="font-weight-bold">Derivation Path:</span>{` ${state.xPubString}`}
-            </div>
-            <div class="d-flex flex-grow-1">
-              <span class="font-weight-bold">Account Key Path:</span>{` ${accountKeyPath.value}`}
-            </div>
-            <div class="d-flex flex-grow-1">
-              <span class="font-weight-bold">Seed Phrase:</span>{` ${state.mnemonic}`}
-            </div>
-          </div>
+          <v-container class="text-left">
+            <v-row class="my-3">
+              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+                Derivation Path:
+              </v-col>
+              <v-col cols="12" md="8" class="pa-0">
+                {` ${state.xPubString}`}
+              </v-col>
+            </v-row>
+            <v-row class="my-3">
+              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+                Account Key Path:
+              </v-col>
+              <v-col cols="12" md="8" class="pa-0">
+                {` ${accountKeyPath.value}`}
+              </v-col>
+            </v-row>
+            <v-row class="my-3">
+              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+                Seed Phrase:
+              </v-col>
+              <v-col cols="12" md="8" class="pa-0 font-weight-bold text-h6">
+                {` ${state.mnemonic}`}
+              </v-col>
+            </v-row>
+          </v-container>
           <v-form ref="form" lazy-validation>
             <v-checkbox
               checked={state.backupSeed}
@@ -120,11 +146,22 @@ export default defineComponent({
                 (v: string) => !state.backupSeed || v.length >= 8 || 'Password must be at least 8 characters'
               ]}
             />
-            <div>
-              <i>You must write down your seed phrase and password somewhere outside of Voltage. Your funds will be lost if you don't keep a copy of your seed phrase. Not even Voltage can recover them for you.</i>
-              <br />
+            <div class="mb-3">
+              You must write down your seed phrase and password somewhere outside of Voltage. 
+              Your funds will be lost if you don't keep a copy of your seed phrase. Not even Voltage can recover them for you.
             </div>
-            <v-btn onClick={finalize} color="highlight" dark>Use Keys</v-btn> 
+            <v-btn onClick={() => state.confirmDialog = true} color="highlight" dark>Use Keys</v-btn> 
+            <v-dialog value={state.confirmDialog} onInput={(v: boolean) => state.confirmDialog = v}>
+              <v-card>
+                <v-container>
+                  <v-card-text>Are you sure you have written down your keys? They will not be shown again.</v-card-text>
+                  <v-card-actions>
+                    <v-btn color="highlight" onClick={finalize} dark>Yes, continue</v-btn>
+                    <v-btn onClick={() => state.confirmDialog = false}>No, go back</v-btn>
+                  </v-card-actions>
+                </v-container>
+              </v-card>
+            </v-dialog>
           </ v-form>
         </v-container>
       }

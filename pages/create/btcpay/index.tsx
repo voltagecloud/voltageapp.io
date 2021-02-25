@@ -46,10 +46,15 @@ export default defineComponent({
     async function validateForm () {
       // return if form is not valid
       const formValid = refs.form.validate()
-      console.log({ formValid })
-      // make sure form is valid and a key method is selected & valid
+      if (!formValid ) return
       const keysValid = (state.createKeys === 'generate' && state.walletPayload) || state.createKeys === 'useown'
-      if (!formValid || !keysValid) return
+
+      // make sure form is valid and a key method is selected & valid
+      if (!keysValid) {
+        state.error = 'You must select a key generation method'
+        return
+      }
+
       // if there is a selected node get the macaroon
       if (state.selectedNode) {
         state.currentStep = 1
@@ -141,6 +146,7 @@ export default defineComponent({
                           label="Select a Node"
                           color="highlight"
                           background-color="secondary"
+                          no-data-text="No mainnet nodes available"
                           outlined
                           clearable
                         />
@@ -148,7 +154,7 @@ export default defineComponent({
                       <v-container>
                         <v-row>
                           <v-col cols="12">
-                            <div class="ml-3">Bitcoin Keys</div>
+                            <div class="ml-3">Generated Bitcoin Wallet</div>
                           </v-col>
                           <v-col cols="12" sm="6">
                             <v-btn
@@ -179,14 +185,23 @@ export default defineComponent({
                                 <v-icon>mdi-close</v-icon>
                               </v-btn>
                             </v-card-actions>
-                            <CreateBTCWallet onFinalize={(payload: WalletPayload) => state.walletPayload = payload } />
+                            <keep-alive>
+                              <CreateBTCWallet onFinalize={(payload: WalletPayload) => state.walletPayload = payload } />
+                            </keep-alive>
                           </v-card>
                         </v-dialog>
                       </v-container>
                     </v-row>
                   </v-container>
                   <v-container>
-                    <v-btn onClick={validateForm} loading={state.loading}>Create Store</v-btn>
+                    <v-btn
+                      onClick={validateForm}
+                      loading={state.loading}
+                      color="highlight"
+                      dark
+                    >
+                      Create Store
+                    </v-btn>
                     <div>{state.error}</div>
                   </v-container>
                 </v-form>
