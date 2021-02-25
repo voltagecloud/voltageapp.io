@@ -17,18 +17,17 @@ export default defineComponent({
       method: 'GET'
     })
 
+
     return () => { 
       if (loading.value) {
-        return <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-card class="text-center">
-                <v-progress-circular indeterminate />
-              </v-card>
-            </v-col>
-          </v-row>
+        return <v-container class="text-center">
+          <v-progress-circular indeterminate />
         </v-container>
       } else if (data.value?.btcpayservers?.length) {
+        root.$router.push(`/btcpay/${data.value.btcpayservers[0].btcpayserver_id}`)
+        return
+        // code for rendering individual stores
+        // disabled for now since there can only be 1 store
         return <v-container>
           <v-row>
             {data.value.btcpayservers.map((server: any) => <v-col cols="12">
