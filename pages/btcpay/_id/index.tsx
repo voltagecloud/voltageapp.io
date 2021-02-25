@@ -6,6 +6,7 @@ import { nodeStore, macaroonStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog, VAutocomplete } from 'vuetify/lib'
 import GetSeedBackup from '~/components/GetSeedBackup'
 import PasswordChip from '~/components/core/PasswordChip'
+import { authStore } from '~/store'
 
 const h = createElement
 
@@ -109,17 +110,22 @@ export default defineComponent({
       }
     }
 
+    // @ts-ignore
+    const username = computed(() => authStore?.user?.attributes?.email || '')
+    const fullUrl = computed(() => `https://${data.value?.url}`)
+
     const tableData = () => {
       const d = data.value
       return {
         Status: d.status,
         'Purchase Status': d.purchase_status,
-        'Node Name': d.node_name,
+        'Node Name': d.node_name || 'No Node Attached',
         Created: d.created,
         Expires: d.expires,
         Instance: d.instance,
         'Store Name': d.store_name,
-        URL: d.url
+        URL: fullUrl.value,
+        Username: `${username.value}`
       } as JsonData
     }
 
@@ -132,6 +138,7 @@ export default defineComponent({
               onChange={(v: number) => state.tab = v}
               background-color="transparent"
               grow
+              show-arrows
             >
               {tabs.map(t => <v-tab active-class="highlight">{t}</v-tab>)}
             </v-tabs>
@@ -144,6 +151,14 @@ export default defineComponent({
                   <div class="font-weight-light warning--text text--darken-1 text-h6 flex-grow-1 text-left d-flex align-center">
                     { data.value.store_name }
                   </div>
+                  <v-btn icon href={fullUrl.value}>
+                    <v-icon>mdi-open-in-app</v-icon>
+                  </v-btn>
+                  { data.value?.purchase_status === 'trial' && <v-btn icon to="/purchase">
+                    <v-icon>
+                      mdi-currency-usd
+                    </v-icon>
+                  </v-btn>}
                   <v-btn icon onClick={deleteStore}>
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
