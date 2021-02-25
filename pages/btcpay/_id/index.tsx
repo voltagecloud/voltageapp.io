@@ -126,7 +126,7 @@ export default defineComponent({
               </div> 
               : <v-tabs-items value={state.tab}>
                 <v-container class="d-flex info">
-                  <div class="flex-grow-1 text-left d-flex align-center">
+                  <div class="font-weight-light warning--text text--darken-1 text-h6 flex-grow-1 text-left d-flex align-center">
                     { data.value.store_name }
                   </div>
                   <v-btn icon onClick={deleteStore}>
