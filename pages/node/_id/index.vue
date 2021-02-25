@@ -267,9 +267,7 @@ export default defineComponent({
         macaroon.value = res.data.admin_macaroon
         createText.value = 'encrypting data'
         if (node.macaroon_backup) {
-          // @ts-ignore
           const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
-          // @ts-ignore
           const encryptedSeed = crypto.AES.encrypt(btoa(seed.data.cipher_seed_mnemonic.join(',')), initPassword.value).toString()
           const { postMacaroon, saveSeed } = useNodeApi(ctx.root.$nuxt.context)
           await postMacaroon(node.node_id, 'admin', encryptedMacaroon)
