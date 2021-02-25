@@ -27,18 +27,18 @@ export default defineComponent({
     return () => <v-container>
       <v-row>
         <v-col cols="12">
-          <v-card>
+          <v-card color="info">
             <v-card-title class="justify-center">
-              <div class="text-center">Start Accepting Bitcoin Instantly</div>
+              <div class="text-center" style="word-break: normal;">Start Accepting Bitcoin Instantly</div>
             </v-card-title>
             <v-card-text>
               <div class="text-center">
-                No setup, no waiting, and no KYC. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
+                No setup, no waiting, and no transaction fees. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
               </div>
               <v-img
-                src={require('~/assets/btcpay-logo.png')}
-                class="mx-auto"
-                max-height="250"
+                src={require('~/assets/btcpay-logo-black-txt.svg')}
+                class="mx-auto my-3"
+                max-height="120"
                 contain
               />
             </v-card-text>
@@ -51,9 +51,11 @@ export default defineComponent({
                 class="mx-auto my-3"
                 loading={loading.value}
               >
-                Create Store
+                Create Your Store
               </v-btn>
-              <div class="text-center my-3">Free for 7 days then $7.99/month on a 1 year plan</div>
+              <div class="text-center my-3">
+                Includes a 7 day free trial. Plans starting at $7.99 per month
+              </div>
             </v-card-actions>
           </v-card>
         </v-col>
