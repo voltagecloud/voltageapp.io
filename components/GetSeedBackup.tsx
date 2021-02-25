@@ -1,6 +1,6 @@
 import { defineComponent, createElement, reactive } from '@vue/composition-api'
 import useFetch from '~/compositions/useFetch'
-import { decryptString } from '~/utils/crypto'
+import { enc, AES } from 'crypto-js'
 import { VProgressCircular } from 'vuetify/lib'
 
 const h = createElement
@@ -32,9 +32,17 @@ export default defineComponent({
     })
 
     function handleSeed (password: string) {
-      const { decrypted, error } = decryptString({ encrypted: data.value.seed, password })
-      state.error = error
-      state.decrypted = decrypted
+      try {
+        const res = AES.decrypt(data.value.seed, password).toString(enc.Utf8)
+        if (res) {
+          state.decrypted = res
+        } else {
+          state.error = 'Invalid Password'
+        }
+      } catch (e) {
+        console.error(e)
+        state.error = 'Invalid Password'
+      }
     }
 
     return () => {
