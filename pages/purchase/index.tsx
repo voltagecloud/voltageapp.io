@@ -1,5 +1,5 @@
 import { defineComponent, createElement, ref, computed, reactive } from '@vue/composition-api'
-import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCheckbox, VDialog } from 'vuetify/lib'
+import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCheckbox, VDialog, VTooltip } from 'vuetify/lib'
 import { loadStripe } from '@stripe/stripe-js'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
@@ -28,7 +28,7 @@ interface Subscription {
 
 export default defineComponent({
   components: {
-    VContainer, VRow, VCol, VCard, VBtn, VSlider, VDivider, VCheckbox, VCardTitle, VDialog
+    VContainer, VRow, VCol, VCard, VSlider, VDivider, VCheckbox, VCardTitle, VDialog, VTooltip
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
@@ -49,14 +49,14 @@ export default defineComponent({
     const litePlans: Subscription[] = [
       {
         desc: 'One year of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
-        name: 'Lite Node/1 Year',
+        name: 'Lite Node/1Yr',
         cost: 9.99,
         plan: Plan.yearly,
         nodeType: NodeType.lite,
       },
       {
         desc: 'One month of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
-        name: 'Lite Node/1 Month',
+        name: 'Lite Node/1Mo',
         cost: 12.99,
         plan: Plan.monthly,
         nodeType: NodeType.lite,
@@ -65,14 +65,14 @@ export default defineComponent({
     const standardPlans: Subscription[] = [
       {
         desc: 'One year of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
-        name: 'Standard Node/1 Year',
+        name: 'Standard Node/1Yr',
         cost: 26.99,
         plan: Plan.yearly,
         nodeType: NodeType.standard,
       },
       {
         desc: 'One month of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
-        name: 'Standard Node/1 Month',
+        name: 'Standard Node/1Mo',
         cost: 31.99,
         plan: Plan.monthly,
         nodeType: NodeType.standard,
@@ -80,15 +80,15 @@ export default defineComponent({
     ]
     const btcPayOnlyPlans: Subscription[] = [
       {
-        desc: 'One year of hosted BTCPay server. This option does not include any lightning nodes. You can add lightning nodes later.',
-        name: 'BTCPay Server/1 Year',
+        desc: "One BTCPay Server account for one year. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
+        name: 'BTCPay Server/1Yr',
         cost: 7.99,
         plan: Plan.yearly,
         nodeType: NodeType.btcPay
       },
       {
-        desc: 'One month of hosted BTCPay server. This option does include any lightning nodes. You can add lightning nodes later.',
-        name: 'BTCPay Server/1 Month',
+        desc: "One BTCPay Server account for one month. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
+        name: 'BTCPay Server/1Mo',
         cost: 9.99,
         plan: Plan.monthly,
         nodeType: NodeType.btcPay
@@ -100,18 +100,29 @@ export default defineComponent({
     function renderPlans (plans: Subscription[]) {
       return plans.map(plan => {
         const active = planState.value.name === plan.name
+        const disabled = plan.nodeType === NodeType.btcPay && btcpayDisabled.value
         return <v-col cols="12">
-          <v-btn
-            raised
-            block
-            large
-            onClick={() => { planState.value = Object.assign(plan) }}
-            style={active ? {border: 'solid', borderColor: '#1d437b', background: '#ffffff'} : {background: '#e4e4e4' }}
-            disabled={plan.nodeType === NodeType.btcPay && btcpayDisabled.value}
+          <v-tooltip
+            top
+            disabled={!disabled}
+            scopedSlots={{ activator: ({ on }: {on: any;}) =>
+              <div {...{on}}>
+                <VBtn
+                  raised
+                  block
+                  large
+                  onClick={() => { planState.value = Object.assign(plan) }}
+                  style={active ? {border: 'solid', borderColor: '#1d437b', background: '#ffffff'} : {background: '#e4e4e4' }}
+                  disabled={disabled}
+                >
+                  <div class="d-flex flex-grow-1">{plan.name}</div>
+                  <div class="my-3">${plan.cost}</div>
+                </VBtn>
+              </div>
+            }}
           >
-            <div class="d-flex flex-grow-1">{plan.name}</div>
-            <div class="my-3">${plan.cost}</div>
-          </v-btn>
+            You can only create 1 BTCPay Server
+          </v-tooltip>
         </v-col>})
     }
 
@@ -281,10 +292,26 @@ export default defineComponent({
               <v-container>
                 <v-row>
                   <v-col cols="12" xl="6">
-                    <v-btn onClick={cardCheckout} block color="highlight" class="info--text">Purchase with Card</v-btn>
+                    <VBtn
+                      onClick={cardCheckout}
+                      loading={loading.value || userLoading.value}
+                      block
+                      color="highlight"
+                      class="info--text"
+                    >
+                      Purchase with Card
+                    </VBtn>
                   </v-col>
                   <v-col cols="12" xl="6">
-                    <v-btn onClick={confirmBitcoin} block color="highlight" class="info--text">Purchase with Bitcoin</v-btn>
+                    <VBtn
+                      onClick={confirmBitcoin}
+                      loading={loading.value || userLoading.value}
+                      block
+                      color="highlight"
+                      class="info--text"
+                    >
+                      Purchase with Bitcoin
+                    </VBtn>
                   </v-col>
                 </v-row>
               </v-container>
@@ -300,8 +327,8 @@ export default defineComponent({
              For that reason we recommend a yearly subscription.
           </v-card-text>
           <v-card-actions>
-            <v-btn color="info" onClick={bitcoinCheckout}>Continue with monthly</v-btn>
-            <v-btn onClick={() => { state.confirmModal = false }}> Go Back</v-btn>
+            <VBtn color="info" onClick={bitcoinCheckout}>Continue with monthly</VBtn>
+            <VBtn onClick={() => { state.confirmModal = false }}> Go Back</VBtn>
           </v-card-actions>
         </v-card>
       </v-dialog>
