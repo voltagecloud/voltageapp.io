@@ -29,7 +29,6 @@ export default defineComponent({
           </v-row>
         </v-container>
       } else if (data.value?.btcpayservers?.length) {
-        console.log({ data: data.value })
         return <v-container>
           <v-row>
             {data.value.btcpayservers.map((server: any) => <v-col cols="12">
