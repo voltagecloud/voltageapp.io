@@ -82,14 +82,14 @@ export default defineComponent({
       {
         desc: "One BTCPay Server account for one year. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
         name: 'BTCPay Server/1Yr',
-        cost: 7.99,
+        cost: 6.99,
         plan: Plan.yearly,
         nodeType: NodeType.btcPay
       },
       {
         desc: "One BTCPay Server account for one month. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
         name: 'BTCPay Server/1Mo',
-        cost: 9.99,
+        cost: 8.99,
         plan: Plan.monthly,
         nodeType: NodeType.btcPay
       }
@@ -130,7 +130,7 @@ export default defineComponent({
     const planQty = ref(1)
     const includeBtcPay = ref(false)
     const btcPayAddonMonthly = computed(() => planState.value.plan === Plan.monthly
-      ? 9.99 : 7.99
+      ? 8.99 : 6.99
     )
 
     const cart = computed(() => {
