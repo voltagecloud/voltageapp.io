@@ -1,10 +1,11 @@
 import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
-import JsonTable from '~/components/core/JsonTable'
+import JsonTable, { JsonData } from '~/components/core/JsonTable'
 import { nodeStore, macaroonStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog, VAutocomplete } from 'vuetify/lib'
 import GetSeedBackup from '~/components/GetSeedBackup'
+import PasswordChip from '~/components/core/PasswordChip'
 
 const h = createElement
 
@@ -108,6 +109,20 @@ export default defineComponent({
       }
     }
 
+    const tableData = () => {
+      const d = data.value
+      return {
+        Status: d.status,
+        'Purchase Status': d.purchase_status,
+        'Node Name': d.node_name,
+        Created: d.created,
+        Expires: d.expires,
+        Instance: d.instance,
+        'Store Name': d.store_name,
+        URL: d.url
+      } as JsonData
+    }
+
     return () => <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10" lg="9">
@@ -134,7 +149,16 @@ export default defineComponent({
                   </v-btn>
                 </v-container>
                 <v-tab-item>
-                  <JsonTable data={() => data.value} />
+                  <JsonTable data={tableData} >
+                    <tr>
+                      <td>
+                        Default Password
+                      </td>
+                      <td>
+                        <PasswordChip password={data.value.password} />
+                      </td>
+                    </tr>
+                  </JsonTable>
                 </v-tab-item>
                 <v-tab-item>
                   <v-container>
