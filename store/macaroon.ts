@@ -53,7 +53,6 @@ export default class MacaroonModule extends VuexModule {
   @Mutation
   NODE_PASSWORD ({ password, nodeId }: { password: string; nodeId: string }) {
     const nextState = reduceArray(this.nodePasswords, { password, nodeId }, nodeId)
-    console.log({ nextState })
     this.nodePasswords = nextState
   }
 
