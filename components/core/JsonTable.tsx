@@ -31,8 +31,10 @@ export default defineComponent({
       //}
     }
   },
-  setup: (props, { root }) => {
+  setup: (props, { root, slots }) => {
     const data = computed(() => props.data ? props.data() : null)
+
+    console.log({ slots })
 
     return () => {
       const dataType = typeof data.value
@@ -79,6 +81,7 @@ export default defineComponent({
                   </td>
                 </tr>
               ))}
+              { slots.default() }
             </tbody>
           </v-simple-table>
         )
