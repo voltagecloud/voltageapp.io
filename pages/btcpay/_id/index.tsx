@@ -134,7 +134,7 @@ export default defineComponent({
                   </JsonTable>
                 </v-tab-item>
                 <v-tab-item>
-                  { data.value && <UpdateBTCPayNode server={data.value} />}
+                  { data.value && <UpdateBTCPayNode onDone={handleUpdate} server={data.value} />}
                 </v-tab-item>
                 <v-tab-item>
                   <GetSeedBackup serverId={root.$route.params.id}/>
