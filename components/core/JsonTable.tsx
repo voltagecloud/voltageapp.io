@@ -34,8 +34,6 @@ export default defineComponent({
   setup: (props, { root, slots }) => {
     const data = computed(() => props.data ? props.data() : null)
 
-    console.log({ slots })
-
     return () => {
       const dataType = typeof data.value
       if (dataType === 'string' || dataType === 'number' || dataType === 'boolean') {
