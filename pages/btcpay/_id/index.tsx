@@ -51,6 +51,7 @@ export default defineComponent({
     const tabs = ['Info', 'Update Lightning Node', 'Seed Backup']
 
     async function deleteStore () {
+      state.error = ''
       const res = await voltageFetch('/btcpayserver/delete', {
         method: 'POST',
         body: JSON.stringify({
@@ -59,6 +60,9 @@ export default defineComponent({
       })
       if (res.ok) {
         root.$router.push('/btcpay')
+      } else {
+        const { message } = await res.json()
+        state.error = message
       }
     }
 
@@ -121,6 +125,7 @@ export default defineComponent({
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-container>
+                {state.error && <div class="error--text info text-right px-3">{state.error}</div>}
                 <v-tab-item>
                   <JsonTable data={tableData} >
                     <tr>
