@@ -63,8 +63,8 @@ export default defineComponent({
           error={state.error}
         />
       } else {
-        return <div classs="text-center my-4">
-          No seed backup is found.
+        return <div class="text-center my-4">
+          No seed backup was found.
         </div>
       }
     }
