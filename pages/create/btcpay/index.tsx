@@ -109,7 +109,7 @@ export default defineComponent({
           <v-container>
             <v-card color="info" key="0">
               <v-card-title>
-                <div class="mx-auto">Create BTCPay Server Store</div>
+                <div class="mx-auto" style="word-break: normal;">Create BTCPay Server Store</div>
               </v-card-title>
               <v-card-actions>
                 <v-form style="width: 100%;"
