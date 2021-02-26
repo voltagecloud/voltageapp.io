@@ -11,7 +11,12 @@ export default function useFetch <T>(endpoint: string) {
     loading.value = true
     const res = await voltageFetch(endpoint, opts)
     try {
-      data.value = await res.json() as T
+      const json = await res.json()
+      if (json.message) {
+        error.value = json.message
+      } else {
+        data.value = json as T
+      }
     } catch (e) {
       error.value = e
     } finally {
