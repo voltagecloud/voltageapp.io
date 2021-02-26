@@ -4,7 +4,6 @@ import useFetch from '~/compositions/useFetch'
 import JsonTable, { JsonData } from '~/components/core/JsonTable'
 import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog } from 'vuetify/lib'
 import GetSeedBackup from '~/components/GetSeedBackup'
-import PasswordChip from '~/components/core/PasswordChip'
 import UpdateBTCPayNode from '~/components/UpdateBTCPayNode'
 import { authStore } from '~/store'
 
@@ -24,6 +23,7 @@ export default defineComponent({
     VIcon,
     VProgressCircular,
     VDialog,
+    CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
@@ -133,7 +133,7 @@ export default defineComponent({
                         Default Password
                       </td>
                       <td>
-                        <PasswordChip password={data.value.password} />
+                        <copy-pill text={data.value.password} hide color="accent" text-color="warning"/>
                       </td>
                     </tr>
                   </JsonTable>
