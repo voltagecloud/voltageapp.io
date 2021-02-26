@@ -7,7 +7,6 @@
   )
     template(v-slot:activator="{ on }")
       v-chip(@click="copyText" v-on="on" v-bind="$attrs")
-        v-icon(v-if='hide') {{icon}}
         | {{ renderText }}
     | Copied to clipboard!
 </template>
@@ -30,22 +29,18 @@ export default defineComponent({
   },
   setup (props, context) {
     const { isCopied, copy } = useClipboard(1000)
-    const hidden = ref(true)
-    const icon = computed(() => hidden.value ? 'mdi-eye' : 'mdi-eye-off')
 
     function copyText () {
-      hidden.value = !hidden.value
       context.emit('click')
       copy(props.text)
     }
 
-    const renderText = computed(() => hidden.value && props.hide ? '•••••••' : props.text)
+    const renderText = computed(() => props.hide ? '••••••••••' : props.text)
 
     return {
       isCopied,
       copyText,
       renderText,
-      icon
     }
   }
 })
