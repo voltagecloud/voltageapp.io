@@ -57,7 +57,6 @@ export default defineComponent({
           <v-progress-circular indeterminate />
         </v-container>
       } else if (data.value?.status) {
-        console.log({ data: data.value })
         return <v-container>
           <v-row justify="center">
             <v-col cols="12" lg="10">
