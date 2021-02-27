@@ -129,7 +129,7 @@ export default defineComponent({
               </v-col>
             </v-row>
           </v-container>
-          <v-form ref="form" lazy-validation>
+          <v-form ref="form" onSubmit={(e: Event) => { e.preventDefault(); state.confirmDialog = true }} lazy-validation>
             <v-checkbox
               checked={state.backupSeed}
               onChange={handleCheckbox}
