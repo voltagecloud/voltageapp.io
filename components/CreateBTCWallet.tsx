@@ -105,26 +105,26 @@ export default defineComponent({
           </div>
           <v-container class="text-left">
             <v-row class="my-3">
-              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+              <v-col cols="12" md="3" class="font-weight-bold pa-0">
                 Derivation Path:
               </v-col>
-              <v-col cols="12" md="8" class="pa-0">
+              <v-col cols="12" md="9" class="pa-0">
                 {` ${state.xPubString}`}
               </v-col>
             </v-row>
             <v-row class="my-3">
-              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+              <v-col cols="12" md="3" class="font-weight-bold pa-0">
                 Account Key Path:
               </v-col>
-              <v-col cols="12" md="8" class="pa-0">
+              <v-col cols="12" md="9"  class="pa-0">
                 {` ${accountKeyPath.value}`}
               </v-col>
             </v-row>
             <v-row class="my-3">
-              <v-col cols="12" md="4" class="font-weight-bold pa-0">
+              <v-col cols="12" md="3" class="font-weight-bold pa-0">
                 Seed Phrase:
               </v-col>
-              <v-col cols="12" md="8" class="pa-0 font-weight-bold text-h6">
+              <v-col cols="12" md="9" class="pa-0 font-weight-bold text-h6">
                 {` ${state.mnemonic}`}
               </v-col>
             </v-row>
