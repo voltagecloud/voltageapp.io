@@ -37,7 +37,6 @@ export default defineComponent({
     state.loading = true
     try {
       connectNode(props.node.node_id, 'readonly').then(({ macaroon }) => {
-        console.log({ macaroon })
         state.checkedForReadOnly = true
         if (macaroon) {
           const { decrypted, error } = decryptString({ password: password.value, encrypted: macaroon })

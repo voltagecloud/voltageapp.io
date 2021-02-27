@@ -76,12 +76,9 @@ export default class MacaroonModule extends VuexModule {
     { nodeId, macaroonType, password }:
     { nodeId: string; macaroonType: string; password?: string }
   ) {
-    console.log('enter action')
     if (password) {
-      console.log({ password })
       this.context.commit('NODE_PASSWORD', { nodeId, password })
     }
-    console.log('sending request')
     try {
       const res = await voltageFetch('/node/connect', {
         method: 'POST',
@@ -92,7 +89,6 @@ export default class MacaroonModule extends VuexModule {
       })
       if (!res.ok) return 'Error retrieving the macaroon'
       const json = await res.json()
-      console.log({ json })
       const { macaroon, endpoint, tls_cert } = json
       if (!macaroon) return 'Could not find macaroon'
       // write node meta to store

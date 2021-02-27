@@ -9,9 +9,9 @@ export default async function backupMacaroon (
   return await voltageFetch('/node/macaroon', {
     method: 'POST',
     body: JSON.stringify({
-      nodeId,
+      node_id: nodeId,
       name: macaroonType,
-      macaroon_data: encrypted
+      macaroon: encrypted
     })
   })
 }

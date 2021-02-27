@@ -31,7 +31,6 @@ export default function usePodcastReferral(
           pubkey
         })
       })
-      console.log({ d: data.value })
     })
   }
 }

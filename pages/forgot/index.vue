@@ -65,7 +65,6 @@ export default defineComponent({
 
     async function handleForm2 () {
       const res = await confirmNewPassword(email.value.trim(), code.value, confirmPassword.value)
-      console.log({ res })
       if (!res) { return }
       await login(email.value.trim(), confirmPassword.value)
       root.$router.push('/')

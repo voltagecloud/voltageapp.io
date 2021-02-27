@@ -331,7 +331,6 @@ export default defineComponent({
         await updateStatus(nodeData.value.node_id, 'unlocking')
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
-          console.log('SPHINX UNLOCK')
           const api = nodeData.value.api_endpoint.replace('voltageapp.io', 'relay.voltageapp.io')
           // call to unlock sphinx
           await axios({

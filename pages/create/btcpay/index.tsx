@@ -24,7 +24,6 @@ export default defineComponent({
   // @ts-ignore
   setup: (_, { refs, root }) => {
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
-    console.log({ mainnetNodes })
 
     //make sure the user has btcpay servers
     const { btcpayDisabled, loading } = useBTCPayDisabled()

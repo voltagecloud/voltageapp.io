@@ -32,8 +32,6 @@ export default defineComponent({
       api: selectedApi
     })
 
-    console.log({ uri })
-
     return () => {
 
       return <div>

@@ -16,7 +16,6 @@ export default defineComponent({
 
     const to = computed(() => {
       if (!data.value?.user_id) return ''
-      console.log({ data: data.value })
       const json = data.value
       const needsPurchase = json.available_btcpayservers === 0
         && !json.btcpayserver_trial && !json.btcpayservers.length
@@ -33,7 +32,7 @@ export default defineComponent({
             </v-card-title>
             <v-card-text>
               <div class="text-center">
-                No setup, no waiting, and no transaction fees. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
+                No setup, no waiting, and no transaction fees. The easiest way to start accepting Bitcoin payments both on-chain and on the Lighting Network.
               </div>
               <v-card max-width="275" class="mx-auto my-3">
                 <v-container>
@@ -58,7 +57,7 @@ export default defineComponent({
                 Create Your Store
               </v-btn>
               <div class="text-center my-3">
-                Includes a 7 day free trial. Plans starting at $7.99 per month
+                Includes a 7 day free trial. Plans starting at $6.99 per month.
               </div>
             </v-card-actions>
           </v-card>

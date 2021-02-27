@@ -57,7 +57,6 @@ export default defineComponent({
         const endpoint = nodeEndpoint.value?.endpoint
         const macaroonHex = adminMacaroon.macaroonHex
         const password = macaroonState.value.password
-        console.log({ macaroonHex })
         if (macaroonHex && endpoint) {
           const res = await bakeMacaroon({
             endpoint,
