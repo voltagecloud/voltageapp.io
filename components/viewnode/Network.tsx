@@ -54,7 +54,6 @@ export default defineComponent({
           'Synced to Graph': json.synced_to_graph,
           URIs: json.uris
         }
-        console.log({ json })
       } catch (e) {
         responseError.value = e.message
       }

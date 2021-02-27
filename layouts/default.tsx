@@ -56,7 +56,6 @@ export default defineComponent({
         if (cur.active()) return i
         return null
       }, null)
-      console.log({ res })
       return res
     })
 

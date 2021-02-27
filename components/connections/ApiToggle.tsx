@@ -20,14 +20,12 @@ export default defineComponent({
   },
   setup: (props, { emit }) => {
     function update (event: 'GRPC'|'REST') {
-      console.log({update: event})
       emit('input', event)
     }
     const grpcMessage = computed(() => !props.node.settings.grpc ? 'GRPC is disabled' : '')
     const restMessage = computed(() => !props.node.settings.rest ? 'REST is disabled' : '')
 
     const combinedMessage = computed(() => [grpcMessage.value, restMessage.value].filter((e) => !!e))
-    console.log({combined: combinedMessage.value})
 
     // make sure values are disabled if corresponding api is disabled
     watchEffect(() => {

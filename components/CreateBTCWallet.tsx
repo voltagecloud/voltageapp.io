@@ -23,7 +23,6 @@ export default defineComponent({
   },
   // @ts-ignore
   setup: (_, { emit, refs }) => {
-    console.log('component setup')
     const keyPath = `/84'/0'/0'`
 
     const state = reactive({
@@ -41,12 +40,10 @@ export default defineComponent({
       const shaHash = SHA256(state.xPubString)
       const fingerprint = RIPEMD160(shaHash.toString())
       const strFingerprint = fingerprint.toString()
-      console.log({ fingerprint, strFingerprint })
       return `${strFingerprint.substring(0, 8)}${keyPath}`
     })
 
     generateNewXPub().then(({ mnemonic, xPubString}) => {
-      console.log({ mnemonic })
       state.mnemonic = mnemonic
       state.xPubString = xPubString
       state.loading = false
@@ -58,7 +55,6 @@ export default defineComponent({
     async function finalize () {
       const valid = refs.form.validate()
       if (!valid) return
-      console.log('finalizing')
       const emitOutput = {
         xPub: state.xPubString,
         accountKeyPath: accountKeyPath.value

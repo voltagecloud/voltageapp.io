@@ -55,7 +55,6 @@ export default defineComponent({
           {state.decrypted}
         </div>
       } else if (data.value?.seed) {
-        console.log({ data })
         return <node-password-input
           onDone={handleSeed}
           text="Get Seed Backup"

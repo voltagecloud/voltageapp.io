@@ -43,7 +43,6 @@ export default defineComponent({
         node_name: props.server.node_name,
         node_id: props.server.node_id
       }
-      console.log({ out })
       return out
     })
 
@@ -58,7 +57,6 @@ export default defineComponent({
           nodeId: state.newSelectedNode,
           type: 'btcpayserver'
         })
-        console.log({ macaroon })
         thisMacaroon = macaroon
       }
       // if there is a selected new node but its macaroon isnt present
@@ -99,7 +97,6 @@ export default defineComponent({
         nodeId: state.newSelectedNode,
         type: 'btcpayserver'
       })
-      console.log({ error })
       state.macaroonError = error
 
       if (macaroon) {
