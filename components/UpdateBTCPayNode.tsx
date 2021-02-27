@@ -86,17 +86,22 @@ export default defineComponent({
 
     async function handlePassword (password: string) {
       state.macaroonError = ''
-      await macaroonStore.FETCH_MACAROON({
+      const fetchError = await macaroonStore.FETCH_MACAROON({
         nodeId: state.newSelectedNode,
         macaroonType: 'btcpayserver',
         password
       })
+      if (fetchError) {
+        state.macaroonError = fetchError
+        return
+      }
       const { error, macaroon } = macaroonStore.macaroonState({
         nodeId: state.newSelectedNode,
         type: 'btcpayserver'
       })
       console.log({ error })
       state.macaroonError = error
+
       if (macaroon) {
         state.promptNodePassword = false
         await updateNode(macaroon)
