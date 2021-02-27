@@ -35,12 +35,16 @@ export default defineComponent({
               <div class="text-center">
                 No setup, no waiting, and no transaction fees. The easiest way to start accepting Bitcoin payments both on chain and on the Lighting Network.
               </div>
-              <v-img
-                src={require('~/assets/btcpay-logo-black-txt.svg')}
-                class="mx-auto my-3"
-                max-height="120"
-                contain
-              />
+              <v-card max-width="275" class="mx-auto my-3">
+                <v-container>
+                  <v-img
+                    src={require('~/assets/btcpay-logo-black-txt.svg')}
+                    class="mx-auto"
+                    max-height="120"
+                    contain
+                  />
+                </v-container>
+              </v-card>
             </v-card-text>
             <v-card-actions class="d-flex flex-column">
               <v-btn
@@ -48,7 +52,7 @@ export default defineComponent({
                 dark
                 to={to.value}
                 color="highlight"
-                class="mx-auto my-3"
+                class="mx-auto my-1"
                 loading={loading.value}
               >
                 Create Your Store
