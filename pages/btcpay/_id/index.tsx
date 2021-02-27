@@ -1,4 +1,4 @@
-import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
+import { defineComponent, createElement, reactive, computed, ref } from '@vue/composition-api'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
 import JsonTable, { JsonData } from '~/components/core/JsonTable'
@@ -50,7 +50,9 @@ export default defineComponent({
 
     const tabs = ['Info', 'Update Lightning Node', 'Seed Backup']
 
+    const deleting = ref(false)
     async function deleteStore () {
+      deleting.value = true
       state.error = ''
       const res = await voltageFetch('/btcpayserver/delete', {
         method: 'POST',
@@ -58,6 +60,7 @@ export default defineComponent({
           btcpayserver_id: root.$route.params.id
         })
       })
+      deleting.value = false
       if (res.ok) {
         root.$router.push('/btcpay')
       } else {
@@ -121,7 +124,7 @@ export default defineComponent({
                       mdi-currency-usd
                     </v-icon>
                   </v-btn>}
-                  <v-btn icon onClick={deleteStore}>
+                  <v-btn icon loading={deleting.value} onClick={deleteStore}>
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-container>
