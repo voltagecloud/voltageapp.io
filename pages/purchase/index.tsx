@@ -2,7 +2,7 @@ import { defineComponent, createElement, ref, computed, reactive } from '@vue/co
 import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCheckbox, VDialog, VTooltip } from 'vuetify/lib'
 import { loadStripe } from '@stripe/stripe-js'
 import { voltageFetch } from '~/utils/fetchClient'
-import useFetch from '~/compositions/useFetch'
+import useBTCPayDisabled from '~/compositions/useBTCPayDisabled'
 
 const h = createElement
 
@@ -33,17 +33,7 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     // add typed api calls
-    const { dispatch, data, loading } = useFetch<any>('/btcpayserver')
-    const { dispatch: userDispatch, data: userData, loading: userLoading } = useFetch<any>('/user')
-    dispatch({ method: 'GET' })
-    userDispatch({ method: 'GET' })
-
-    const btcpayDisabled = computed(() => {
-      if (!data.value || loading.value || userLoading.value) return true
-      const alreadyHasInstance = !!data.value.btcpayservers.find((server: any) => server.purchase_status !== 'trial')
-      const hasAvailable = !!userData.value?.available_btcpayservers
-      return alreadyHasInstance || hasAvailable
-    })
+    const { btcpayDisabled } = useBTCPayDisabled()
 
 
     const litePlans: Subscription[] = [
