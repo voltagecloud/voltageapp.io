@@ -34,7 +34,8 @@ export default defineComponent({
       updating: false,
       promptNodePassword: false,
       macaroonError: '',
-      updateError: ''
+      updateError: '',
+      changed: false
     })
 
     const selectValue = computed(() => {
@@ -49,7 +50,8 @@ export default defineComponent({
 
     async function updateNode (mac?: string) {
       state.updateError = ''
-      if (!state.newSelectedNode) return
+      // if input hasnt changed return
+      if (!state.changed) return
       let thisMacaroon = mac
       if (!thisMacaroon) {
         const { macaroon } = macaroonStore.macaroonState({
@@ -60,7 +62,7 @@ export default defineComponent({
         thisMacaroon = macaroon
       }
       // if there is a selected new node but its macaroon isnt present
-      if (!thisMacaroon) {
+      if (!thisMacaroon && state.newSelectedNode) {
         state.promptNodePassword = true
         return
       }
@@ -69,7 +71,7 @@ export default defineComponent({
         method: 'POST',
         body: JSON.stringify({
           btcpayserver_id: root.$route.params.id,
-          node_id: state.newSelectedNode,
+          node_id: state.newSelectedNode || '',
           node_macaroon: thisMacaroon
         })
       })
@@ -105,7 +107,7 @@ export default defineComponent({
       <v-row justify="center">
         <v-col cols="8">
           <v-autocomplete
-            onInput={(val: string) => {state.newSelectedNode = val }}
+            onInput={(val: string) => {state.newSelectedNode = val; state.changed = true }}
             value={selectValue.value || ''}
             items={mainnetNodes.value}
             item-text="node_name"
@@ -124,7 +126,7 @@ export default defineComponent({
         </v-col>
       </v-row>
       <v-dialog value={state.promptNodePassword} onInput={(v: boolean) => state.promptNodePassword = v}>
-        <node-password-input onDone={handlePassword} text="Authorize BTC Pay Server" error={state.macaroonError} />
+        <node-password-input onDone={handlePassword} text="Authorize BTCPay Server" error={state.macaroonError} />
       </v-dialog>
     </v-container>
   }
