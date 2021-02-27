@@ -5,6 +5,7 @@ import SetupBtcPay from '~/components/SetupBtcPay'
 import CreateBTCWallet from '~/components/CreateBTCWallet'
 import { macaroonStore } from '~/store'
 import { voltageFetch } from '~/utils/fetchClient'
+import useBTCPayDisabled from '~/compositions/useBTCPayDisabled'
 
 const h = createElement
 
@@ -23,6 +24,9 @@ export default defineComponent({
   setup: (_, { refs, root }) => {
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
     console.log({ mainnetNodes })
+
+    //make sure the user has btcpay servers
+    const { btcpayDisabled, loading } = useBTCPayDisabled()
 
     // keypath used to generate addresses
     const state = reactive<{
@@ -197,19 +201,23 @@ export default defineComponent({
                   <v-container>
                     <v-btn
                       onClick={validateForm}
-                      loading={state.loading}
+                      loading={state.loading || loading.value}
                       color="highlight"
                       dark
+                      disabled={btcpayDisabled.value}
                     >
                       Create Store
                     </v-btn>
-                    <div>{state.error}</div>
+                    <div class="error--text">{state.error}</div>
+                    <div class="error--text">
+                      {(btcpayDisabled.value && !loading.value) ? `You don't have any available btcpay server accounts` : ''}
+                    </div>
                   </v-container>
                 </v-form>
               </v-card-actions>
             </v-card>
             { /* acquire macaroon step */}
-            <v-dialog value={state.currentStep === 1}>
+            <v-dialog value={state.currentStep === 1} max-width="800">
               <v-card>
                 <v-card-actions>
                   <v-btn onClick={() => { state.currentStep = 0}} icon>
@@ -222,7 +230,7 @@ export default defineComponent({
               </v-card>
             </v-dialog>
             { /* finished dialog info */}
-            <v-dialog value={state.currentStep === 2}>
+            <v-dialog value={state.currentStep === 2} max-width="800">
               <v-card class="text-center">
                 <v-container>
                   <div class="text-h4">BTCPay Server Account Created!</div>
