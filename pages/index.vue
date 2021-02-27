@@ -51,7 +51,7 @@
     </v-dialog>
   </v-container>
   <v-row justify="center" align="center" no-gutters="no-gutters">
-    <v-col cols="12" lg="10" xl="8" v-if="!noNodes">
+    <v-col cols="12" lg="10" xl="8" v-if="noNodes">
       <v-fade-transition group="group">
         <template v-if="display && nodes.length">
           <div v-for="node in nodes" :key="node.node_id">
@@ -77,8 +77,8 @@
           <v-container>
             <v-row>
               <v-col v-for="(product, i) in products" :key="i" cols="12" sm="6">
-                <v-card @click="$router.push(product.to)" class="text-center d-flex flex-column align-between" style="min-height: 175px;">
-                  <v-img :src="product.src" max-height="250" max-width="150" class="mx-auto"/>
+                <v-card @click="$router.push(product.to)" class="text-center d-flex flex-column justify-space-between" style="height: 200px;">
+                  <v-img :src="product.src" max-height="150" max-width="150" class="mx-auto my-3" contain/>
                   <div class="font-weight-bold">{{product.title}}</div>
                 </v-card>
               </v-col>
