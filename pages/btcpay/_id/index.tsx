@@ -113,7 +113,7 @@ export default defineComponent({
                   <div class="font-weight-light warning--text text--darken-1 text-h6 flex-grow-1 text-left d-flex align-center">
                     { data.value.store_name }
                   </div>
-                  <v-btn icon href={fullUrl.value}>
+                  <v-btn icon target="_blank" href={fullUrl.value}>
                     <v-icon>mdi-open-in-app</v-icon>
                   </v-btn>
                   { data.value?.purchase_status === 'trial' && <v-btn icon to="/purchase">
