@@ -59,7 +59,7 @@ export default defineComponent({
         return <node-password-input
           onDone={handleSeed}
           text="Get Seed Backup"
-          topText="Enter the password you used to encrpyt your seed"
+          topText="Enter the password you used to encrypt your seed"
           error={state.error}
         />
       } else {
