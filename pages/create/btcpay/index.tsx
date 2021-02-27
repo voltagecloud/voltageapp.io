@@ -179,7 +179,7 @@ export default defineComponent({
                           </v-col>
                         </v-row>
                         { /* generate seed step */ }
-                        <v-dialog value={state.createKeys === 'generate' && !state.walletPayload} onInput={() => state.createKeys = null}>
+                        <v-dialog max-width="800" value={state.createKeys === 'generate' && !state.walletPayload} onInput={() => state.createKeys = null}>
                           <v-card>
                             <v-card-actions>
                               <v-btn icon onClick={() => state.createKeys = null}>
