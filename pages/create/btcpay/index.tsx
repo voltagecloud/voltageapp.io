@@ -6,6 +6,7 @@ import CreateBTCWallet from '~/components/CreateBTCWallet'
 import { macaroonStore } from '~/store'
 import { voltageFetch } from '~/utils/fetchClient'
 import useBTCPayDisabled from '~/compositions/useBTCPayDisabled'
+import CopyPill from '~/components/core/CopyPill.vue'
 
 const h = createElement
 
@@ -17,7 +18,7 @@ interface WalletPayload {
 
 export default defineComponent({
   components: {
-    VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog
+    VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog, CopyPill
   },
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   // @ts-ignore
@@ -237,8 +238,8 @@ export default defineComponent({
                   <div class="text-h6">Your BTCPay Server Account has successfully been created.</div>
                   <v-row class="my-4">
                     <v-col cols="12" class="font-weight-bold">Login Information:</v-col>
-                    <v-col cols="12">Username: {username.value}</v-col>
-                    <v-col cols="12">Password: {btcpayState.password}</v-col>
+                    <v-col cols="12">Username: <copy-pill text={username.value} /></v-col>
+                    <v-col cols="12">Password: <copy-pill text={btcpayState.password} /></v-col>
                   </v-row>
                   <div class="my-4 font-italic">Please change the default password as soon as you login</div>
                   <v-btn color="highlight" dark large onClick={finish}>Login to Account</v-btn>
