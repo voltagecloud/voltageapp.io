@@ -51,7 +51,7 @@ export default defineComponent({
           <v-progress-circular indeterminate />
         </div>
       } else if (state.decrypted) {
-        return <div class="text-center my-4 white">
+        return <div class="text-center my-4 white font-weight-bold">
           {state.decrypted}
         </div>
       } else if (data.value?.seed) {
