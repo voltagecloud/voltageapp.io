@@ -11,7 +11,7 @@ export default async function backupMacaroon (
     body: JSON.stringify({
       node_id: nodeId,
       name: macaroonType,
-      macaroon_data: encrypted
+      macaroon: encrypted
     })
   })
 }
