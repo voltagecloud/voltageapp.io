@@ -294,7 +294,7 @@ export default defineComponent({
                   <v-col cols="12" xl="6">
                     <VBtn
                       onClick={cardCheckout}
-                      loading={loading.value || userLoading.value}
+                      loading={loading.value || userLoading.value || state.loading}
                       block
                       color="highlight"
                       class="info--text"
@@ -305,7 +305,7 @@ export default defineComponent({
                   <v-col cols="12" xl="6">
                     <VBtn
                       onClick={confirmBitcoin}
-                      loading={loading.value || userLoading.value}
+                      loading={loading.value || userLoading.value || state.loading}
                       block
                       color="highlight"
                       class="info--text"
