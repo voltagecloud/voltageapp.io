@@ -33,7 +33,7 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     // add typed api calls
-    const { btcpayDisabled } = useBTCPayDisabled()
+    const { btcpayDisabled, loading } = useBTCPayDisabled()
 
 
     const litePlans: Subscription[] = [
@@ -284,7 +284,7 @@ export default defineComponent({
                   <v-col cols="12" xl="6">
                     <VBtn
                       onClick={cardCheckout}
-                      loading={loading.value || userLoading.value || state.loading}
+                      loading={loading.value || state.loading}
                       block
                       color="highlight"
                       class="info--text"
@@ -295,7 +295,7 @@ export default defineComponent({
                   <v-col cols="12" xl="6">
                     <VBtn
                       onClick={confirmBitcoin}
-                      loading={loading.value || userLoading.value || state.loading}
+                      loading={loading.value|| state.loading}
                       block
                       color="highlight"
                       class="info--text"
