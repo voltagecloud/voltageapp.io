@@ -28,17 +28,16 @@ export default function useBackupMacaroon() {
     try {
       const res = await bakeMacaroon({ endpoint, macaroonType, macaroonHex });
       let { macaroon } = (await res.json()) as { macaroon: string };
-      const encrypted = AES.encrypt(macaroon, password).toString();
+      const { encrypted } = await backupMacaroon({
+        macaroon,
+        macaroonType,
+        nodeId,
+        password,
+      });
       macaroonStore.MACAROON({
         nodeId,
         macaroon: encrypted,
         type: macaroonType,
-      });
-      await backupMacaroon({
-        macaroonText: encrypted,
-        macaroonType,
-        nodeId,
-        password,
       });
     } catch (e) {
       console.error(e);
