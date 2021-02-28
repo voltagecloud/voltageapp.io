@@ -143,7 +143,7 @@ export default defineComponent({
                       </v-col>
                       <v-col cols="12">
                         <v-autocomplete
-                          onInput={(val: string) => {state.selectedNode = val }}
+                          onInput={(val: string) => {state.selectedNode = val}}
                           value={state.selectedNode || ''}
                           items={mainnetNodes.value}
                           item-text="node_name"
@@ -225,7 +225,7 @@ export default defineComponent({
                   </v-btn>
                 </v-card-actions>
                 <v-card-text>
-                  <SetupBtcPay onDone={createBtcPay} nodeId={state.selectedNode} />
+                  {state.selectedNode && <SetupBtcPay onDone={createBtcPay} nodeId={state.selectedNode} />}
                 </v-card-text>
               </v-card>
             </v-dialog>
