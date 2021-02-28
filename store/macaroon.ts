@@ -134,10 +134,9 @@ export default class MacaroonModule extends VuexModule {
       // asume the required password is in store
       const pwObj = this.nodePasswords.find((elem) => elem.nodeId === nodeId);
       const password = pwObj?.password || "";
-      const encrypted =
-        this.macaroons.find(
-          (elem) => elem.nodeId === nodeId && elem.type === type
-        ) || "";
+      const encrypted = this.macaroons.find(
+        (elem) => elem.nodeId === nodeId && elem.type === type
+      );
       if (password && encrypted) {
         const payload = decryptString({
           encrypted: encrypted.macaroon,
