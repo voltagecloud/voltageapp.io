@@ -114,175 +114,206 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
-import axios from 'axios'
-import crypto from 'crypto-js'
-import { nodeStore, lndStore, createStore, dashboardsStore } from '~/store'
-import useNodeStatus from '~/compositions/useNodeStatus'
-import useNodeApi from '~/compositions/useNodeApi'
-import useFormValidation from '~/compositions/useFormValidation'
-import type { Node } from '~/types/apiResponse'
-import type LogsComponent from '~/components/viewnode/Logs.vue'
-import Network from '~/components/viewnode/Network'
-import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
-import usePodcastReferral from '~/compositions/usePodcastReferral'
+import { defineComponent, computed, ref, watch } from "@vue/composition-api";
+import axios from "axios";
+import crypto from "crypto-js";
+import { nodeStore, lndStore, createStore, dashboardsStore } from "~/store";
+import useNodeStatus from "~/compositions/useNodeStatus";
+import useNodeApi from "~/compositions/useNodeApi";
+import useFormValidation from "~/compositions/useFormValidation";
+import type { Node } from "~/types/apiResponse";
+import type LogsComponent from "~/components/viewnode/Logs.vue";
+import Network from "~/components/viewnode/Network";
+import usePodcastReferral from "~/compositions/usePodcastReferral";
+import { macaroonStore } from "~/store";
+import { MacaroonType } from "~/utils/bakeMacaroon";
 
 export default defineComponent({
   components: {
-    NodeControls: () => import('~/components/viewnode/NodeControls.vue'),
-    DataTable: () => import('~/components/viewnode/DataTable.vue'),
-    NodeSettings: () => import('~/components/viewnode/NodeSettings.vue'),
-    ExportData: () => import('~/components/ExportData.vue'),
-    DashboardData: () => import('~/components/DashboardData.vue'),
+    NodeControls: () => import("~/components/viewnode/NodeControls.vue"),
+    DataTable: () => import("~/components/viewnode/DataTable.vue"),
+    NodeSettings: () => import("~/components/viewnode/NodeSettings.vue"),
+    ExportData: () => import("~/components/ExportData.vue"),
+    DashboardData: () => import("~/components/DashboardData.vue"),
     Network,
-    ConnectTab: () => import('~/components/viewnode/Connect'),
-    Logs: () => import('~/components/viewnode/Logs.vue'),
-    CoreDialog: () => import('~/components/core/Dialog.vue'),
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
-    CopyPill: () => import('~/components/core/CopyPill.vue'),
-    QrcodeVue: () => import('qrcode.vue')
+    ConnectTab: () => import("~/components/viewnode/Connect"),
+    Logs: () => import("~/components/viewnode/Logs.vue"),
+    CoreDialog: () => import("~/components/core/Dialog.vue"),
+    NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
+    CopyPill: () => import("~/components/core/CopyPill.vue"),
+    QrcodeVue: () => import("qrcode.vue"),
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
-  async fetch () {
+  middleware: ["loadCognito", "assertAuthed", "loadUser"],
+  async fetch() {
     // @ts-ignore
-    const axios = this.$nuxt.context.$axios
+    const axios = this.$nuxt.context.$axios;
     // @ts-ignore
-    const res = await axios.get('/dashboards')
-    dashboardsStore.DASHBOARDS(res.data.dashboards)
+    const res = await axios.get("/dashboards");
+    dashboardsStore.DASHBOARDS(res.data.dashboards);
     // @ts-ignore
-    const { postNode } = useNodeApi(this.$nuxt.context)
+    const { postNode } = useNodeApi(this.$nuxt.context);
     // @ts-ignore
-    postNode(this.nodeID)
+    postNode(this.nodeID);
     // Logic for auto-refreshing
     // make sure interval is clean
     // set new interval
-    let firstRun = true
+    let firstRun = true;
     // @ts-ignore
     this.timer = setInterval(async () => {
       // @ts-ignore
-      let previousStatus = this.status
+      let previousStatus = this.status;
       if (!firstRun) {
         // If the node was running, deleted, or stopped on load don't try to refresh
-        if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
+        if (
+          previousStatus === "running" ||
+          previousStatus === "stopped" ||
+          previousStatus === "deleted"
+        ) {
           // @ts-ignore
-          clearInterval(this.timer)
-          return
+          clearInterval(this.timer);
+          return;
         }
       }
       // @ts-ignore
-      const { postNode } = useNodeApi(this.$nuxt.context)
+      const { postNode } = useNodeApi(this.$nuxt.context);
       // @ts-ignore
-      const res = await postNode(this.nodeID)
+      const res = await postNode(this.nodeID);
       // @ts-ignore
-      const shouldRefresh = previousStatus === res.status
+      const shouldRefresh = previousStatus === res.status;
       // @ts-ignore
-      previousStatus = res.status
+      previousStatus = res.status;
       // If the user leaves the node's page stop checking
       // @ts-ignore
       if (this.$route.params.id !== res.node_id) {
         // @ts-ignore
-        clearInterval(this.timer)
-        return
+        clearInterval(this.timer);
+        return;
       }
       if (!shouldRefresh) {
         // If the node is in a running, deleted, or stopped state we want to stop checking
-        if (previousStatus === 'running' || previousStatus === 'stopped' || previousStatus === 'deleted') {
+        if (
+          previousStatus === "running" ||
+          previousStatus === "stopped" ||
+          previousStatus === "deleted"
+        ) {
           // @ts-ignore
-          clearInterval(this.timer)
+          clearInterval(this.timer);
         }
       }
-      firstRun = false
-    }, 5000)
+      firstRun = false;
+    }, 5000);
   },
-  setup (_, ctx) {
-    const nodeID = ref(ctx.root.$nuxt.context.params.id)
-    const nodeData = computed(() => nodeStore.nodes.filter(elem => elem.node_id === nodeID.value)[0])
-    const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(nodeData)
-    const { updateNode, updateStatus, postNode } = useNodeApi(ctx.root.$nuxt.context)
-    const timer = ref<NodeJS.Timeout|null>(null)
-    const errorText = ref('')
-    const initializing = ref(false)
-    const initPassword = ref('')
-    const passError = ref('')
-    const nodeCreating = ref(false)
-    const createText = ref('')
+  setup(_, ctx) {
+    const nodeID = ref(ctx.root.$nuxt.context.params.id);
+    const nodeData = computed(
+      () => nodeStore.nodes.filter((elem) => elem.node_id === nodeID.value)[0]
+    );
+    const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(
+      nodeData
+    );
+    const { updateNode, updateStatus, postNode } = useNodeApi(
+      ctx.root.$nuxt.context
+    );
+    const timer = ref<NodeJS.Timeout | null>(null);
+    const errorText = ref("");
+    const initializing = ref(false);
+    const initPassword = ref("");
+    const passError = ref("");
+    const nodeCreating = ref(false);
+    const createText = ref("");
     const passwordInit = computed(() => {
       if (createStore.password) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
-    })
+    });
 
-    function sleep (ms: number) {
-      return new Promise(resolve => setTimeout(resolve, ms))
+    function sleep(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     // get handle to macaroon state for this node
-    const { macaroon, macaroonHex } = useDecryptMacaroon(ctx, ctx.root.$route.params.id)
+    const macaroonHex = computed(
+      () =>
+        macaroonStore.macaroonState({
+          nodeId: nodeData.value.node_id,
+          type: MacaroonType.admin,
+        }).macaroonHex
+    );
     // apply watchers to macaroon state if podcast code is present
     usePodcastReferral({
       macaroonHex,
       nodeId: ctx.root.$route.params.id,
-      podcastCode: createStore.referralCode
-    })
+      podcastCode: createStore.referralCode,
+    });
 
-    async function initialize () {
-      lndStore.CURRENT_NODE(nodeData.value)
-      initializing.value = true
+    async function initialize() {
+      lndStore.CURRENT_NODE(nodeData.value);
+      initializing.value = true;
       if (createStore.password) {
-        initPassword.value = createStore.password
+        initPassword.value = createStore.password;
       } else {
-        if (nodePassword.value === '') {
-          passError.value = 'You must create a password.'
-          initializing.value = false
-          return
+        if (nodePassword.value === "") {
+          passError.value = "You must create a password.";
+          initializing.value = false;
+          return;
         }
         if (nodePassword.value.length < 8) {
-          passError.value = 'Password must be at least 8 characters.'
-          initializing.value = false
-          return
+          passError.value = "Password must be at least 8 characters.";
+          initializing.value = false;
+          return;
         }
-        initPassword.value = nodePassword.value
+        initPassword.value = nodePassword.value;
       }
-      createText.value = 'initializing'
-      const node = lndStore.currentNode as Node
-      updateStatus(node.node_id, 'initializing')
+      createText.value = "initializing";
+      const node = lndStore.currentNode as Node;
+      updateStatus(node.node_id, "initializing");
       try {
         const seed = await axios({
           url: `https://${node.api_endpoint}:8080/v1/genseed`,
-          method: 'GET'
-        })
+          method: "GET",
+        });
         const res = await axios({
-          method: 'POST',
+          method: "POST",
           url: `https://${node.api_endpoint}:8080/v1/initwallet`,
           data: {
             wallet_password: btoa(initPassword.value), // b64 encode password string
             cipher_seed_mnemonic: seed.data.cipher_seed_mnemonic,
-            stateless_init: true
-          }
-        })
-        // write the bare macaroon to useDecryptMacaroon state
-        macaroon.value = res.data.admin_macaroon
-        createText.value = 'encrypting data'
+            stateless_init: true,
+          },
+        });
+        createText.value = "encrypting data";
         if (node.macaroon_backup) {
-          const encryptedMacaroon = crypto.AES.encrypt(res.data.admin_macaroon, initPassword.value).toString()
-          const encryptedSeed = crypto.AES.encrypt(btoa(seed.data.cipher_seed_mnemonic.join(',')), initPassword.value).toString()
-          const { postMacaroon, saveSeed } = useNodeApi(ctx.root.$nuxt.context)
-          await postMacaroon(node.node_id, 'admin', encryptedMacaroon)
-          await saveSeed(node.node_id, encryptedSeed)
+          const encryptedMacaroon = crypto.AES.encrypt(
+            res.data.admin_macaroon,
+            initPassword.value
+          ).toString();
+          // write the macaroon to macaroon store
+          macaroonStore.MACAROON({
+            nodeId: nodeData.value.node_id,
+            type: MacaroonType.admin,
+            macaroon: encryptedMacaroon,
+          });
+          const encryptedSeed = crypto.AES.encrypt(
+            btoa(seed.data.cipher_seed_mnemonic.join(",")),
+            initPassword.value
+          ).toString();
+          const { postMacaroon, saveSeed } = useNodeApi(ctx.root.$nuxt.context);
+          await postMacaroon(node.node_id, "admin", encryptedMacaroon);
+          await saveSeed(node.node_id, encryptedSeed);
         }
-        createStore.WIPE_PASSWORD()
-        res.data = {}
-        seed.data = {}
-        await sleep(4000)
-        createText.value = 'finalizing'
+        createStore.WIPE_PASSWORD();
+        res.data = {};
+        seed.data = {};
+        await sleep(4000);
+        createText.value = "finalizing";
       } catch (err) {
-        updateStatus(node.node_id, 'waiting_init')
-        nodeCreating.value = false
-        errorText.value = err
-        console.log(err)
-        initializing.value = false
+        updateStatus(node.node_id, "waiting_init");
+        nodeCreating.value = false;
+        errorText.value = err;
+        console.log(err);
+        initializing.value = false;
       }
     }
 
@@ -299,99 +330,107 @@ export default defineComponent({
       matchPassword,
       confirmPassword,
       password: nodePassword,
-      showPassword
-    } = useFormValidation()
+      showPassword,
+    } = useFormValidation();
 
-    const unlockDialog = ref(false)
-    const unlocking = ref(false)
-    const error = ref('')
+    const unlockDialog = ref(false);
+    const unlocking = ref(false);
+    const error = ref("");
 
-    // get node password state
-    const { password: pwState } = useDecryptMacaroon(ctx, ctx.root.$route.params.id)
-    async function unlockNode (password: string) {
-      error.value = ''
-      lndStore.CURRENT_NODE(nodeData.value)
-      unlocking.value = true
+    async function unlockNode(password: string) {
+      error.value = "";
+      lndStore.CURRENT_NODE(nodeData.value);
+      unlocking.value = true;
       try {
-        const node = lndStore.currentNode as Node
+        const node = lndStore.currentNode as Node;
         // call to unlock lnd
         await axios({
           url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
-          method: 'POST',
+          method: "POST",
           data: {
             wallet_password: btoa(password),
-            stateless_init: true
+            stateless_init: true,
           },
-          timeout: 45000
-        })
+          timeout: 45000,
+        });
         // node has been unlocked so password is correct write to state
-        pwState.value = password
+        macaroonStore.NODE_PASSWORD({
+          nodeId: nodeData.value.node_id,
+          password,
+        });
         // update the status of the node in the api
-        await updateStatus(nodeData.value.node_id, 'unlocking')
+        await updateStatus(nodeData.value.node_id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
-          const api = nodeData.value.api_endpoint.replace('voltageapp.io', 'relay.voltageapp.io')
+          const api = nodeData.value.api_endpoint.replace(
+            "voltageapp.io",
+            "relay.voltageapp.io"
+          );
           // call to unlock sphinx
           await axios({
             url: `https://${api}:3001/unlock`,
-            method: 'POST',
-            data: { password }
-          })
+            method: "POST",
+            data: { password },
+          });
         }
-        await postNode(nodeID.value)
+        await postNode(nodeID.value);
       } catch (err) {
-        error.value = `${err.response.data.message}`
+        error.value = `${err.response.data.message}`;
       } finally {
-        unlocking.value = false
+        unlocking.value = false;
       }
     }
 
-    async function update () {
-      await updateNode(nodeData.value.node_id)
+    async function update() {
+      await updateNode(nodeData.value.node_id);
       // @ts-ignore
-      ctx.root.$nuxt.$router.go()
+      ctx.root.$nuxt.$router.go();
     }
 
     // clear errors on typing in password field
-    watch(nodePassword, () => { error.value = '' })
-    watch(nodePassword, () => { passError.value = '' })
+    watch(nodePassword, () => {
+      error.value = "";
+    });
+    watch(nodePassword, () => {
+      passError.value = "";
+    });
     watch(status, (newStatus: string) => {
-      if (newStatus === 'initializing' || newStatus === 'provisioning') {
-        nodeCreating.value = true
-        createText.value = newStatus
+      if (newStatus === "initializing" || newStatus === "provisioning") {
+        nodeCreating.value = true;
+        createText.value = newStatus;
       } else {
-        nodeCreating.value = false
+        nodeCreating.value = false;
       }
-      if (newStatus === 'waiting_init') {
-        nodeCreating.value = true
-        createText.value = 'waiting_init'
-        initialize()
+      if (newStatus === "waiting_init") {
+        nodeCreating.value = true;
+        createText.value = "waiting_init";
+        initialize();
       }
-      if (newStatus === 'running') {
-        createText.value = 'complete'
+      if (newStatus === "running") {
+        createText.value = "complete";
       }
-    })
+    });
 
-    const confirmUpdate = ref(false)
-    async function closeAndUpdate () {
-      confirmUpdate.value = false
-      await update()
+    const confirmUpdate = ref(false);
+    async function closeAndUpdate() {
+      confirmUpdate.value = false;
+      await update();
     }
 
     // data for tab state
     const tabs = ref([
-      'Info',
-      'Network',
-      'Connect',
-      'Dashboards',
-      'Settings',
-      'Logs'
-    ])
+      "Info",
+      "Network",
+      "Connect",
+      "Dashboards",
+      "Settings",
+      "Logs",
+    ]);
 
-    const curTab = ref(0)
+    const curTab = ref(0);
 
     // only load logs on tab click
-    const logsRef = ref<null|typeof LogsComponent>(null)
+    const logsRef = ref<null | typeof LogsComponent>(null);
 
     return {
       nodeData,
@@ -432,8 +471,8 @@ export default defineComponent({
       createText,
       tabs,
       curTab,
-      logsRef
-    }
-  }
-})
+      logsRef,
+    };
+  },
+});
 </script>
