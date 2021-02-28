@@ -111,7 +111,7 @@ export default defineComponent({
               </div>
             }}
           >
-            You can only create 1 BTCPay Server
+            You can only create or purchase 1 BTCPay Server
           </v-tooltip>
         </v-col>})
     }
