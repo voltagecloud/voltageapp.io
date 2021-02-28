@@ -2,7 +2,7 @@ import { defineComponent, createElement, ref, computed, reactive } from '@vue/co
 import { VContainer, VRow, VCol, VCard, VCardTitle, VBtn, VSlider, VDivider, VCheckbox, VDialog, VTooltip } from 'vuetify/lib'
 import { loadStripe } from '@stripe/stripe-js'
 import { voltageFetch } from '~/utils/fetchClient'
-import useBTCPayDisabled from '~/compositions/useBTCPayDisabled'
+import useFetch from '~/compositions/useFetch'
 
 const h = createElement
 
@@ -25,6 +25,57 @@ interface Subscription {
   nodeType: NodeType;
   // is this subscription type just btcpay server
 }
+const litePlans: Subscription[] = [
+  {
+    desc: 'One year of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
+    name: 'Lite Node/1Yr',
+    cost: 9.99,
+    plan: Plan.yearly,
+    nodeType: NodeType.lite,
+  },
+  {
+    desc: 'One month of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
+    name: 'Lite Node/1Mo',
+    cost: 12.99,
+    plan: Plan.monthly,
+    nodeType: NodeType.lite,
+  }
+]
+const standardPlans: Subscription[] = [
+  {
+    desc: 'One year of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
+    name: 'Standard Node/1Yr',
+    cost: 26.99,
+    plan: Plan.yearly,
+    nodeType: NodeType.standard,
+  },
+  {
+    desc: 'One month of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
+    name: 'Standard Node/1Mo',
+    cost: 31.99,
+    plan: Plan.monthly,
+    nodeType: NodeType.standard,
+  }
+]
+const btcPayOnlyPlans: Subscription[] = [
+  {
+    desc: "One BTCPay Server account for one year. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
+    name: 'BTCPay Server/1Yr',
+    cost: 6.99,
+    plan: Plan.yearly,
+    nodeType: NodeType.btcPay
+  },
+  {
+    desc: "One BTCPay Server account for one month. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
+    name: 'BTCPay Server/1Mo',
+    cost: 8.99,
+    plan: Plan.monthly,
+    nodeType: NodeType.btcPay
+  }
+]
+
+interface SubscriptionItem {item: string; quantity: number;}
+interface Subscription {items: SubscriptionItem[]}
 
 export default defineComponent({
   components: {
@@ -33,64 +84,24 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     // add typed api calls
-    const { canPurchase, loading } = useBTCPayDisabled()
+    const { loading, dispatch, data } = useFetch<{ subscriptions: Subscription[] }>('/billing')
+    dispatch({ method: 'GET' })
 
+    const canPurchaseBTCPay = computed(() => {
+      if (loading.value || !data.value) return false
+      const subsWithBTCPay = data.value.subscriptions.filter((sub: Subscription) => {
+        return sub.items.find((item) => item.item === 'btcpayserver')
+      })
+      return subsWithBTCPay.length === 0
+    })
 
-    const litePlans: Subscription[] = [
-      {
-        desc: 'One year of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
-        name: 'Lite Node/1Yr',
-        cost: 9.99,
-        plan: Plan.yearly,
-        nodeType: NodeType.lite,
-      },
-      {
-        desc: 'One month of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.',
-        name: 'Lite Node/1Mo',
-        cost: 12.99,
-        plan: Plan.monthly,
-        nodeType: NodeType.lite,
-      }
-    ]
-    const standardPlans: Subscription[] = [
-      {
-        desc: 'One year of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
-        name: 'Standard Node/1Yr',
-        cost: 26.99,
-        plan: Plan.yearly,
-        nodeType: NodeType.standard,
-      },
-      {
-        desc: 'One month of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.',
-        name: 'Standard Node/1Mo',
-        cost: 31.99,
-        plan: Plan.monthly,
-        nodeType: NodeType.standard,
-      }
-    ]
-    const btcPayOnlyPlans: Subscription[] = [
-      {
-        desc: "One BTCPay Server account for one year. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
-        name: 'BTCPay Server/1Yr',
-        cost: 6.99,
-        plan: Plan.yearly,
-        nodeType: NodeType.btcPay
-      },
-      {
-        desc: "One BTCPay Server account for one month. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
-        name: 'BTCPay Server/1Mo',
-        cost: 8.99,
-        plan: Plan.monthly,
-        nodeType: NodeType.btcPay
-      }
-    ]
 
     const planState = ref<Subscription>(Object.assign(standardPlans[0]))
 
     function renderPlans (plans: Subscription[]) {
       return plans.map(plan => {
         const active = planState.value.name === plan.name
-        const disabled = plan.nodeType === NodeType.btcPay && !canPurchase.value
+        const disabled = plan.nodeType === NodeType.btcPay && !canPurchaseBTCPay.value
         return <v-col cols="12">
           <v-tooltip
             top
@@ -263,7 +274,7 @@ export default defineComponent({
                 />
               </div>
               <v-divider />
-              {!canPurchase.value || <div class="d-flex pa-2 justify-space-between">
+              {!canPurchaseBTCPay.value || <div class="d-flex pa-2 justify-space-between">
                 <div class="text-h6 d-flex flex-column">
                   <div>Add BTCPay Server</div>
                   <div>${btcPayAddonMonthly.value}/mo</div>
