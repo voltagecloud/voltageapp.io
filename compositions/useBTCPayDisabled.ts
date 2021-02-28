@@ -8,18 +8,17 @@ export default function useBTCPayDisabled () {
   const { dispatch: userDispatch, data: userData, loading: userLoading } = useFetch<any>('/user')
   userDispatch({ method: 'GET' })
 
-  const btcpayDisabled = computed(() => {
-    if (!data.value || loading.value || userLoading.value) return true
-    console.log({ data, userData })
-    const alreadyHasTrial = !!data.value.btcpayservers.find((server: any) => server.purchase_status === 'trial')
-    const noneAvailable = !userData.value?.available_btcpayservers
-    return alreadyHasTrial && noneAvailable
-  })
+  const alreadyHasIntance = computed(() => !!data.value?.btcpayservers?.find((server: any) => server.purchase_status !== 'trial'))
+  const hasAvailable = computed(() => !!userData.value?.available_btcpayservers)
 
-  const mergedLoading = computed(() => loading.value || userLoading.value)
+  const mergedLoading = computed(() => loading.value || userLoading.value || !data.value)
+
+  const canPurchase = computed(() => !mergedLoading.value && !hasAvailable.value && !alreadyHasIntance.value)
+  const canCreate = computed(() => !mergedLoading.value && hasAvailable.value || !alreadyHasIntance.value)
 
   return {
-    btcpayDisabled,
-    loading: mergedLoading
+    loading: mergedLoading,
+    canPurchase,
+    canCreate
   }
 }

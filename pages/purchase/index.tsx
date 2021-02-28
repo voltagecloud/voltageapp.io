@@ -33,7 +33,7 @@ export default defineComponent({
   middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     // add typed api calls
-    const { btcpayDisabled, loading } = useBTCPayDisabled()
+    const { canPurchase, loading } = useBTCPayDisabled()
 
 
     const litePlans: Subscription[] = [
@@ -90,7 +90,7 @@ export default defineComponent({
     function renderPlans (plans: Subscription[]) {
       return plans.map(plan => {
         const active = planState.value.name === plan.name
-        const disabled = plan.nodeType === NodeType.btcPay && btcpayDisabled.value
+        const disabled = plan.nodeType === NodeType.btcPay && !canPurchase.value
         return <v-col cols="12">
           <v-tooltip
             top
@@ -263,7 +263,7 @@ export default defineComponent({
                 />
               </div>
               <v-divider />
-              {btcpayDisabled.value || <div class="d-flex pa-2 justify-space-between">
+              {!canPurchase.value || <div class="d-flex pa-2 justify-space-between">
                 <div class="text-h6 d-flex flex-column">
                   <div>Add BTCPay Server</div>
                   <div>${btcPayAddonMonthly.value}/mo</div>

@@ -26,7 +26,7 @@ export default defineComponent({
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
 
     //make sure the user has btcpay servers
-    const { btcpayDisabled, loading } = useBTCPayDisabled()
+    const { canCreate, loading } = useBTCPayDisabled()
 
     // keypath used to generate addresses
     const state = reactive<{
@@ -204,13 +204,13 @@ export default defineComponent({
                       loading={state.loading || loading.value}
                       color="highlight"
                       dark
-                      disabled={btcpayDisabled.value}
+                      disabled={!canCreate.value}
                     >
                       Create Store
                     </v-btn>
                     <div class="error--text">{state.error}</div>
                     <div class="error--text">
-                      {(btcpayDisabled.value && !loading.value) ? `You don't have any available btcpay server accounts` : ''}
+                      {(!canCreate.value && !loading.value) ? `You don't have any available btcpay server accounts` : ''}
                     </div>
                   </v-container>
                 </v-form>
