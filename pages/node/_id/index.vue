@@ -46,7 +46,6 @@ v-container
                 v-container
                   core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
                     export-data(:nodeID='nodeID' :nodeStatus='status')
-              //- WIP network tab
               v-tab-item
                 network(:node='nodeData')
               v-tab-item
