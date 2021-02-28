@@ -2,6 +2,7 @@ import { defineComponent, createElement, reactive, computed, PropType } from '@v
 import { nodeStore, macaroonStore } from '~/store'
 import { voltageFetch } from '~/utils/fetchClient'
 import { VContainer, VRow, VCol, VBtn, VDialog, VAutocomplete } from 'vuetify/lib'
+import SetupBtcPay from '~/components/SetupBtcPay'
 
 const h = createElement
 
@@ -17,8 +18,7 @@ export default defineComponent({
     VCol,
     VBtn,
     VDialog,
-    VAutocomplete,
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
+    VAutocomplete
   },
   props: {
     server: {
@@ -46,21 +46,15 @@ export default defineComponent({
       return out
     })
 
+    const decrpyted = computed(() => macaroonStore.macaroonState({ nodeId: state.newSelectedNode, type: 'btcpayserver' }))
 
-    async function updateNode (mac?: string) {
+
+    async function updateNode () {
       state.updateError = ''
       // if input hasnt changed return
       if (!state.changed) return
-      let thisMacaroon = mac
-      if (!thisMacaroon) {
-        const { macaroon } = macaroonStore.macaroonState({
-          nodeId: state.newSelectedNode,
-          type: 'btcpayserver'
-        })
-        thisMacaroon = macaroon
-      }
       // if there is a selected new node but its macaroon isnt present
-      if (!thisMacaroon && state.newSelectedNode) {
+      if (!decrpyted.value.macaroon && state.newSelectedNode) {
         state.promptNodePassword = true
         return
       }
@@ -70,7 +64,7 @@ export default defineComponent({
         body: JSON.stringify({
           btcpayserver_id: root.$route.params.id,
           node_id: state.newSelectedNode || '',
-          node_macaroon: thisMacaroon
+          node_macaroon: decrpyted.value.macaroon
         })
       })
       state.updating = false
@@ -79,29 +73,6 @@ export default defineComponent({
       } else {
         const { message } = await res.json()
         state.updateError = message
-      }
-    }
-
-    async function handlePassword (password: string) {
-      state.macaroonError = ''
-      const fetchError = await macaroonStore.FETCH_MACAROON({
-        nodeId: state.newSelectedNode,
-        macaroonType: 'btcpayserver',
-        password
-      })
-      if (fetchError) {
-        state.macaroonError = fetchError
-        return
-      }
-      const { error, macaroon } = macaroonStore.macaroonState({
-        nodeId: state.newSelectedNode,
-        type: 'btcpayserver'
-      })
-      state.macaroonError = error
-
-      if (macaroon) {
-        state.promptNodePassword = false
-        await updateNode(macaroon)
       }
     }
 
@@ -121,14 +92,14 @@ export default defineComponent({
           />
         </v-col>
         <v-col cols="8">
-          <v-btn loading={state.updating} onClick={() => updateNode()} color="highlight" dark error>
+          <v-btn loading={state.updating} onClick={updateNode} color="highlight" dark error>
             Update Connected Node
           </v-btn>
           <div class="error--text">{state.updateError}</div>
         </v-col>
       </v-row>
       <v-dialog value={state.promptNodePassword} onInput={(v: boolean) => state.promptNodePassword = v}>
-        <node-password-input onDone={handlePassword} text="Authorize BTCPay Server" error={state.macaroonError} />
+        <SetupBtcPay onDone={updateNode} nodeId={state.newSelectedNode} />
       </v-dialog>
     </v-container>
   }
