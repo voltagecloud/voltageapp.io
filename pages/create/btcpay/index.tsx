@@ -5,8 +5,8 @@ import SetupBtcPay from '~/components/SetupBtcPay'
 import CreateBTCWallet from '~/components/CreateBTCWallet'
 import { macaroonStore } from '~/store'
 import { voltageFetch } from '~/utils/fetchClient'
-import useBTCPayDisabled from '~/compositions/useBTCPayDisabled'
 import CopyPill from '~/components/core/CopyPill.vue'
+import useFetch from '~/compositions/useFetch'
 
 const h = createElement
 
@@ -26,7 +26,25 @@ export default defineComponent({
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
 
     //make sure the user has btcpay servers
-    const { canCreate, loading } = useBTCPayDisabled()
+    const { dispatch, data, loading: serverLoading } = useFetch<{btcpayservers: any[]}>('/btcpayserver')
+    dispatch({method: 'GET'})
+
+    const {dispatch: userDispatch, data: userData, loading: userLoading} = useFetch<{
+      available_btcpayservers: number;
+      btcpayserver_trial: boolean;
+    }>('/user')
+    userDispatch({method: 'GET'})
+
+    const loading = computed(() => serverLoading.value || userLoading.value)
+
+    const canCreate = computed(() => {
+      if (loading.value || !data.value || !userData.value) return false
+      return data.value.btcpayservers.length === 0 &&
+        (userData.value.available_btcpayservers || userData.value.btcpayserver_trial)
+    })
+
+
+
 
     // keypath used to generate addresses
     const state = reactive<{
