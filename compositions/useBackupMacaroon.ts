@@ -5,6 +5,7 @@ import {
 } from "~/utils/bakeMacaroon";
 import { ref } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
+import { AES } from "crypto-js";
 
 export default function useBackupMacaroon() {
   const loading = ref(false);
@@ -26,17 +27,22 @@ export default function useBackupMacaroon() {
     loading.value = true;
     try {
       const res = await bakeMacaroon({ endpoint, macaroonType, macaroonHex });
-      const { macaroon } = (await res.json()) as { macaroon: string };
-      macaroonStore.MACAROON({ nodeId, macaroon, type: macaroonType });
+      let { macaroon } = (await res.json()) as { macaroon: string };
+      const encrypted = AES.encrypt(macaroon, password).toString();
+      macaroonStore.MACAROON({
+        nodeId,
+        macaroon: encrypted,
+        type: macaroonType,
+      });
       await backupMacaroon({
-        macaroonText: macaroon,
+        macaroonText: encrypted,
         macaroonType,
         nodeId,
         password,
       });
     } catch (e) {
       console.error(e);
-      error.value = e;
+      error.value = e.message;
     } finally {
       loading.value = false;
     }
