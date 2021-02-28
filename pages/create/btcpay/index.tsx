@@ -60,11 +60,7 @@ export default defineComponent({
       }
 
       // if there is a selected node get the macaroon
-      if (state.selectedNode) {
-        state.currentStep = 1
-      } else {
-        await createBtcPay()
-      }
+      await createBtcPay()
     }
 
     const btcpayState = reactive({
@@ -75,9 +71,13 @@ export default defineComponent({
 
     async function createBtcPay () {
       state.currentStep = 0
-      state.loading = true
       const nodeId = state.selectedNode
       const { macaroon } = macaroonStore.macaroonState({ nodeId, type: 'btcpayserver' })
+      if (!macaroon) {
+        state.currentStep = 1
+        return
+      }
+      state.loading = true
       const payload = {
         node_id: nodeId || undefined,
         node_macaroon: macaroon,
