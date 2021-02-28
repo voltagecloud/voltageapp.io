@@ -73,14 +73,14 @@ export default defineComponent({
       state.currentStep = 0
       const nodeId = state.selectedNode
       const { macaroon } = macaroonStore.macaroonState({ nodeId, type: 'btcpayserver' })
-      if (!macaroon) {
+      if (!macaroon && state.selectedNode) {
         state.currentStep = 1
         return
       }
       state.loading = true
       const payload = {
         node_id: nodeId || undefined,
-        node_macaroon: macaroon,
+        node_macaroon: macaroon || undefined,
         store_name: state.name,
         derivation_scheme: state.walletPayload?.xPub,
         account_key_path: state.walletPayload?.accountKeyPath,
