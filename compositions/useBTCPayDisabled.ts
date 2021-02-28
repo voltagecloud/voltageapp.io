@@ -10,9 +10,10 @@ export default function useBTCPayDisabled () {
 
   const btcpayDisabled = computed(() => {
     if (!data.value || loading.value || userLoading.value) return true
-    const alreadyHasInstance = !!data.value.btcpayservers.find((server: any) => server.purchase_status !== 'trial')
+    console.log({ data, userData })
+    const alreadyHasTrial = !!data.value.btcpayservers.find((server: any) => server.purchase_status === 'trial')
     const noneAvailable = !userData.value?.available_btcpayservers
-    return alreadyHasInstance || noneAvailable
+    return alreadyHasTrial && noneAvailable
   })
 
   const mergedLoading = computed(() => loading.value || userLoading.value)
