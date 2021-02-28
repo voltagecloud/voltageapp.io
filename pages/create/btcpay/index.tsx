@@ -230,7 +230,7 @@ export default defineComponent({
               </v-card>
             </v-dialog>
             { /* finished dialog info */}
-            <v-dialog value={state.currentStep === 2} max-width="800">
+            <v-dialog value={state.currentStep === 2} max-width="800" persistent>
               <v-card class="text-center">
                 <v-container>
                   <div class="text-h4">BTCPay Server Account Created!</div>
