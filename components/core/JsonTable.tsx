@@ -2,7 +2,7 @@ import {
   defineComponent,
   PropType,
   computed,
-  createElement
+  createElement,
 } from "@vue/composition-api";
 import CopyPill from "~/components/core/CopyPill.vue";
 import { VSimpleTable } from "vuetify/lib";
@@ -17,12 +17,12 @@ export type JsonData = Primitive | JsonObject | JsonArray;
 export default defineComponent({
   name: "json-table",
   components: {
-    "v-simple-table": VSimpleTable
+    "v-simple-table": VSimpleTable,
   },
   props: {
     data: {
       type: Function as PropType<() => JsonData>,
-      required: false
+      required: false,
       //validator: (prop) => {
       //  let validJson = false
       //  try {
@@ -33,7 +33,7 @@ export default defineComponent({
       //  }
       //  return validJson
       //}
-    }
+    },
   },
   setup: (props, { root, slots }) => {
     const data = computed(() => (props.data ? props.data() : null));
@@ -59,7 +59,7 @@ export default defineComponent({
         return (
           <v-simple-table
             style={{
-              "background-color": root.$vuetify.theme.currentTheme.secondary
+              "background-color": root.$vuetify.theme.currentTheme.secondary,
             }}
           >
             <tbody>
@@ -77,7 +77,7 @@ export default defineComponent({
         return (
           <v-simple-table
             style={{
-              "background-color": root.$vuetify.theme.currentTheme.secondary
+              "background-color": root.$vuetify.theme.currentTheme.secondary,
             }}
           >
             <tbody>
@@ -91,11 +91,11 @@ export default defineComponent({
                   </td>
                 </tr>
               ))}
-              {slots?.default()}
+              {slots?.default?.()}
             </tbody>
           </v-simple-table>
         );
       }
     };
-  }
+  },
 });
