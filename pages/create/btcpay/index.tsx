@@ -43,9 +43,6 @@ export default defineComponent({
         (userData.value.available_btcpayservers || userData.value.btcpayserver_trial)
     })
 
-
-
-
     // keypath used to generate addresses
     const state = reactive<{
       name: string;
