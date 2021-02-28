@@ -96,18 +96,18 @@ export async function bakeMacaroon({
 }
 
 export async function backupMacaroon({
-  macaroonText,
+  macaroon,
   macaroonType,
   nodeId,
   password,
 }: {
-  macaroonText: string;
+  macaroon: string;
   macaroonType: MacaroonType;
   nodeId: string;
   password: string;
 }) {
-  const encrypted = crypto.AES.encrypt(macaroonText, password).toString();
-  return await voltageFetch("/node/macaroon", {
+  const encrypted = crypto.AES.encrypt(macaroon, password).toString();
+  const res = await voltageFetch("/node/macaroon", {
     method: "POST",
     body: JSON.stringify({
       node_id: nodeId,
@@ -115,4 +115,5 @@ export async function backupMacaroon({
       macaroon: encrypted,
     }),
   });
+  return { encrypted, res };
 }
