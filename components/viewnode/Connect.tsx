@@ -1,33 +1,55 @@
-import { defineComponent, computed, createElement, PropType } from '@vue/composition-api'
-import type { Node } from '~/types/apiResponse'
-import useDecryptMacaroon from '~/compositions/useDecryptMacaroon'
+import {
+  defineComponent,
+  computed,
+  createElement,
+  PropType,
+} from "@vue/composition-api";
+import type { Node } from "~/types/apiResponse";
+import { macaroonStore } from "~/store";
+import { MacaroonType } from "~/utils/bakeMacaroon";
 
-const h = createElement
+const h = createElement;
 
 export default defineComponent({
   components: {
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue'),
-    ShowQr: () => import('~/components/ShowQr')
+    NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
+    ShowQr: () => import("~/components/ShowQr"),
   },
   props: {
     node: {
       type: Object as PropType<Node>,
-      required: true
-    }
+      required: true,
+    },
   },
-  setup: (props, ctx) => {
-    const grpc = computed(() => props.node.settings.grpc)
-    const rest = computed(() => props.node.settings.rest)
+  setup: (props) => {
+    const state = computed(() => {
+      const data = macaroonStore.macaroonState({
+        nodeId: props.node.node_id,
+        type: MacaroonType.admin,
+      });
+      return data;
+    });
 
-    const { isMacaroonDecrypted, handleDecryptMacaroon, error } = useDecryptMacaroon(ctx, props.node.node_id)
+    async function writePassword(password: string) {
+      await macaroonStore.FETCH_MACAROON({
+        nodeId: props.node.node_id,
+        password,
+        macaroonType: MacaroonType.admin,
+      });
+    }
 
     return () => {
-      if (!isMacaroonDecrypted.value) {
-        return <node-password-input text="Connect" onDone={(password: string) => handleDecryptMacaroon({ password })}  error={error.value}/>
-      } else if (!!isMacaroonDecrypted.value) {
-        return <show-qr node={props.node} />
+      if (!state.value.macaroon) {
+        return (
+          <node-password-input
+            text="Connect"
+            onDone={writePassword}
+            error={state.value.error}
+          />
+        );
+      } else {
+        return <show-qr node={props.node} />;
       }
-    }
-  }
-})
-
+    };
+  },
+});

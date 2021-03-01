@@ -31,63 +31,66 @@ div
       v-btn(type='submit' color='highlight' :disabled='!valid' block :loading='loading').info--text Initialize Node
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from "@vue/composition-api";
 // @ts-ignore
-import { AES, format } from 'crypto-js'
-import axios from 'axios'
-import useFormValidation from '~/compositions/useFormValidation'
-import useNodeApi from '~/compositions/useNodeApi'
-import { lndStore } from '~/store'
-import { Node } from '~/types/apiResponse'
+import { AES, format } from "crypto-js";
+import axios from "axios";
+import useFormValidation from "~/compositions/useFormValidation";
+import useNodeApi from "~/compositions/useNodeApi";
+import { lndStore } from "~/store";
+import { Node } from "~/types/apiResponse";
 
 export default defineComponent({
-  setup (_, context) {
-    const loading = ref(false)
-    const error = ref('')
-    const { updateStatus } = useNodeApi(context.root.$nuxt.context)
-    async function getMacaroon () {
-      const node = lndStore.currentNode as Node
-      loading.value = true
+  setup(_, context) {
+    const loading = ref(false);
+    const error = ref("");
+    const { updateStatus } = useNodeApi(context.root.$nuxt.context);
+    async function getMacaroon() {
+      const node = lndStore.currentNode as Node;
+      loading.value = true;
       try {
         const res = await axios({
-          method: 'POST',
+          method: "POST",
           url: `https://${node.api_endpoint}:8080/v1/initwallet`,
           data: {
             wallet_password: btoa(formState.password.value), // b64 encode password string
             cipher_seed_mnemonic: lndStore.cipher_seed_mnemonic,
-            stateless_init: true
-          }
-        })
-        loading.value = false
-        // @ts-ignore
-        lndStore.MACAROON(res.data.admin_macaroon)
+            stateless_init: true,
+          },
+        });
+        loading.value = false;
+        lndStore.MACAROON(res.data.admin_macaroon);
         // check the current nodes macaroon backup is true
         if (node.macaroon_backup) {
-          // @ts-ignore
-          const encrypted = AES.encrypt(res.data.admin_macaroon, formState.password.value).toString()
-          const { postMacaroon } = useNodeApi(context.root.$nuxt.context)
-          await postMacaroon(node.node_id, 'admin', encrypted)
+          const encrypted = AES.encrypt(
+            res.data.admin_macaroon,
+            formState.password.value
+          ).toString();
+          const { postMacaroon } = useNodeApi(context.root.$nuxt.context);
+          await postMacaroon(node.node_id, "admin", encrypted);
         }
-        updateStatus(node.node_id, 'initializing')
-        context.emit('next')
+        updateStatus(node.node_id, "initializing");
+        context.emit("next");
       } catch (err) {
-        error.value = `${err}`
+        error.value = `${err}`;
       } finally {
-        loading.value = false
+        loading.value = false;
       }
     }
 
-    const formState = useFormValidation()
+    const formState = useFormValidation();
 
     // clear errors on typing in password field
-    watch(formState.password, () => { error.value = '' })
+    watch(formState.password, () => {
+      error.value = "";
+    });
 
     return {
       getMacaroon,
       loading,
       error,
-      ...formState
-    }
-  }
-})
+      ...formState,
+    };
+  },
+});
 </script>

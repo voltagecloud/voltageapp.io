@@ -1,7 +1,7 @@
 <template lang="pug">
   v-container
     v-card(color='secondary')
-      components(:is='component' @next='() => { currentStep += 1 }' @done='back')
+      components(:is='component' @next='() => { currentStep += 1 }' @done='back' :seed='seed')
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from '@vue/composition-api'
@@ -9,7 +9,7 @@ import { lndStore } from '~/store'
 
 export default defineComponent({
   components: {
-    ConfirmSeed: () => import('~/components/ConfirmSeed.vue'),
+    ConfirmSeed: () => import('~/components/ConfirmSeed'),
     SeedPassword: () => import('~/components/SeedPassword.vue'),
     DownloadMacaroon: () => import('~/components/DownloadMacaroon.vue')
   },
@@ -18,6 +18,8 @@ export default defineComponent({
     if (lndStore.cipher_seed_mnemonic.length !== 24) {
       back()
     }
+
+    const seed = computed(() => lndStore.cipher_seed_mnemonic)
 
     function back () {
       context.root.$router.go(-1)
@@ -28,7 +30,8 @@ export default defineComponent({
     return {
       component,
       currentStep,
-      back
+      back,
+      seed
     }
   }
 })
