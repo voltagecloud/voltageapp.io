@@ -129,6 +129,7 @@ export default defineComponent({
 
     const canPurchaseBTCPay = computed(() => {
       if (loading.value || !data.value) return false;
+      console.log({ response: data.value });
       const subsWithBTCPay = data.value.subscriptions.filter(
         (sub: SubscriptionResponse) => {
           console.log({ items: sub.items });
