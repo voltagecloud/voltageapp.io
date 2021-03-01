@@ -131,11 +131,13 @@ export default defineComponent({
       if (loading.value || !data.value) return false;
       const subsWithBTCPay = data.value.subscriptions.filter(
         (sub: SubscriptionResponse) => {
-          return sub.items.find((item) => item.item === "btcpayserver");
+          console.log({ items: sub.items });
+          return !!sub.items.find((item) => item.item === "btcpayserver");
         }
       );
       return subsWithBTCPay.length === 0;
     });
+    console.log({ canPurchaseBTCPay });
 
     const planState = ref<Subscription>(Object.assign(standardPlans[0]));
 
