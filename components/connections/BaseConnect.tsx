@@ -21,13 +21,9 @@ export default defineComponent({
     }
   },
   setup: (props) => {
-    console.log({ props })
     const apiOff = computed(() => props.node.settings.grpc || props.node.settings.rest)
 
     const showCode = computed(() => apiOff.value && props.connectUri)
-
-    console.log(props.node)
-    console.log({ apiOff, showCode })
     return () => {
 
 

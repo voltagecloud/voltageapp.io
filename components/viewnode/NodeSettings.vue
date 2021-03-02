@@ -202,7 +202,6 @@ export default defineComponent({
     })
 
     async function confirmSettings () {
-      console.log('Confirming the settings')
       let webhookValid = false
       let chansizeValid = false
       if (settings.value.webhook !== '') {

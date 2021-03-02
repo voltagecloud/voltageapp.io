@@ -5,7 +5,6 @@ import type { User, Node } from '~/types/apiResponse'
 const loadUser: Middleware = async ({ $axios }: Context) => {
   const user = await $axios.get<User>('/user')
   const nodes = await $axios.get<{nodes: Node[]}>('/node')
-  console.log({ nodes })
 
   nodeStore.HYDRATE_USER({ user: user.data, nodes: nodes.data.nodes })
 }
