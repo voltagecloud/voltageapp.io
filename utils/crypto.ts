@@ -44,7 +44,6 @@ export function decryptString({
   password: string;
 }): { decrypted: string; error: string } {
   try {
-    console.log({ encrypted, password });
     const decrypted = crypto.AES.decrypt(encrypted || "", password).toString(
       crypto.enc.Base64
     );
