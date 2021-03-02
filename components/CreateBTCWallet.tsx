@@ -99,6 +99,12 @@ export default defineComponent({
             </a>
             <br />
           </div>
+          <div>
+            <br />
+            <p>
+              These keys are used in your BTCPay Server store to receive on-chain funds.
+            </p>
+          </div>
           <v-container class="text-left">
             <v-row class="my-3">
               <v-col cols="12" md="3" class="font-weight-bold pa-0">
@@ -136,15 +142,15 @@ export default defineComponent({
               disabled={!state.backupSeed}
               value={state.password}
               onInput={(v: string) => state.password = v}
-              label="Password"
+              label="Password for Encrypting Seed"
               type="password"
               rules={[
                 (v: string) => !state.backupSeed || v.length >= 8 || 'Password must be at least 8 characters'
               ]}
             />
             <div class="mb-3">
-              You must write down your seed phrase and password somewhere outside of Voltage. 
-              Your funds will be lost if you don't keep a copy of your seed phrase. Not even Voltage can recover them for you.
+              <i>You must write down your seed phrase and password somewhere outside of Voltage. 
+              Your funds will be lost if you don't keep a copy of your seed phrase. Not even Voltage can recover them for you.</i>
             </div>
             <v-btn onClick={() => state.confirmDialog = true} color="highlight" dark>Use Keys</v-btn> 
             <v-dialog value={state.confirmDialog} onInput={(v: boolean) => state.confirmDialog = v}>

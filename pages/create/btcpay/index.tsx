@@ -166,7 +166,7 @@ export default defineComponent({
                           label="Select a Node"
                           color="highlight"
                           background-color="secondary"
-                          no-data-text="No mainnet nodes available"
+                          no-data-text="You don't have any mainnet nodes running."
                           outlined
                           clearable
                         />
@@ -174,7 +174,7 @@ export default defineComponent({
                       <v-container>
                         <v-row>
                           <v-col cols="12">
-                            <div class="ml-3">Generated Bitcoin Wallet</div>
+                            <div class="ml-3">Create a Bitcoin wallet for your store:</div>
                           </v-col>
                           <v-col cols="12" sm="6">
                             <v-btn

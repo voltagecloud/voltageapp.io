@@ -87,6 +87,7 @@ export default defineComponent({
             item-value="node_id"
             label="Select a Node"
             color="highlight"
+            no-data-text="You don't have any mainnet nodes running."
             outlined
             clearable
           />
