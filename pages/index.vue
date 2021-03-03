@@ -1,96 +1,94 @@
-<template lang="pug">
-  v-container
-    v-container(v-if='showTrialBox' color='primary')
-      v-dialog(max-width='800' color='secondary' :value='showTrialBox' @click:outside='clear')
-        v-card.text-center(style='padding: 20px;' color='info')
-          v-card-title Welcome to Voltage!
-          v-container
-            v-row(justify='center')
-              v-col(cols='12')
-                p(style='font-size: 24px;')
-                  | Create a Node
-                p(style='padding-left: 5px; padding-right: 5px; font-size: 15px;')
-                  | Create your free trial node now. These trial nodes last for 7 days and are provisioned on Bitcoin's testnet.
-                v-form(ref='form' v-model='valid' lazy-validation @submit.prevent='populate')
-                  v-col(cols='12' style='max-width: 100%;')
-                      v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title
-                        | Choose Name
-                      div(style='padding-left: 5px; padding-right: 5px;')
-                        v-text-field(
-                          v-model='nodeName'
-                          label='Node Name'
-                          outlined
-                          color='highlight'
-                          background-color='secondary'
-                          :error-messages='errorMessage'
-                          :rules='[required]'
-                          @blur='validateName'
-                          required
-                        )
-                  v-col(cols='12' style='max-width: 100%;')
-                    v-card-title.font-weight-light.warning--text.text--darken-1.v-card--title
-                      | Choose Password
-                    div(justify='center' align='center' style='margin: auto;')
-                      p(style="padding-left: 5px;").warning--text.text--darken-1
-                        | Create a password for your node
-                    div(style='padding: 5px;')
-                      v-form(v-model='valid' ref='form')
-                        v-text-field(
-                          v-model='password'
-                          :rules='[required]'
-                          label='Password'
-                          color='highlight'
-                          background-color='secondary'
-                          outlined
-                          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                          :type="showPassword ? 'text' : 'password'"
-                          required
-                          @click:append='showPassword = !showPassword'
-                        )
-                        v-text-field(
-                          v-model='confirmPassword'
-                          :rules='[char8, matchPassword, required]'
-                          :type="showPassword ? 'text' : 'password'"
-                          label='Confirm Password'
-                          color='highlight'
-                          background-color='secondary'
-                          outlined
-                          :error-messages='error'
-                          required
-                        )
-                        div.text-center.warning--text.mb-6
-                          v-icon(style='padding-bottom: 10px;') mdi-alert-circle
-                          br
-                          | Write this password down! You need it to unlock your node. Also your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
-                        v-divider.mx-12.mt-6
-
-                  div(justify='center' align='center' style='margin: auto;')
-                    v-row(justify='center' style='max-width: 75%;')
-                      v-col(cols='12').pt-0
-                        p.px-4.error--text(v-if='populateError')
-                          | There was a problem configuring the node. Please retry or create a new one.
-                      v-col(cols='12').pt-0
-                        v-btn.px-4.warning--text(block='' type='submit' color='secondary' large='' :loading='loading' :disabled='!valid')
-                          | Provision Node
-                          br
-                        div.text-center.warning--text.mb-6(style='padding-top: 15px;')
-                          | Please do not close your browser until your node is running.
-
-    v-row(justify='center' align='center' no-gutters)
-      v-col(cols='12' lg='10' xl='8' v-if='!noNodes')
-        v-fade-transition(group)
-          template(v-if='display && nodes.length')
-            div(v-for='(node, i) in nodes' :key='node.node_id')
-              v-col(cols='12').px-0
-                node-controls(:nodeID='node.node_id')
-      v-col(cols='12' sm='6' v-else-if='noNodes')
-        v-card(color='info' key='no-nodes')
-          v-card-text.text-center
-            | You dont have any nodes yet.
-            br
-            | Nodes you create will appear here.
-          v-card-actions
-            v-btn(to='/create' color='secondary').warning--text.px-6.mx-auto Create Node
+<template>
+<v-container>
+  <v-container v-if="showTrialBox" color="primary">
+    <v-dialog max-width="800" color="secondary" :value="showTrialBox" @click:outside="clear">
+      <v-card class="text-center" style="padding: 20px;" color="info">
+        <v-card-title>Welcome to Voltage!</v-card-title>
+        <v-container>
+          <v-row justify="center">
+            <v-col cols="12">
+              <p style="font-size: 24px;">Create a Node</p>
+              <p style="padding-left: 5px; padding-right: 5px; font-size: 15px;">Create your free trial node now. These trial nodes last for 7 days and are provisioned on Bitcoin's testnet.</p>
+              <v-form ref="form" v-model="valid" lazy-validation="lazy-validation" @submit.prevent="populate">
+                <v-col cols="12" style="max-width: 100%;">
+                  <v-card-title class="font-weight-light warning--text text--darken-1 v-card--title">Choose Name</v-card-title>
+                  <div style="padding-left: 5px; padding-right: 5px;">
+                    <v-text-field v-model="nodeName" label="Node Name" outlined="outlined" color="highlight" background-color="secondary" :error-messages="errorMessage" :rules="[required]" @blur="validateName" required="required"></v-text-field>
+                  </div>
+                </v-col>
+                <v-col cols="12" style="max-width: 100%;">
+                  <v-card-title class="font-weight-light warning--text text--darken-1 v-card--title">Choose Password</v-card-title>
+                  <div justify="center" align="center" style="margin: auto;">
+                    <p class="warning--text text--darken-1" style="padding-left: 5px;">Create a password for your node</p>
+                  </div>
+                  <div style="padding: 5px;">
+                    <v-form v-model="valid" ref="form">
+                      <v-text-field v-model="password" :rules="[required]" label="Password" color="highlight" background-color="secondary" outlined="outlined" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" required="required" @click:append="showPassword = !showPassword"></v-text-field>
+                      <v-text-field v-model="confirmPassword" :rules="[char8, matchPassword, required]" :type="showPassword ? 'text' : 'password'" label="Confirm Password" color="highlight" background-color="secondary" outlined="outlined" :error-messages="error" required="required"></v-text-field>
+                      <div class="text-center warning--text mb-6">
+                        <v-icon style="padding-bottom: 10px;">mdi-alert-circle</v-icon><br />Write this password down! You need it to unlock your node. Also your node's seed and macaroons are encrypted to this password. Losing this password means losing access to backups and Voltage can not reset it.
+                      </div>
+                      <v-divider class="mx-12 mt-6"></v-divider>
+                    </v-form>
+                  </div>
+                </v-col>
+                <div justify="center" align="center" style="margin: auto;">
+                  <v-row justify="center" style="max-width: 75%;">
+                    <v-col class="pt-0" cols="12">
+                      <p class="px-4 error--text" v-if="populateError">There was a problem configuring the node. Please retry or create a new one.</p>
+                    </v-col>
+                    <v-col class="pt-0" cols="12">
+                      <v-btn class="px-4 warning--text" block="" type="submit" color="secondary" large="" :loading="loading" :disabled="!valid">Provision Node<br /></v-btn>
+                      <div class="text-center warning--text mb-6" style="padding-top: 15px;">Please do not close your browser until your node is running.</div>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
+  </v-container>
+  <v-row justify="center" align="center" no-gutters="no-gutters">
+    <v-col cols="12" lg="10" xl="8" v-if="!noNodes">
+      <v-fade-transition group="group">
+        <template v-if="display && nodes.length">
+          <div v-for="node in nodes" :key="node.node_id">
+            <v-col class="px-0" cols="12">
+              <node-controls :nodeID="node.node_id"></node-controls>
+            </v-col>
+          </div>
+        </template>
+      </v-fade-transition>
+    </v-col>
+    <v-col cols="12" md="8" v-else>
+      <v-card key="no-nodes" color="info">
+        <v-card-title class="justify-center text-h5" style="word-break: normal;">
+          <div class="text-center">Welcome to Voltage! Let's get started.</div>
+        </v-card-title>
+        <v-card-text class="text-center">
+          <div>Voltage offers products that make using Bitcoin and the Lightning Network easy. Get started on Mainnet or Testnest in just a few clicks.</div>
+        </v-card-text>
+        <v-card-text class="mt-6 text-center font-weight-bold text-h6">
+          <div>What would you like to create?</div>
+        </v-card-text>
+        <v-card-actions class="text-center">
+          <v-container>
+            <v-row>
+              <v-col v-for="(product, i) in products" :key="i" cols="12" sm="6">
+                <v-card @click="$router.push(product.to)" class="text-center d-flex flex-column justify-space-between" style="height: 200px;">
+                  <v-img :src="product.src" max-height="150" max-width="150" class="mx-auto my-3" contain/>
+                  <div class="font-weight-bold">{{product.title}}</div>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
+</v-container>
 
 </template>
 <script lang="ts">
@@ -99,6 +97,7 @@ import { Address4 } from 'ip-address'
 import { layoutStore, nodeStore, createStore } from '~/store'
 import useFormValidation from '~/compositions/useFormValidation'
 import useNodeApi from '~/compositions/useNodeApi'
+import useFetch from '~/compositions/useFetch'
 
 import { Network } from '~/types/api'
 
@@ -147,7 +146,6 @@ export default defineComponent({
     async function create () {
       if (showTrialBox.value) {
         try {
-          // @ts-ignore
           createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: 'trial' })
           const node = await createNode()
           ip.value = node.data.user_ip
@@ -209,6 +207,22 @@ export default defineComponent({
       }
     }
 
+    const { data, dispatch } = useFetch<any>('/user')
+    dispatch({ method: 'GET' })
+
+    const products = computed(() => [
+      {
+        title: 'Lightning Node',
+        src: require('~/assets/lnd-logo.png'),
+        to: '/create/lnd'
+      },
+      {
+        title: 'BTCPay Server',
+        src: require('~/assets/btcpay-logo.svg'),
+        to: data.value?.btcpayservers ? '/btcpay' : '/create/btcpay'
+      }
+    ])
+
     return {
       display,
       noNodes,
@@ -228,7 +242,8 @@ export default defineComponent({
       char8,
       nodeName,
       clear,
-      nodes
+      nodes,
+      products
     }
   }
 })

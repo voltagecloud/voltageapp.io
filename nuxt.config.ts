@@ -5,7 +5,8 @@ const dev = process.env.NODE_ENV !== 'prod' || process.env.NETLIFY
 const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io'
 
 export default {
-  mode: 'spa',
+  ssr: false,
+  target: 'static',
   server: {
     host: '0.0.0.0',
     port: '3000'
@@ -122,6 +123,11 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     treeShake: true,
+    defaultAssets: {
+      font: {
+        family: 'Noto Sans TC'
+      }
+    },
     options: {
       customProperties: true
     },

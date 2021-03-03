@@ -7,11 +7,11 @@
   )
     template(v-slot:activator="{ on }")
       v-chip(@click="copyText" v-on="on" v-bind="$attrs")
-        | {{ text }}
+        | {{ renderText }}
     | Copied to clipboard!
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import useClipboard from '~/compositions/useClipboard'
 
 export default defineComponent({
@@ -20,6 +20,11 @@ export default defineComponent({
     text: {
       type: String,
       required: true
+    },
+    hide: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   setup (props, context) {
@@ -30,9 +35,12 @@ export default defineComponent({
       copy(props.text)
     }
 
+    const renderText = computed(() => props.hide ? '••••••••••' : props.text)
+
     return {
       isCopied,
-      copyText
+      copyText,
+      renderText,
     }
   }
 })

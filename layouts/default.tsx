@@ -22,7 +22,7 @@ export default defineComponent({
     VTabs: () => import('vuetify/lib').then(m => m.VTabs),
     VTab: () => import('vuetify/lib').then(m => m.VTab),
     VCard: () => import('vuetify/lib').then(m => m.VCard),
-    VContent: () => import('vuetify/lib').then(m => m.VContent),
+    VMain: () => import('vuetify/lib').then(m => m.VMain),
     VDivider: () => import('vuetify/lib').then(m => m.VDivider),
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue'),
     CoreFooter: () => import('~/components/core/Footer.vue'),
@@ -32,11 +32,32 @@ export default defineComponent({
       showDrawer: false
     })
 
-    const tabs: { text: string; to?: string; href?: string; }[] = [
-      { text: 'Nodes', to: '/' },
-      // { text: 'BTCPay Server', to: '/btcpay' },
-      { text: 'Documentation', href: 'https://docs.voltageapp.io' },
-    ]
+    const tabs = computed<{ text: string; active: () => boolean; onClick: () => void; }[]>(() => [
+      {
+        text: 'Nodes',
+        onClick: () => ctx.root.$router.push('/'),
+        active: () => ctx.root.$route.path === '/' || ctx.root.$route.path.includes('node')
+      },
+      {
+        text: 'BTCPay Server',
+        onClick: () => ctx.root.$router.push('/btcpay'),
+        active: () => ctx.root.$route.path.includes('btcpay')
+      },
+      {
+        text: 'Documentation',
+        onClick: () => window.open('https://docs.voltageapp.io', '_blank'),
+        active: () => false
+      },
+    ])
+
+    const activeTab = computed(() => {
+      const res = tabs.value.reduce((acc: null|number, cur, i) => {
+        if (typeof acc === 'number') return acc
+        if (cur.active()) return i
+        return null
+      }, null)
+      return res
+    })
 
     // aws amplify typescript typings are incorrect smh jeff bezos
     // @ts-ignore
@@ -80,7 +101,7 @@ export default defineComponent({
     // these buttons are considered deprecated and should be remove when setup flow is redone
     const deprecatedButtons: { text: string; to: string; icon: string; }[] = [
       { text: 'Purchase', to: '/purchase', icon: 'mdi-currency-usd-circle-outline' },
-      { text: 'Create', to: '/create', icon: 'mdi-plus' }
+      { text: 'Create', to: '/create/lnd', icon: 'mdi-plus' }
     ]
 
     return () => {
@@ -114,13 +135,10 @@ export default defineComponent({
         value={state.showDrawer && !isBig.value}
         onInput={(v: boolean) => { state.showDrawer = v }}
         disable-resize-watcher
-        class=""
       >
         <v-list>
-          {tabs.map(e => <v-list-item
-            to={e.to}
-            href={e.href}
-            target={e.href ? '_blank' : ''}
+          {tabs.value.map(e => <v-list-item
+            onClick={e.onClick}
             class="font-weight-bold"
           >
             {e.text}
@@ -155,15 +173,12 @@ export default defineComponent({
         <nuxt-link to="/">
           <v-img  src={require('~/assets/logo/name-white.svg')} max-height="18" max-width="100" contain />
         </nuxt-link>
-        <v-tabs class="d-flex flex-grow-1 mx-6">
+        <v-tabs class="d-flex flex-grow-1 mx-6" value={activeTab.value}>
           {
-            // @ts-ignore
-            tabs.map(elem => <v-tab
+            tabs.value.map(elem => <v-tab
+            onClick={elem.onClick}
             class="d-none d-md-flex mx-3"
-            to={elem.to}
             text
-            href={elem.href}
-            target={elem.href ? '_blank' : ''}
           >{elem.text}</v-tab>)
           }
           {deprecatedButtons.map(e => <div class="d-none d-md-flex flex-column justify-center">
@@ -196,9 +211,9 @@ export default defineComponent({
         }
         
       </v-app-bar>
-      <v-content class={{background: ctx.root.$route.path !== 'settings'}}>
+      <v-main class={{background: ctx.root.$route.path !== 'settings'}}>
         <nuxt />
-      </v-content>
+      </v-main>
       <error-snackbar />
       <core-footer />
     </v-app>}

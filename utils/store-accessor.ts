@@ -7,6 +7,7 @@ import create from '~/store/create'
 import exports from '~/store/exports'
 import dashboards from '~/store/dashboards'
 import lnd from '~/store/lnd'
+import macaroon from '~/store/macaroon'
 
 let layoutStore: layout
 let authStore: auth
@@ -15,6 +16,7 @@ let createStore: create
 let exportsStore: exports
 let dashboardsStore: dashboards
 let lndStore: lnd
+let macaroonStore: macaroon
 
 function initialiseStores (store: Store<any>): void {
   layoutStore = getModule(layout, store)
@@ -24,6 +26,7 @@ function initialiseStores (store: Store<any>): void {
   exportsStore = getModule(exports, store)
   dashboardsStore = getModule(dashboards, store)
   lndStore = getModule(lnd, store)
+  macaroonStore = getModule(macaroon, store)
 }
 
 export {
@@ -34,5 +37,6 @@ export {
   createStore,
   exportsStore,
   dashboardsStore,
-  lndStore
+  lndStore,
+  macaroonStore
 }
