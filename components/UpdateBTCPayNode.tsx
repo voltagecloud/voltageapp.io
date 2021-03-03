@@ -64,7 +64,7 @@ export default defineComponent({
         body: JSON.stringify({
           btcpayserver_id: root.$route.params.id,
           node_id: state.newSelectedNode || '',
-          node_macaroon: decrpyted.value.macaroon
+          node_macaroon: decrpyted.value.macaroonHex
         })
       })
       state.updating = false
