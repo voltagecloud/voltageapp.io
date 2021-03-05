@@ -25,10 +25,14 @@ export function hexToBase64(str) {
   );
 }
 
+export function isHex (str: string) {
+  const re = /[0-9A-Fa-f]{6}/g;
+  return re.test(str)
+}
+
 export function isBase64(str: string) {
-  if (str === "" || str.trim() === "") {
-    return false;
-  }
+  if (str === "" || str.trim() === "") return false;
+  if (isHex(str)) return false
   try {
     return btoa(atob(str)) === str;
   } catch (err) {

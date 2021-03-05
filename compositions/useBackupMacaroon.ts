@@ -2,6 +2,7 @@ import {
   bakeMacaroon,
   backupMacaroon,
   MacaroonType,
+  ensureBase64
 } from "~/utils/bakeMacaroon";
 import { ref } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
@@ -28,6 +29,7 @@ export default function useBackupMacaroon() {
     try {
       const res = await bakeMacaroon({ endpoint, macaroonType, macaroonHex });
       let { macaroon } = (await res.json()) as { macaroon: string };
+      macaroon = ensureBase64(macaroon)
       const { encrypted } = await backupMacaroon({
         macaroon,
         macaroonType,

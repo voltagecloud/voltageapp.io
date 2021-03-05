@@ -1,4 +1,5 @@
 import { voltageFetch } from "~/utils/fetchClient";
+import { isHex, hexToBase64 } from '~/utils/crypto'
 import crypto from "crypto-js";
 
 interface Permission {
@@ -95,6 +96,13 @@ export async function bakeMacaroon({
   });
 }
 
+export function ensureBase64 (macaroon: string) {
+  if (isHex(macaroon)) {
+    return hexToBase64(macaroon)
+  }
+  return macaroon
+}
+
 export async function backupMacaroon({
   macaroon,
   macaroonType,
@@ -106,7 +114,8 @@ export async function backupMacaroon({
   nodeId: string;
   password: string;
 }) {
-  const encrypted = crypto.AES.encrypt(macaroon, password).toString();
+  const macaroon64 = ensureBase64(macaroon)
+  const encrypted = crypto.AES.encrypt(macaroon64, password).toString();
   const res = await voltageFetch("/node/macaroon", {
     method: "POST",
     body: JSON.stringify({
