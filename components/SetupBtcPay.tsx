@@ -10,6 +10,7 @@ import { VProgressCircular, VBtn, VCard } from "vuetify/lib";
 import crypto from "crypto-js";
 import { voltageFetch } from "~/utils/fetchClient";
 import useFetch from "~/compositions/useFetch";
+import useBackupMacaroon from "~/compositions/useBackupMacaroon";
 
 const h = createElement;
 
@@ -51,6 +52,7 @@ export default defineComponent({
       retry: false,
     });
 
+    const { loading, error, bakeBackupMacaroon } = useBackupMacaroon();
     async function handlePassword(password: string) {
       state.error = "";
       state.retry = false;
@@ -78,32 +80,14 @@ export default defineComponent({
             "Could not retrieve admin macaroon. Please make sure this node has been initialized";
           return;
         }
-        const endpoint = nodeEndpoint.value?.endpoint;
-        const macaroonHex = adminMacaroon.macaroonHex;
-        const password = macaroonState.value.password;
-        if (macaroonHex && endpoint) {
-          const res = await bakeMacaroon({
-            endpoint,
-            macaroonType: MacaroonType.btcpayserver,
-            macaroonHex,
-          });
-          const { macaroon }: { macaroon: string } = await res.json();
-
-          // encrypt btcpayserver macaroon and back it up
-          const encrypted = crypto.AES.encrypt(macaroon, password).toString();
-          macaroonStore.MACAROON({
-            nodeId,
-            macaroon: encrypted,
-            type: "btcpayserver",
-          });
-          await voltageFetch("/node/macaroon", {
-            method: "POST",
-            body: JSON.stringify({
-              node_id: nodeId,
-              name: "btcpayserver",
-              macaroon: encrypted,
-            }),
-          });
+        await bakeBackupMacaroon({
+          endpoint: nodeEndpoint.value?.endpoint || "",
+          macaroonHex: adminMacaroon.macaroonHex,
+          password: adminMacaroon.password,
+          nodeId: props.nodeId,
+          macaroonType: MacaroonType.btcpayserver,
+        });
+        if (!error.value) {
           ctx.emit("done");
         }
       }
@@ -130,14 +114,14 @@ export default defineComponent({
             text="Enter node password"
           />
         );
-      } else if (state.loading || state.error) {
+      } else if (state.loading || state.error || error.value || loading.value) {
         return (
           <v-card class="pa-4 text-center">
             {state.loading && <v-progress-circular indeterminate />}
             <div>Retrieving Macaroons</div>
             {state.error && (
               <div>
-                {state.error}
+                {state.error || error.value}
                 <v-btn block onClick={() => (state.retry = true)}>
                   Retry
                 </v-btn>
