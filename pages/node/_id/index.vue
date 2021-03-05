@@ -287,7 +287,6 @@ export default defineComponent({
         });
         createText.value = "encrypting data";
         if (node.macaroon_backup) {
-          console.log({ macaroon: res.data })
           const encryptedMacaroon = crypto.AES.encrypt(
             res.data.admin_macaroon,
             initPassword.value
