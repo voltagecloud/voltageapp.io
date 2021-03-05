@@ -127,6 +127,7 @@ import Network from "~/components/viewnode/Network";
 import usePodcastReferral from "~/compositions/usePodcastReferral";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
+import { voltageFetch } from '~/utils/fetchClient'
 
 export default defineComponent({
   components: {
@@ -248,6 +249,7 @@ export default defineComponent({
       podcastCode: createStore.referralCode,
     });
 
+    
     async function initialize() {
       lndStore.CURRENT_NODE(nodeData.value);
       initializing.value = true;
@@ -285,6 +287,7 @@ export default defineComponent({
         });
         createText.value = "encrypting data";
         if (node.macaroon_backup) {
+          console.log({ macaroon: res.data })
           const encryptedMacaroon = crypto.AES.encrypt(
             res.data.admin_macaroon,
             initPassword.value
@@ -299,9 +302,21 @@ export default defineComponent({
             btoa(seed.data.cipher_seed_mnemonic.join(",")),
             initPassword.value
           ).toString();
-          const { postMacaroon, saveSeed } = useNodeApi(ctx.root.$nuxt.context);
-          await postMacaroon(node.node_id, "admin", encryptedMacaroon);
-          await saveSeed(node.node_id, encryptedSeed);
+          await voltageFetch('/node/macaroon', {
+            method: 'POST',
+            body: JSON.stringify({
+              node_id: nodeData.value.node_id,
+              name: 'admin',
+              macaroon: encryptedMacaroon
+            })
+          })
+          await voltageFetch('/node/seed', {
+            method: 'POST',
+            body: JSON.stringify({
+              node_id: nodeData.value.node_id,
+              seed: encryptedSeed
+            })
+          })
         }
         createStore.WIPE_PASSWORD();
         res.data = {};
