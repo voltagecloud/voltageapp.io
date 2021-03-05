@@ -1,5 +1,5 @@
 import { voltageFetch } from "~/utils/fetchClient";
-import { isBase64, hexToBase64 } from '~/utils/crypto'
+import { isHex, hexToBase64 } from '~/utils/crypto'
 import crypto from "crypto-js";
 
 interface Permission {
@@ -97,11 +97,10 @@ export async function bakeMacaroon({
 }
 
 export function ensureBase64 (macaroon: string) {
-  let output = macaroon
-  if (!isBase64(output)) {
-    output = hexToBase64(macaroon)
+  if (isHex(macaroon)) {
+    return hexToBase64(macaroon)
   }
-  return output
+  return macaroon
 }
 
 export async function backupMacaroon({
