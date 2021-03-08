@@ -1,4 +1,4 @@
-import { defineComponent, createElement, computed, reactive, ref } from '@vue/composition-api'
+import { defineComponent, computed, reactive, ref } from '@vue/composition-api'
 import { nodeStore, authStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions,  VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'
@@ -8,7 +8,6 @@ import { voltageFetch } from '~/utils/fetchClient'
 import CopyPill from '~/components/core/CopyPill.vue'
 import useFetch from '~/compositions/useFetch'
 
-const h = createElement
 
 interface WalletPayload {
   xPub: string;

@@ -1,8 +1,7 @@
-import { defineComponent, createElement, PropType, computed, ref } from '@vue/composition-api'
+import { defineComponent, PropType, computed, ref } from '@vue/composition-api'
 import { Node } from '~/types/apiResponse'
 import { VTabs, VTab, VTabsItems, VTabItem, VSheet, VContainer } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {

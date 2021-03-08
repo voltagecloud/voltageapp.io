@@ -1,10 +1,4 @@
-import {
-  defineComponent,
-  createElement,
-  ref,
-  computed,
-  reactive,
-} from "@vue/composition-api";
+import { defineComponent, ref, computed, reactive } from "@vue/composition-api";
 import {
   VContainer,
   VRow,
@@ -21,8 +15,6 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { voltageFetch } from "~/utils/fetchClient";
 import useFetch from "~/compositions/useFetch";
-
-const h = createElement;
 
 enum Plan {
   yearly = "yearly",

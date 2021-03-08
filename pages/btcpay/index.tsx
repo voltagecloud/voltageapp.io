@@ -1,9 +1,7 @@
-import { defineComponent, createElement } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 import { VContainer, VRow, VCol, VCard, VProgressCircular } from 'vuetify/lib'
 import useFetch from '~/compositions/useFetch'
 import BTCPayLandingCard from '~/components/BTCPayLandingCard'
-
-const h = createElement
 
 export default defineComponent({
   components: {

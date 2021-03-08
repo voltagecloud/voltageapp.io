@@ -1,6 +1,5 @@
 import {
   defineComponent,
-  createElement,
   PropType,
   ref,
   computed,
@@ -9,7 +8,6 @@ import type { Node } from "~/types/apiResponse";
 import useBuildUri from "~/compositions/useBuildUri";
 import { macaroonStore } from "~/store";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

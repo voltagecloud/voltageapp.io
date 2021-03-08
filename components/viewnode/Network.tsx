@@ -4,14 +4,12 @@ import {
   computed,
   ref,
   watchEffect,
-  createElement,
 } from "@vue/composition-api";
 import { VContainer, VBtn } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

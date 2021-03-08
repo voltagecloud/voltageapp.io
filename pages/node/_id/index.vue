@@ -127,7 +127,8 @@ import Network from "~/components/viewnode/Network";
 import usePodcastReferral from "~/compositions/usePodcastReferral";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
-import { voltageFetch } from '~/utils/fetchClient'
+import { voltageFetch } from "~/utils/fetchClient";
+import { NodeStatus } from '~/types/api'
 
 export default defineComponent({
   components: {
@@ -249,7 +250,6 @@ export default defineComponent({
       podcastCode: createStore.referralCode,
     });
 
-    
     async function initialize() {
       lndStore.CURRENT_NODE(nodeData.value);
       initializing.value = true;
@@ -301,21 +301,21 @@ export default defineComponent({
             btoa(seed.data.cipher_seed_mnemonic.join(",")),
             initPassword.value
           ).toString();
-          await voltageFetch('/node/macaroon', {
-            method: 'POST',
+          await voltageFetch("/node/macaroon", {
+            method: "POST",
             body: JSON.stringify({
               node_id: nodeData.value.node_id,
-              name: 'admin',
-              macaroon: encryptedMacaroon
-            })
-          })
-          await voltageFetch('/node/seed', {
-            method: 'POST',
+              name: "admin",
+              macaroon: encryptedMacaroon,
+            }),
+          });
+          await voltageFetch("/node/seed", {
+            method: "POST",
             body: JSON.stringify({
               node_id: nodeData.value.node_id,
-              seed: encryptedSeed
-            })
-          })
+              seed: encryptedSeed,
+            }),
+          });
         }
         createStore.WIPE_PASSWORD();
         res.data = {};
@@ -408,19 +408,19 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
-    watch(status, (newStatus: string) => {
-      if (newStatus === "initializing" || newStatus === "provisioning") {
+    watch(status, (newStatus: string|NodeStatus) => {
+      if (newStatus === NodeStatus.initializing || newStatus === NodeStatus.provisioning) {
         nodeCreating.value = true;
         createText.value = newStatus;
       } else {
         nodeCreating.value = false;
       }
-      if (newStatus === "waiting_init") {
+      if (newStatus === NodeStatus.waiting_init) {
         nodeCreating.value = true;
         createText.value = "waiting_init";
         initialize();
       }
-      if (newStatus === "running") {
+      if (newStatus === NodeStatus.running) {
         createText.value = "complete";
       }
     });

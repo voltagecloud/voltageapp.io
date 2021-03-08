@@ -1,14 +1,12 @@
 import {
   defineComponent,
   computed,
-  createElement,
   PropType,
 } from "@vue/composition-api";
 import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

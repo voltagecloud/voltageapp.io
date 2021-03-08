@@ -1,7 +1,6 @@
-import { defineComponent, createElement, PropType, computed } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from '@vue/composition-api'
 import type { Node } from '~/types/apiResponse'
 
-const h = createElement
 
 export default defineComponent({
   components: {

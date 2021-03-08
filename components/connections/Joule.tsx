@@ -1,7 +1,5 @@
-import crypto from "crypto-js";
 import {
   defineComponent,
-  createElement,
   PropType,
   computed,
 } from "@vue/composition-api";
@@ -10,7 +8,6 @@ import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import useBackupMacaroon from "~/compositions/useBackupMacaroon";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

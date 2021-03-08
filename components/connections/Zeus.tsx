@@ -1,15 +1,7 @@
-import {
-  defineComponent,
-  createElement,
-  PropType,
-  ref,
-  computed,
-} from "@vue/composition-api";
+import { defineComponent, PropType, ref, computed } from "@vue/composition-api";
 import type { Node } from "~/types/apiResponse";
 import useBuildUri from "~/compositions/useBuildUri";
 import { macaroonStore } from "~/store";
-
-const h = createElement;
 
 export default defineComponent({
   components: {

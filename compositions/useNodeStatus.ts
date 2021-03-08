@@ -49,7 +49,6 @@ export default function useNodeStatus (node: Ref<Node|null>) {
   })
 
   const status = computed(() => {
-    if (!node.value) return false
     return node.value ? node.value.status : ''
   })
 

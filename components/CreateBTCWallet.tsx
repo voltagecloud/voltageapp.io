@@ -1,9 +1,8 @@
-import { defineComponent, createElement, reactive, computed } from '@vue/composition-api'
+import { defineComponent, reactive, computed } from '@vue/composition-api'
 import { generateNewXPub } from '~/utils/btc'
 import { SHA256, AES, RIPEMD160 } from 'crypto-js'
 import { VProgressCircular, VBtn, VForm, VTextField, VCheckbox, VContainer, VCol, VRow, VDialog, VCard, VCardActions, VCardText } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {
