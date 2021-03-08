@@ -144,7 +144,6 @@ export default defineComponent({
     CopyPill: () => import("~/components/core/CopyPill.vue"),
     QrcodeVue: () => import("qrcode.vue"),
   },
-  middleware: ["loadCognito", "assertAuthed", "loadUser"],
   async fetch() {
     // @ts-ignore
     const axios = this.$nuxt.context.$axios;

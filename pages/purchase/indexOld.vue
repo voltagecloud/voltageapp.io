@@ -86,7 +86,6 @@ import { layoutStore } from '~/store'
 import useNodeApi from '~/compositions/useNodeApi'
 
 export default defineComponent({
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, { root }) {
     layoutStore.DRAWER(false)
     document.addEventListener('focusout', (e) => { changeQuantity() })

@@ -51,7 +51,6 @@ import Auth from '@aws-amplify/auth'
 import { authStore } from '~/store'
 
 export default defineComponent({
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   components: {
     EnableMfa: () => import('~/components/EnableMfa.vue'),
     ChangePassword: () => import('~/components/ChangePassword.vue')

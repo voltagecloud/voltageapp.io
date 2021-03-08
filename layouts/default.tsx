@@ -27,6 +27,7 @@ export default defineComponent({
     ErrorSnackbar: () => import('~/components/core/ErrorSnackbar.vue'),
     CoreFooter: () => import('~/components/core/Footer.vue'),
   },
+  middleware: ['assertAuthed', 'loadUser'],
   setup: (_, ctx) => {
     const state = reactive({
       showDrawer: false

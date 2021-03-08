@@ -102,7 +102,6 @@ import useFetch from '~/compositions/useFetch'
 import { Network } from '~/types/api'
 
 export default defineComponent({
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   components: {
     AvailableNode: () => import('~/components/AvailableNode.vue'),
     NodeControls: () => import('~/components/viewnode/NodeControls.vue')

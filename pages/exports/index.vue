@@ -26,7 +26,6 @@ export default defineComponent({
   components: {
     NodeExport: () => import('~/components/NodeExport.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   async fetch () {
     // @ts-ignore
     this.loading = true

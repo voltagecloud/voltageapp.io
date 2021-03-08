@@ -119,7 +119,6 @@ export default defineComponent({
     VDialog,
     VTooltip,
   },
-  middleware: ["loadCognito", "assertAuthed", "loadUser"],
   setup: (_, ctx) => {
     // add typed api calls
     const { loading, dispatch, data } = useFetch<{

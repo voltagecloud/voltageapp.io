@@ -25,7 +25,6 @@ export default defineComponent({
     VDialog,
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
     const { data, loading, dispatch } = useFetch<any>('/btcpayserver')
 

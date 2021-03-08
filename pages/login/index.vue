@@ -44,7 +44,6 @@ import useAuthentication from '~/compositions/useAuthentication'
 
 export default defineComponent({
   layout: 'plain',
-  middleware: ['loadCognito', 'assertUnAuthed'],
   components: {
     BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
   },

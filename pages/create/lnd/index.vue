@@ -26,7 +26,6 @@ export default defineComponent({
     CreateType: () => import('~/components/CreateType.vue'),
     CreateNode: () => import('~/components/CreateNode.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup () {
     layoutStore.DRAWER(false)
     layoutStore.SET_TITLE('Create Node')

@@ -9,7 +9,6 @@ const h = createElement
 interface PurchasedItem { item: string; quantity: number; }
 
 export default defineComponent({
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   components: {
     VContainer, VRow, VCol, VCard, VSimpleTable, VChip, VBtn, VProgressCircular
   },
