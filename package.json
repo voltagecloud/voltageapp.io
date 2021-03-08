@@ -16,7 +16,7 @@
     "@aws-amplify/auth": "^3.2.3",
     "@nuxt/typescript-runtime": "^0.4.0",
     "@nuxtjs/axios": "^5.3.6",
-    "@nuxtjs/composition-api": "^0.18.1",
+    "@nuxtjs/composition-api": "^0.22.0",
     "@nuxtjs/pwa": "^3.0.0-0",
     "@stripe/stripe-js": "^1.9.0",
     "@types/ip-address": "^5.8.2",
