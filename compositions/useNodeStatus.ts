@@ -2,14 +2,16 @@ import { Ref, computed } from '@vue/composition-api'
 import { NodeStatus } from '~/types/api'
 import { Node } from '~/types/apiResponse'
 
-export default function useNodeStatus (node: Ref<Node>) {
+export default function useNodeStatus (node: Ref<Node|null>) {
   const canStart = computed(() => {
+    if (!node.value) return false
     return node.value.status === NodeStatus.stopped ||
         node.value.status === NodeStatus.failed ||
         node.value.status === NodeStatus.stopping
   })
 
   const canStop = computed(() => {
+    if (!node.value) return false
     return node.value.status === NodeStatus.running ||
         node.value.status === NodeStatus.failed ||
         node.value.status === NodeStatus.starting ||
@@ -21,31 +23,38 @@ export default function useNodeStatus (node: Ref<Node>) {
   })
 
   const canDelete = computed(() => {
+    if (!node.value) return false
     return node.value.status !== NodeStatus.deleted &&
         node.value.status !== NodeStatus.expired
   })
 
   const canConnect = computed(() => {
+    if (!node.value) return false
     return node.value.status === NodeStatus.running
   })
 
   const canInit = computed(() => {
+    if (!node.value) return false
     return node.value.status === NodeStatus.waiting_init
   })
 
   const canUnlock = computed(() => {
+    if (!node.value) return false
     return node.value.status === NodeStatus.waiting_unlock
   })
 
   const canUpdate = computed(() => {
+    if (!node.value) return false
     return node.value.update_available === true
   })
 
   const status = computed(() => {
+    if (!node.value) return false
     return node.value ? node.value.status : ''
   })
 
   const helperText = computed(() => {
+    if (!node.value) return false
     if (node.value.status === NodeStatus.waiting_init) {
       return 'Your node is waiting to be initialized.'
     } else if (node.value.status === NodeStatus.initializing) {
