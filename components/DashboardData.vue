@@ -23,18 +23,15 @@
                           | Not Yet Available
               v-col(cols='12')
                 v-btn(color='info' @click='provisionDashboard' :loading='loading' block).warning--text Create Dashboard
-      v-container(v-else-if='runningDashboard')
-        v-card-actions
-          v-container
-            v-row(justify='center' no-gutters)
-              v-container(v-if='filteredDashboards.length > 0')
-                v-col(cols='12' v-for='(dashboardData, i) in filteredDashboards' :key='dashboardData.dashboard_id')
-                  node-dashboard(:dashboardID='dashboardData.dashboard_id' :includeNodeButton='false')
-                  br
-              v-container(v-else)
-                | You don't have any running Dashboards
-                br
-                a(@click='createNew')  Create a new one
+      v-container(v-else-if='runningDashboard' fluid)
+        v-row(justify='center' no-gutters)
+          v-col(v-if='filteredDashboards.length > 0' cols='12' v-for='(dashboardData, i) in filteredDashboards' :key='dashboardData.dashboard_id')
+            node-dashboard(:dashboardID='dashboardData.dashboard_id' :includeNodeButton='false')
+            br
+          v-col(cols='12' v-else)
+            | You don't have any running Dashboards
+            br
+            a(@click='createNew')  Create a new one
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, onBeforeUnmount } from '@vue/composition-api'
