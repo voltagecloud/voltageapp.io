@@ -1,8 +1,13 @@
 <template>
-  <div ref="container" :syle='containerStyle'>
-    <div :style='contentStyle'>
-      <div :style='visibleStyle'>
-        <slot :items='visibleChildren' />
+  <div
+    style="position: absolute; top: 0; bottom: 0; left: 0; right: 0"
+    ref="outerContainer"
+  >
+    <div :style="containerStyle" ref="containerRef">
+      <div :style="contentStyle">
+        <div :style="visibleStyle">
+          <slot :items="visibleChildren" />
+        </div>
       </div>
     </div>
   </div>
@@ -16,6 +21,8 @@ import {
   onMounted,
   onUnmounted,
 } from "@vue/composition-api";
+import useScrollAware from "~/compositions/useScrollAware";
+import useHeightAware from "~/compositions/useHeightAware";
 
 export default defineComponent({
   name: "VirtualScroll",
@@ -29,8 +36,8 @@ export default defineComponent({
       type: Number,
       required: true,
     },
-    // number value in px
-    padding: {
+    // number of items to pad by
+    renderAhead: {
       type: Number,
       required: false,
       default: 0,
@@ -39,33 +46,20 @@ export default defineComponent({
   setup: (props) => {
     const totalHeight = computed(() => props.height * props.items.length);
 
-    const container = ref<HTMLElement | null>(null);
-    const viewportHeight = ref(0);
-
-    function handleResize() {
-      viewportHeight.value = container.value?.offsetHeight || 0;
-    }
-
-    onMounted(() => {
-      window.addEventListener("resize", handleResize);
-      handleResize();
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("resize", handleResize);
-    });
+    const { containerRef: outerContainer, height } = useHeightAware();
+    const { containerRef, scrollTop } = useScrollAware();
 
     const startNode = computed(() => {
       const start =
-        Math.floor(container.value?.scrollTop || 0 / props.height) -
-        props.padding;
+        Math.floor(scrollTop.value / props.height) - props.renderAhead;
       return Math.max(0, start);
     });
 
     const visibleNodesCount = computed(() => {
       const count =
-        Math.ceil(viewportHeight.value / props.height) + 2 * props.padding;
-      return Math.min(props.items.length - startNode.value, count);
+        Math.ceil(height.value / props.height) + 2 * props.renderAhead;
+      const output = Math.min(props.items.length - startNode.value, count);
+      return output;
     });
 
     const offsetY = computed(() => startNode.value * props.height);
@@ -78,18 +72,28 @@ export default defineComponent({
 
     // computed styles for elements
     const containerStyle = computed(() => ({
-      height: viewportHeight.value,
+      height: `${height.value}px`,
       overflow: "auto",
     }));
     const contentStyle = computed(() => ({
-      height: totalHeight.value,
+      height: `${totalHeight.value}px`,
       overflow: "hidden",
+      position: "relative",
+      willChange: "transform",
     }));
-    const visibleOffset = computed(() => ({
+    const visibleStyle = computed(() => ({
       transform: `translateY(${offsetY.value}px)`,
+      willChange: "transform",
     }));
 
-    return { visibleChildren, containerStyle, contentStyle, visibleOffset };
+    return {
+      visibleChildren,
+      containerStyle,
+      contentStyle,
+      visibleStyle,
+      containerRef,
+      outerContainer,
+    };
   },
 });
 </script>
