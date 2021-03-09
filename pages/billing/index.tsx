@@ -1,10 +1,8 @@
-import { defineComponent, reactive, createElement } from '@vue/composition-api'
-import useNodeApi from '~/compositions/useNodeApi'
+import { defineComponent, reactive } from '@vue/composition-api'
 import { VContainer, VRow, VCol, VCard, VSimpleTable, VChip, VBtn, VProgressCircular } from 'vuetify/lib'
 import { nodeStore } from '~/store'
 import useFetch  from '~/compositions/useFetch'
 
-const h = createElement
 
 interface PurchasedItem { item: string; quantity: number; }
 

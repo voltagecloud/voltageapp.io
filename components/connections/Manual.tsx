@@ -1,15 +1,11 @@
 import {
   defineComponent,
-  createElement,
   PropType,
-  watchEffect,
-  reactive,
   computed
 } from "@vue/composition-api";
 import { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

@@ -1,7 +1,6 @@
-import { defineComponent, createElement } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 import { VCard, VContainer, VRow, VCol } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {

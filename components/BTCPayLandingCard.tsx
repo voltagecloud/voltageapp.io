@@ -1,9 +1,7 @@
-import { defineComponent, createElement, computed } from '@vue/composition-api'
-import { authStore } from '~/store'
+import { defineComponent, computed } from '@vue/composition-api'
 import useFetch from '~/compositions/useFetch'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VImg, VBtn } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {
