@@ -58,20 +58,6 @@ export default function useAuthentication () {
     }
   }
 
-  async function load () {
-    loading.value = true
-    try {
-      const user: CognitoUser | null = await Auth.currentAuthenticatedUser()
-      authStore.SET_USER(user)
-      return user
-    } catch (e) {
-      console.log({ e })
-      error.value = e.message
-    } finally {
-      loading.value = false
-    }
-  }
-
   async function logout () {
     loading.value = true
     await Auth.signOut()

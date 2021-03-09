@@ -1,4 +1,4 @@
-import { defineComponent, computed, reactive, ref } from '@vue/composition-api'
+import { defineComponent, computed, reactive  } from '@vue/composition-api'
 import { nodeStore, authStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions,  VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'

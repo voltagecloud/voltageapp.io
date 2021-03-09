@@ -1,8 +1,4 @@
-import {
-  defineComponent,
-  PropType,
-  reactive,
-} from "@vue/composition-api";
+import { defineComponent, PropType, reactive } from "@vue/composition-api";
 import useNodeApi from "~/compositions/useNodeApi";
 import type { Node } from "~/types/apiResponse";
 
