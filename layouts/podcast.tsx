@@ -1,6 +1,4 @@
-import { defineComponent, createElement } from '@vue/composition-api'
-
-const h = createElement
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   setup: () => {
