@@ -52,7 +52,8 @@ export default defineComponent({
     })
 
     async function finalize () {
-      const valid = refs.form.validate()
+      const form = refs.form as HTMLFormElement
+      const valid = form.validate()
       if (!valid) return
       const emitOutput = {
         xPub: state.xPubString,

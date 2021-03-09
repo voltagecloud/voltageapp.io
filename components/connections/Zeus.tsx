@@ -40,7 +40,7 @@ export default defineComponent({
     const { uri } = useBuildUri({
       endpoint,
       macaroon,
-      cert: ref(false),
+      cert: ref(''),
       api: ref("REST"),
     });
 

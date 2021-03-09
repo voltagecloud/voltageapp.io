@@ -29,7 +29,7 @@ v-card(color='info')
                 v-btn(color='info' @click='closeAndDelete') Yes
                 v-btn(@click='deleteModal = false') No
 
-    slot(name='append-content')
+  slot(name='append-content')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'

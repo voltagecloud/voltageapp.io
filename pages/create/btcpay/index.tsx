@@ -63,7 +63,8 @@ export default defineComponent({
 
     async function validateForm () {
       // return if form is not valid
-      const formValid = refs.form.validate()
+      const form = refs.form as HTMLFormElement
+      const formValid = form.validate()
       if (!formValid ) return
       const keysValid = (state.createKeys === 'generate' && state.walletPayload) || state.createKeys === 'useown'
 

@@ -1,4 +1,4 @@
-import { defineComponent, reactive, computed } from '@vue/composition-api'
+import { defineComponent, reactive, computed, h } from '@vue/composition-api'
 import useAuthentication from '~/compositions/useAuthentication'
 import { authStore } from '~/store'
 import { VBtn, VIcon } from 'vuetify/lib'
