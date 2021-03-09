@@ -1,10 +1,9 @@
-import { defineComponent, createElement, reactive, computed, PropType } from '@vue/composition-api'
+import { defineComponent, reactive, computed, PropType } from '@vue/composition-api'
 import { nodeStore, macaroonStore } from '~/store'
 import { voltageFetch } from '~/utils/fetchClient'
 import { VContainer, VRow, VCol, VBtn, VDialog, VAutocomplete } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'
 
-const h = createElement
 
 interface Props {
   node_name: string;

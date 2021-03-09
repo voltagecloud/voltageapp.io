@@ -1,18 +1,14 @@
 import {
   defineComponent,
-  createElement,
   computed,
   reactive,
 } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
-import { MacaroonType, bakeMacaroon } from "~/utils/bakeMacaroon";
+import { MacaroonType } from "~/utils/bakeMacaroon";
 import { VProgressCircular, VBtn, VCard } from "vuetify/lib";
-import crypto from "crypto-js";
-import { voltageFetch } from "~/utils/fetchClient";
 import useFetch from "~/compositions/useFetch";
 import useBackupMacaroon from "~/compositions/useBackupMacaroon";
 
-const h = createElement;
 
 export default defineComponent({
   components: {

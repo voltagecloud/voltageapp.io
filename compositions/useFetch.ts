@@ -15,7 +15,7 @@ export default function useFetch <T>(endpoint: string) {
       if (json.message) {
         error.value = json.message
       } else {
-        data.value = json as T
+        data.value = json
       }
     } catch (e) {
       error.value = e

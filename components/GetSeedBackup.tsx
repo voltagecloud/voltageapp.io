@@ -1,9 +1,8 @@
-import { defineComponent, createElement, reactive } from '@vue/composition-api'
+import { defineComponent, reactive } from '@vue/composition-api'
 import useFetch from '~/compositions/useFetch'
 import { enc, AES } from 'crypto-js'
 import { VProgressCircular } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {

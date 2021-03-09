@@ -1,10 +1,9 @@
-import { defineComponent, ref, PropType, createElement } from '@vue/composition-api'
+import { defineComponent, ref, PropType } from '@vue/composition-api'
 import { lndStore } from '~/store'
 import useAnimation from '~/compositions/useAnimation'
 import useClipboard from '~/compositions/useClipboard'
 import { VDivider, VFadeTransition, VChip, VBtn, VCard, VCardText, VCardActions, VDialog } from 'vuetify/lib'
 
-const h = createElement
 
 export default defineComponent({
   components: {

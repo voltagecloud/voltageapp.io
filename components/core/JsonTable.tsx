@@ -2,12 +2,10 @@ import {
   defineComponent,
   PropType,
   computed,
-  createElement,
 } from "@vue/composition-api";
 import CopyPill from "~/components/core/CopyPill.vue";
 import { VSimpleTable } from "vuetify/lib";
 
-const h = createElement;
 
 type Primitive = String | Number | Boolean;
 type JsonObject = Record<string, Primitive | JsonArray>;
