@@ -17,7 +17,6 @@ export default defineComponent({
     async function checkout(plan: Subscription) {
       planState.value = Object.assign({}, plan);
       await stripeCheckout('/create/lnd');
-      console.log('stripe promise complete')
     }
 
     return () => (
