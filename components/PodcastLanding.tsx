@@ -1,13 +1,22 @@
 import { defineComponent, ref } from "@vue/composition-api";
 import { VCard, VContainer, VRow, VCol, VSwitch, VCheckbox } from "vuetify/lib";
-import useNodePricing from '~/compositions/useNodePricing'
+import useNodePricing from "~/compositions/useNodePricing";
+import useCart from "~/compositions/useCart";
+import useStripeCheckout from "~/compositions/useStripeCheckout";
+import type { Subscription } from "~/utils/voltageProducts";
 
 export default defineComponent({
   setup: () => {
-    const { litePlan, standardPlan, yearlyBilling } = useNodePricing()
-    const includeBreeze = ref(false);
+    const { litePlan, standardPlan, yearlyBilling } = useNodePricing();
 
-    async function checkout () {
+    const { cart, planState } = useCart();
+
+    const { stripeCheckout } = useStripeCheckout(cart);
+
+    const includeBreeze = ref(false);
+    async function checkout(plan: Subscription) {
+      planState.value = Object.assign({}, plan);
+      await stripeCheckout();
     }
 
     return () => (
@@ -48,19 +57,31 @@ export default defineComponent({
                   </div>
                 </VCheckbox>
               </div>
-              <div class="d-flex flex-row justify-around">
-                <VCard onClick={checkout}>
-                  <div class="d-flex flex-col">
-                    <div class="text-h5">Basic</div>
-                    <div class="text-h6">{litePlan.value.cost}</div>
-                  </div>
-                </VCard>
-                <VCard onClick={checkout}>
-                  <div class="d-flex flex-col">
-                    <div class="text-h5">Premium</div>
-                    <div class="text-h6">{standardPlan.value.cost}</div>
-                  </div>
-                </VCard>
+              <div class="d-flex flex-row justify-space-around">
+                <VCol cols="4">
+                  <VCard
+                    onClick={() => checkout(litePlan.value)}
+                    class="pa-6"
+                    color="secondary"
+                  >
+                    <div class="d-flex flex-column">
+                      <div class="text-h5">Basic</div>
+                      <div class="text-h6">{litePlan.value.cost}</div>
+                    </div>
+                  </VCard>
+                </VCol>
+                <VCol cols="4">
+                  <VCard
+                    onClick={() => checkout(standardPlan.value)}
+                    class="pa-6"
+                    color="secondary"
+                  >
+                    <div class="d-flex flex-column">
+                      <div class="text-h5">Premium</div>
+                      <div class="text-h6">{standardPlan.value.cost}</div>
+                    </div>
+                  </VCard>
+                </VCol>
               </div>
             </VCol>
           </VRow>
