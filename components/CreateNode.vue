@@ -280,14 +280,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
-import useFormValidation from '~/compositions/useFormValidation'
-import useNodeApi from '~/compositions/useNodeApi'
-import { createStore } from '~/store'
+import { defineComponent, computed, ref } from "@vue/composition-api";
+import useFormValidation from "~/compositions/useFormValidation";
+import useFetch from "~/compositions/useFetch";
+import useNodeApi from "~/compositions/useNodeApi";
+import { createStore } from "~/store";
 
 export default defineComponent({
-  name: 'CreateNode',
-  setup (_, { root }) {
+  name: "CreateNode",
+  setup(_, { root }) {
     const {
       valid,
       settings,
@@ -301,210 +302,233 @@ export default defineComponent({
       matchPassword,
       confirmPassword,
       password,
-      showPassword
-    } = useFormValidation()
-    const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(root.$nuxt.context)
+      showPassword,
+    } = useFormValidation();
+    const { dispatch: dispatchPopulate, loading: populating, error: populateError } = useFetch(
+      "/node/populate"
+    );
+    const { populateNode, loading, nodeName: checkNodeName } = useNodeApi(
+      root.$nuxt.context
+    );
 
-    const oppositeColor = computed(() => invertColor(settings.color))
-    const populateError = ref(false)
-    const error = ref('')
-    const configErrorMessage = ref('')
-    const configError = ref(false)
-    const advancedSettings = ref(false)
-    const chosenConfig = ref('Personal Node')
+    const oppositeColor = computed(() => invertColor(settings.color));
+    const error = ref("");
+    const configErrorMessage = ref("");
+    const configError = ref(false);
+    const advancedSettings = ref(false);
+    const chosenConfig = ref("Personal Node");
 
-    function tileSelect (event: any) {
-      chosenConfig.value = event.currentTarget.getAttribute('value')
+    function tileSelect(event: any) {
+      chosenConfig.value = event.currentTarget.getAttribute("value");
       if (chosenConfig.value == "Advanced Configuration") {
-        advancedSettings.value = true
-        settings.alias = ''
-        settings.webhook = ''
-        settings.minchansize = ''
-        settings.maxchansize = ''
-        settings.defaultfeerate = ''
-        configErrorMessage.value = ''
+        advancedSettings.value = true;
+        settings.alias = "";
+        settings.webhook = "";
+        settings.minchansize = "";
+        settings.maxchansize = "";
+        settings.defaultfeerate = "";
+        configErrorMessage.value = "";
       } else {
-        advancedSettings.value = false
-        configErrorMessage.value = ''
+        advancedSettings.value = false;
+        configErrorMessage.value = "";
       }
     }
 
     const nodeName = computed({
       get: () => createStore.nodeName,
-      set: (v: string) => createStore.NODE_NAME(v)
-    })
+      set: (v: string) => createStore.NODE_NAME(v),
+    });
 
     const nodeNetwork = computed(() => {
-      return createStore.network
-    })
+      return createStore.network;
+    });
 
-    const errorMessage = ref('')
+    const errorMessage = ref("");
 
     async function populate() {
-      configError.value = false
-      configErrorMessage.value = ""
+      configError.value = false;
+      configErrorMessage.value = "";
       if (nodeName.value == "") {
-        errorMessage.value = "You must specify a node name."
-        return
+        errorMessage.value = "You must specify a node name.";
+        return;
       }
       if (chosenConfig.value == "") {
-        configError.value = true
-        configErrorMessage.value = "You must select a configuration type."
-        return
+        configError.value = true;
+        configErrorMessage.value = "You must select a configuration type.";
+        return;
       }
       if (password.value == "") {
-        error.value = "You must create a password."
-        return
+        error.value = "You must create a password.";
+        return;
       }
       if (chosenConfig.value !== "Advanced Configuration") {
-        settings.alias = nodeName.value
-        settings.color = "#EF820D"
-        settings.whitelist = settings.whitelist
-        settings.webhook = ''
-        settings.minchansize = ''
-        settings.maxchansize = ''
-        settings.defaultfeerate = ''
-        switch(chosenConfig.value) {
+        settings.alias = nodeName.value;
+        settings.color = "#EF820D";
+        settings.whitelist = settings.whitelist;
+        settings.webhook = "";
+        settings.minchansize = "";
+        settings.maxchansize = "";
+        settings.defaultfeerate = "";
+        switch (chosenConfig.value) {
           case "Personal Node":
-            settings.autopilot = false
-            settings.grpc = true
-            settings.rest = true
-            settings.keysend = true
-            settings.wumbo = false
-            settings.autocompaction = false
-            settings.minchansize = ''
-            settings.maxchansize = ''
-            settings.defaultfeerate = ''
+            settings.autopilot = false;
+            settings.grpc = true;
+            settings.rest = true;
+            settings.keysend = true;
+            settings.wumbo = false;
+            settings.autocompaction = false;
+            settings.minchansize = "";
+            settings.maxchansize = "";
+            settings.defaultfeerate = "";
             break;
           case "Routing Node":
-            settings.autopilot = false
-            settings.grpc = true
-            settings.rest = false
-            settings.keysend = false
-            settings.wumbo = true
-            settings.autocompaction = true
-            settings.minchansize = ''
-            settings.maxchansize = ''
-            settings.defaultfeerate = ''
+            settings.autopilot = false;
+            settings.grpc = true;
+            settings.rest = false;
+            settings.keysend = false;
+            settings.wumbo = true;
+            settings.autocompaction = true;
+            settings.minchansize = "";
+            settings.maxchansize = "";
+            settings.defaultfeerate = "";
             break;
           case "Ecommerce Node":
-            settings.autopilot = false
-            settings.grpc = false
-            settings.rest = true
-            settings.keysend = false
-            settings.wumbo = true
-            settings.autocompaction = true
-            settings.minchansize = ''
-            settings.maxchansize = ''
-            settings.defaultfeerate = ''
+            settings.autopilot = false;
+            settings.grpc = false;
+            settings.rest = true;
+            settings.keysend = false;
+            settings.wumbo = true;
+            settings.autocompaction = true;
+            settings.minchansize = "";
+            settings.maxchansize = "";
+            settings.defaultfeerate = "";
             break;
           case "Development Node":
-            settings.autopilot = (createStore.network == "testnet") ? true : false
-            settings.grpc = true
-            settings.rest = true
-            settings.keysend = true
-            settings.wumbo = false
-            settings.autocompaction = false
-            settings.minchansize = ''
-            settings.maxchansize = ''
-            settings.defaultfeerate = ''
+            settings.autopilot =
+              createStore.network == "testnet" ? true : false;
+            settings.grpc = true;
+            settings.rest = true;
+            settings.keysend = true;
+            settings.wumbo = false;
+            settings.autocompaction = false;
+            settings.minchansize = "";
+            settings.maxchansize = "";
+            settings.defaultfeerate = "";
             break;
           case "Research Node":
-            settings.autopilot = (createStore.network == "testnet") ? true : false
-            settings.grpc = true
-            settings.rest = true
-            settings.keysend = true
-            settings.wumbo = true
-            settings.autocompaction = true
-            settings.minchansize = ''
-            settings.maxchansize = ''
-            settings.defaultfeerate = ''
+            settings.autopilot =
+              createStore.network == "testnet" ? true : false;
+            settings.grpc = true;
+            settings.rest = true;
+            settings.keysend = true;
+            settings.wumbo = true;
+            settings.autocompaction = true;
+            settings.minchansize = "";
+            settings.maxchansize = "";
+            settings.defaultfeerate = "";
             break;
           default:
             break;
         }
       }
       if (settings.webhook !== "") {
-        if (!settings.webhook.includes("http") || !settings.webhook.includes(".")) {
-          configError.value = true
-          configErrorMessage.value = "Please enter a valid URL"
-          return
+        if (
+          !settings.webhook.includes("http") ||
+          !settings.webhook.includes(".")
+        ) {
+          configError.value = true;
+          configErrorMessage.value = "Please enter a valid URL";
+          return;
         }
       }
       // @ts-ignore
-      if (settings.defaultfeerate != "" && isNaN(parseInt(settings.defaultfeerate))) {
-        configError.value = true
-        configErrorMessage.value = "feerate must be a number"
-        return
+      if (
+        settings.defaultfeerate != "" &&
+        isNaN(parseInt(settings.defaultfeerate))
+      ) {
+        configError.value = true;
+        configErrorMessage.value = "feerate must be a number";
+        return;
       }
 
       // @ts-ignore
       if (settings.minchansize != "" && isNaN(parseInt(settings.minchansize))) {
-        configError.value = true
-        configErrorMessage.value = "minchansize must be a number"
-        return
+        configError.value = true;
+        configErrorMessage.value = "minchansize must be a number";
+        return;
       }
       // @ts-ignore
       if (settings.maxchansize != "") {
         if (isNaN(parseInt(settings.maxchansize))) {
-          configError.value = true
-          configErrorMessage.value = "maxchansize must be a number"
-          return
+          configError.value = true;
+          configErrorMessage.value = "maxchansize must be a number";
+          return;
         }
-        let maxSize = parseInt(settings.maxchansize)
+        let maxSize = parseInt(settings.maxchansize);
         if (settings.wumbo) {
           if (maxSize > 1000000000) {
-            configError.value = true
-            configErrorMessage.value = "When Wumbo is enabled, maxchansize can't exceed 1000000000"
-            return
+            configError.value = true;
+            configErrorMessage.value =
+              "When Wumbo is enabled, maxchansize can't exceed 1000000000";
+            return;
           }
         } else {
           if (maxSize > 16777215) {
-            configError.value = true
-            configErrorMessage.value = "When Wumbo is disabled, maxchansize can't exceed  16777215"
-            return
+            configError.value = true;
+            configErrorMessage.value =
+              "When Wumbo is disabled, maxchansize can't exceed  16777215";
+            return;
           }
         }
       }
       if (settings.minchansize != "" && settings.maxchansize != "") {
-        let minSize = parseInt(settings.minchansize)
-        let maxSize = parseInt(settings.maxchansize)
+        let minSize = parseInt(settings.minchansize);
+        let maxSize = parseInt(settings.maxchansize);
         if (minSize > maxSize) {
-          configError.value = true
-          configErrorMessage.value = "minchansize must be smaller than maxchansize"
-          return
+          configError.value = true;
+          configErrorMessage.value =
+            "minchansize must be smaller than maxchansize";
+          return;
         }
       }
-      createStore.SETTINGS(settings)
-      createStore.PASSWORD(password.value)
-      try {
-        const res = await populateNode()
-        root.$router.push(`/node/${createStore.newNodeID}`)
-      } catch (e) {
-        console.log(e)
-        populateError.value = true
+      createStore.SETTINGS(settings);
+      createStore.PASSWORD(password.value);
+      const res = await dispatchPopulate({
+        method: "POST",
+        body: JSON.stringify({
+          node_id: createStore.newNodeID,
+          name: createStore.nodeName,
+          // force sphinx creation as false for now
+          settings: Object.assign(createStore.settings, { sphinx: false }),
+        }),
+      });
+      if (!populateError.value) {
+        root.$router.push(`/node/${createStore.newNodeID}`);
       }
     }
 
-    async function validateName () {
-      if (!nodeName.value) { return }
-      const res = await checkNodeName(nodeName.value, createStore.network)
+    async function validateName() {
+      if (!nodeName.value) {
+        return;
+      }
+      const res = await checkNodeName(nodeName.value, createStore.network);
       if (res.data.taken) {
-        errorMessage.value = 'Node name is already taken'
+        errorMessage.value = "Node name is already taken";
       } else if (!res.data.valid) {
-        errorMessage.value = 'Invalid node name. Must be only letters, numbers, and dashes with less than 42 characters.'
+        errorMessage.value =
+          "Invalid node name. Must be only letters, numbers, and dashes with less than 42 characters.";
       } else {
-        errorMessage.value = ''
+        errorMessage.value = "";
       }
     }
 
     const displayNetwork = computed(() => {
-      const n = createStore.network
-      return n.charAt(0).toUpperCase() + n.slice(1)
-    })
+      const n = createStore.network;
+      return n.charAt(0).toUpperCase() + n.slice(1);
+    });
 
-    const isTrial = computed(() => createStore.trial ? '(trial)' : '')
-    const colWidth = ref(null)
+    const isTrial = computed(() => (createStore.trial ? "(trial)" : ""));
+    const colWidth = ref(null);
 
     return {
       tileSelect,
@@ -515,6 +539,7 @@ export default defineComponent({
       nodeNetwork,
       form,
       loading,
+      populating,
       populateError,
       remove,
       displayNetwork,
@@ -535,8 +560,8 @@ export default defineComponent({
       error,
       configErrorMessage,
       configError,
-      populate
-    }
-  }
-})
+      populate,
+    };
+  },
+});
 </script>
