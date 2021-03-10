@@ -56,7 +56,6 @@ export default defineComponent({
       );
       return subsWithBTCPay.length === 0;
     });
-    console.log({ canPurchaseBTCPay });
 
     const planState = ref<Subscription>(Object.assign(standardPlans[0]));
 
