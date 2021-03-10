@@ -66,6 +66,11 @@ export default defineComponent({
       error: stripeError,
     } = useStripeCheckout(cart);
 
+    async function handleCheckout () {
+      const isBtcPayOnly = planState.value.nodeType === NodeType.btcPay
+      await stripeCheckout(isBtcPayOnly ? '/create/btcpay' : '/create/lnd')
+    }
+
     const canPurchaseBTCPay = computed(() => {
       if (loading.value || !data.value) return false;
       const subsWithBTCPay = data.value.subscriptions.filter(
@@ -237,7 +242,7 @@ export default defineComponent({
                   <v-row>
                     <v-col cols="12" xl="6">
                       <VBtn
-                        onClick={stripeCheckout}
+                        onClick={handleCheckout}
                         loading={
                           loading.value || state.loading || stripeLoading.value
                         }

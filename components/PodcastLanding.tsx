@@ -16,7 +16,8 @@ export default defineComponent({
     const includeBreeze = ref(false);
     async function checkout(plan: Subscription) {
       planState.value = Object.assign({}, plan);
-      await stripeCheckout();
+      await stripeCheckout('/create/lnd');
+      console.log('stripe promise complete')
     }
 
     return () => (
