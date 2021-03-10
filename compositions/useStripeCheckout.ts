@@ -7,7 +7,7 @@ export interface Cart {
     plan: string;
     quantity: number;
     type: string;
-  }[]
+  }[];
 }
 
 export default function useStripeCheckout(cart: Ref<Cart>) {
@@ -16,16 +16,24 @@ export default function useStripeCheckout(cart: Ref<Cart>) {
   const loading = ref(false);
   const error = ref("");
 
-  async function stripeCheckout() {
-    loading.value = true
+  const port = window.location.port ? `:${window.location.port}` : ''
+  const base = `${window.location.protocol}//${window.location.hostname}${port}`
+
+  async function stripeCheckout(path: string) {
+    loading.value = true;
+    const redirect = `${base}${path}`
+    console.log({ redirect })
     try {
       const res = await voltageFetch("/stripe/session", {
         method: "POST",
         body: JSON.stringify({
           items: cart.value.items,
+          redirect
         }),
       });
-      const { session_id } = await res.json();
+      const json = await res.json();
+      console.log({ json });
+      const { session_id } = json;
       const stripe = await stripePromise;
 
       if (!stripe) {
@@ -48,6 +56,6 @@ export default function useStripeCheckout(cart: Ref<Cart>) {
   return {
     loading,
     error,
-    stripeCheckout
-  }
+    stripeCheckout,
+  };
 }
