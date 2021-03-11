@@ -27,9 +27,7 @@ export default defineComponent({
     CreateNode: () => import('~/components/CreateNode.vue')
   },
   setup () {
-    layoutStore.DRAWER(false)
-    layoutStore.SET_TITLE('Create Node')
-    const steps = ref([0, 1])
+    const steps = [0, 1]
     const currentStep = computed({
       get: () => createStore.currentStep,
       set: (v: number) => createStore.STEP(v)
