@@ -1,13 +1,13 @@
 import { computed, ref } from "@vue/composition-api";
 import {
-  NodeType,
   Plan,
+  Product,
   Subscription,
   standardPlans,
 } from "~/utils/voltageProducts";
 
-export default function useCart(initial?: Subscription) {
-  const planState = ref<Subscription>(
+export default function useCart(initial?: Subscription<Plan, Product>) {
+  const planState = ref<Subscription<Plan, Product>>(
     Object.assign({}, initial || standardPlans[0])
   );
 
@@ -18,7 +18,7 @@ export default function useCart(initial?: Subscription) {
   );
 
   const cart = computed(() => {
-    const isBtcPay = planState.value.nodeType === NodeType.btcPay;
+    const isBtcPay = planState.value.nodeType === Product.btcPay;
     const timeMultiplier = planState.value.plan === Plan.monthly ? 1 : 12;
 
     const addonPrice =
@@ -27,7 +27,7 @@ export default function useCart(initial?: Subscription) {
         : 0;
 
     const multiplier =
-      planState.value.nodeType === NodeType.btcPay ? 1 : planQty.value;
+      planState.value.nodeType === Product.btcPay ? 1 : planQty.value;
 
     const totalPrice = (
       timeMultiplier * multiplier * planState.value.cost +
@@ -47,7 +47,7 @@ export default function useCart(initial?: Subscription) {
       items.push({
         plan: btcPayPlanName,
         quantity: 1,
-        type: NodeType.btcPay,
+        type: Product.btcPay,
       });
     }
     return {
