@@ -77,21 +77,20 @@
 import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
 import { nodeStore, createStore } from '~/store'
 import { Network } from '~/types/api'
-import useNodeApi from '~/compositions/useNodeApi'
+import { User } from '~/types/apiResponse'
 
 export default defineComponent({
   setup (_, { root }) {
-    // @ts-ignore
-    const standardCount = nodeStore.user.available_nodes
-    // @ts-ignore
-    const liteCount = nodeStore.user.available_lite_nodes
-    // @ts-ignore
-    const trialCount = nodeStore.user.trial_available ? 1 : 0
-    // @ts-ignore
-    const chosenNetwork = ref(nodeStore.user.trial_available ? "testnet" : "mainnet")
-    // @ts-ignore
-    const nodeAvailable = ref(nodeStore.user.trial_available || nodeStore.user.available_lite_nodes > 0 || nodeStore.user.available_nodes > 0 ? true : false)
-    const { createNode, loading } = useNodeApi(root.$nuxt.context)
+    const userData = computed(() => nodeStore.user as User)
+    const standardCount = computed(() => userData.value.available_nodes)
+    const liteCount = computed(() => userData.value.available_lite_nodes)
+    const trialCount = computed(() => userData.value.trial_available ? 1 : 0)
+    //const standardCount = nodeStore.user.available_nodes
+    //const liteCount = nodeStore.user.available_lite_nodes
+    //const trialCount = nodeStore.user.trial_available ? 1 : 0
+    const chosenNetwork = ref(trialCount.value ? "testnet" : "mainnet")
+    //const nodeAvailable = ref(nodeStore.user.trial_available || nodeStore.user.available_lite_nodes > 0 || nodeStore.user.available_nodes > 0 ? true : false)
+    //const { createNode, loading } = useNodeApi(root.$nuxt.context)
 
     // @ts-ignore
     const chosenType = ref(nodeStore.user.trial_available ? 'trial' : (nodeStore.user.available_lite_nodes > 0 ? 'lite' : 'standard'))
