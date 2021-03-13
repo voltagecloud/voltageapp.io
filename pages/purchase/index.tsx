@@ -16,7 +16,7 @@ import useFetch from "~/compositions/useFetch";
 import useStripeCheckout from "~/compositions/useStripeCheckout";
 import {
   standardPlans,
-  NodeType,
+  Product,
   Subscription,
   litePlans,
   Plan,
@@ -67,7 +67,7 @@ export default defineComponent({
     } = useStripeCheckout(cart);
 
     async function handleCheckout () {
-      const isBtcPayOnly = planState.value.nodeType === NodeType.btcPay
+      const isBtcPayOnly = planState.value.nodeType === Product.btcPay
       await stripeCheckout(isBtcPayOnly ? '/create/btcpay' : '/create/lnd')
     }
 
@@ -81,11 +81,11 @@ export default defineComponent({
       return subsWithBTCPay.length === 0;
     });
 
-    function renderPlans(plans: Subscription[]) {
+    function renderPlans(plans: Subscription<Plan, Product>[]) {
       return plans.map((plan) => {
         const active = planState.value.name === plan.name;
         const disabled =
-          plan.nodeType === NodeType.btcPay && !canPurchaseBTCPay.value;
+          plan.nodeType === Product.btcPay && !canPurchaseBTCPay.value;
         return (
           <v-col cols="12">
             <v-tooltip
@@ -195,7 +195,7 @@ export default defineComponent({
                   <div class="text-h6">Description</div>
                   <div class="text-caption">{planState.value.desc}</div>
                 </div>
-                {planState.value.nodeType !== NodeType.btcPay && (
+                {planState.value.nodeType !== Product.btcPay && (
                   <div>
                     <div class="my-3">
                       <div>Node Quantity:</div>
