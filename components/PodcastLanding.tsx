@@ -59,8 +59,8 @@ export default defineComponent({
                   </div>
                 </VCheckbox>
               </div>
-              <div class="d-flex flex-row justify-space-around">
-                <VCol cols="4">
+              <div class="d-flex flex-row justify-space-around flex-wrap">
+                <VCol cols="12" md="6" lg="4">
                   <VCard
                     onClick={() => checkout(litePlan.value)}
                     class="pa-6"
@@ -68,11 +68,11 @@ export default defineComponent({
                   >
                     <div class="d-flex flex-column">
                       <div class="text-h5">Basic</div>
-                      <div class="text-h6">{litePlan.value?.cost || ''}</div>
+                      <div class="text-h6">${litePlan.value?.cost || ''}/mo</div>
                     </div>
                   </VCard>
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="12" md="6" lg="4">
                   <VCard
                     onClick={() => checkout(standardPlan.value)}
                     class="pa-6"
@@ -80,7 +80,7 @@ export default defineComponent({
                   >
                     <div class="d-flex flex-column">
                       <div class="text-h5">Premium</div>
-                      <div class="text-h6">{standardPlan.value?.cost || ''}</div>
+                      <div class="text-h6">${standardPlan.value?.cost || ''}/mo</div>
                     </div>
                   </VCard>
                 </VCol>
