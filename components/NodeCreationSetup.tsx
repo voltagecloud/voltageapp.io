@@ -13,7 +13,7 @@ import {
 import useNodePricing from "~/compositions/useNodePricing";
 import { Plan, Subscription, Product, subscriptions } from "~/utils/voltageProducts";
 import { Network } from "~/types/api";
-import { createStore } from "~/store";
+import { createStore, nodeStore } from "~/store";
 import PrepayPurchaseCard from '~/components/PrepayPurchaseCard'
 
 export default defineComponent({
@@ -62,7 +62,10 @@ export default defineComponent({
       set: (v: Network) => createStore.NETWORK(v),
     });
 
-    const billingOptions = Object.keys(Plan);
+    const billingOptions = computed(() => Object.keys(Plan).filter(plan => {
+      // only allow trial option if its available on this user
+      return plan !== Plan.trial || nodeStore.user?.trial_available
+    }));
 
     function pricingText(monthlyPrice?: number) {
       if (typeof monthlyPrice !== "undefined") {
@@ -98,21 +101,27 @@ export default defineComponent({
 
     const showPrepayModal = ref(false);
 
+    const availableLiteNodes = computed(() => nodeStore.user?.available_lite_nodes || 0)
+    const availableNodes = computed(() => nodeStore.user?.available_nodes || 0)
+
     async function handleCreation() {
-      if (
-        planState.value.plan === Plan.monthly ||
-        planState.value.plan === Plan.yearly
-      ) {
-        // customer is prepaying, show payment methods
-        console.log('show prepay')
-        showPrepayModal.value = true;
-      } else if (planState.value.plan === Plan.payAsYouGo) {
+      if (planState.value.plan === Plan.payAsYouGo) {
         // handle some pay as you go state
         // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
-        console.log('trial going next')
         emit("next");
+      } else if (planState.value.nodeType === Product.lite && availableLiteNodes.value) {
+        // the user has availalbe nodes purchased of this type, continue to settings
+        console.log(`user has ${availableLiteNodes.value} nodes available`)
+        emit('next')
+      } else if (planState.value.nodeType === Product.standard && availableNodes.value) {
+        // the user has availalbe nodes purchased of this type, continue to settings
+        console.log(`user has ${availableNodes.value} nodes available`)
+        emit('next')
+      } else {
+        // customer is prepaying, show payment methods
+        showPrepayModal.value = true;
       }
     }
 
@@ -148,7 +157,7 @@ export default defineComponent({
               <div class="text-h5 pa-3">Billing Option</div>
               <div class="mx-12">
                 <VSelect
-                  items={billingOptions}
+                  items={billingOptions.value}
                   value={billingCycle.value}
                   onChange={(v: Plan) => handleBillingChange(v)}
                   color="highlight"
