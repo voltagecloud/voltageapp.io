@@ -11,7 +11,7 @@ import {
   VDialog
 } from "vuetify/lib";
 import useNodePricing from "~/compositions/useNodePricing";
-import { Plan, Subscription, Product } from "~/utils/voltageProducts";
+import { Plan, Subscription, Product, subscriptions } from "~/utils/voltageProducts";
 import { Network } from "~/types/api";
 import { createStore } from "~/store";
 import PrepayPurchaseCard from '~/components/PrepayPurchaseCard'
@@ -86,6 +86,7 @@ export default defineComponent({
       selectedNetwork.value = Network.testnet;
       disableMainnet.value = billing === Plan.trial;
       billingCycle.value = billing;
+      planState.value = Object.assign({}, subscriptions.find(sub => sub.plan === billing))
     }
 
     // create logic
@@ -103,12 +104,14 @@ export default defineComponent({
         planState.value.plan === Plan.yearly
       ) {
         // customer is prepaying, show payment methods
+        console.log('show prepay')
         showPrepayModal.value = true;
       } else if (planState.value.plan === Plan.payAsYouGo) {
         // handle some pay as you go state
         // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
+        console.log('trial going next')
         emit("next");
       }
     }
@@ -206,7 +209,7 @@ export default defineComponent({
                   ))}
                 </VRadioGroup>
               </div>
-              {props.btcPayServerToggle && planState.value.plan !== Plan.trial && (
+              {props.btcPayServerToggle && billingCycle.value !== Plan.trial && (
                 <div>
                   <div class="pa-3 text-h5">Include BtcPay Server</div>
                   <div class="d-flex flex-column justify-start ml-12">
