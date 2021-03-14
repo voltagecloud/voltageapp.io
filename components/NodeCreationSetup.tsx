@@ -7,13 +7,28 @@ import {
   VRadioGroup,
   VRadio,
   VSelect,
+  VSwitch,
+  VDialog
 } from "vuetify/lib";
 import useNodePricing from "~/compositions/useNodePricing";
-import useCart from "~/compositions/useCart";
 import { Plan, Subscription, Product } from "~/utils/voltageProducts";
+import { Network } from "~/types/api";
+import { createStore } from "~/store";
+import PrepayPurchaseCard from '~/components/PrepayPurchaseCard'
 
 export default defineComponent({
-  setup: (_, { emit }) => {
+  props: {
+    btcPayServerToggle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    callbackPath: {
+      type: String,
+      required: true
+    }
+  },
+  setup: (props, { emit }) => {
     const lightningSoftwares = [
       {
         img: require("~/assets/lnd-logo.png"),
@@ -32,7 +47,20 @@ export default defineComponent({
       },
     ];
 
-    const { planState, cart, includeBtcPay } = useCart ()
+    const planState = computed({
+      get: () => createStore.planState,
+      set: (v: Subscription<Plan, Product>) => createStore.PLAN_STATE(v),
+    });
+
+    const includeBtcPay = computed({
+      get: () => createStore.includeBtcPay,
+      set: (v: boolean) => createStore.INCLUDE_BTCPAY(v),
+    });
+
+    const selectedNetwork = computed({
+      get: () => createStore.network,
+      set: (v: Network) => createStore.NETWORK(v),
+    });
 
     const billingOptions = Object.keys(Plan);
 
@@ -45,42 +73,43 @@ export default defineComponent({
 
     const { litePlan, standardPlan, billingCycle } = useNodePricing();
 
-
     function handleSelectProduct(subscription?: Subscription<Plan, Product>) {
       if (subscription) {
-        planState.value = Object.assign({}, subscription)
+        planState.value = Object.assign({}, subscription);
       }
     }
 
-    const networks = ["Testnet", "Mainnet"];
-    const selectedNetwork = ref("Testnet");
-    const disableMainnet = ref(false)
+    const networks = Object.keys(Network);
+    const disableMainnet = ref(false);
 
-    function handleBillingChange (billing: Plan) {
-      selectedNetwork.value = "Testnet"
-      disableMainnet.value = billing === Plan.trial
-      billingCycle.value = billing
+    function handleBillingChange(billing: Plan) {
+      selectedNetwork.value = Network.testnet;
+      disableMainnet.value = billing === Plan.trial;
+      billingCycle.value = billing;
     }
 
     // create logic
     const createDisabled = computed(() => {
-      if (!planState.value) return true
-      if (!selectedNetwork.value) return true
-      return false
-    })
+      if (!planState.value) return true;
+      if (!selectedNetwork.value) return true;
+      return false;
+    });
 
-    const showPrepayModal = ref(false)
+    const showPrepayModal = ref(false);
 
-    async function handleCreation ()  {
-
-      if (planState.value.plan === Plan.monthly || planState.value.plan === Plan.yearly) {
+    async function handleCreation() {
+      if (
+        planState.value.plan === Plan.monthly ||
+        planState.value.plan === Plan.yearly
+      ) {
         // customer is prepaying, show payment methods
-        showPrepayModal.value = true
-        // the
+        showPrepayModal.value = true;
       } else if (planState.value.plan === Plan.payAsYouGo) {
         // handle some pay as you go state
+        // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
-        emit('cart', cart.value)
+        // trial does not require store serialization since there is no redirect
+        emit("next");
       }
     }
 
@@ -163,7 +192,7 @@ export default defineComponent({
               <div class="d-flex flex-column justify-start ml-12">
                 <VRadioGroup
                   value={selectedNetwork.value}
-                  onChange={(v: string) => (selectedNetwork.value = v)}
+                  onChange={(v: Network) => (selectedNetwork.value = v)}
                   aria-label="Network"
                 >
                   {networks.map((net) => (
@@ -171,12 +200,25 @@ export default defineComponent({
                       key={net}
                       label={net}
                       value={net}
-                      disabled={net === "Mainnet" && disableMainnet.value}
+                      disabled={net === Network.mainnet && disableMainnet.value}
                       color="highlight"
                     />
                   ))}
                 </VRadioGroup>
               </div>
+              {props.btcPayServerToggle && planState.value.plan !== Plan.trial && (
+                <div>
+                  <div class="pa-3 text-h5">Include BtcPay Server</div>
+                  <div class="d-flex flex-column justify-start ml-12">
+                    <VSwitch
+                      value={includeBtcPay.value}
+                      onChange={(v: boolean) => (includeBtcPay.value = v)}
+                      inset
+                      color="highlight"
+                    />
+                  </div>
+                </div>
+              )}
               <div class="pa-3 text-h5">Region</div>
               <div class="mx-12">
                 <VSelect
@@ -189,13 +231,21 @@ export default defineComponent({
                 />
               </div>
               <div class="pa-3">
-                <VBtn block onClick={handleCreation} disabled={createDisabled.value} >Create Node</VBtn>
+                <VBtn
+                  block
+                  onClick={handleCreation}
+                  disabled={createDisabled.value}
+                >
+                  Create Node
+                </VBtn>
               </div>
             </VCard>
           </VCol>
         </div>
+        <VDialog value={showPrepayModal.value}>
+          <PrepayPurchaseCard callbackPath={props.callbackPath} />
+        </VDialog>
       </VContainer>
     );
   },
 });
-
