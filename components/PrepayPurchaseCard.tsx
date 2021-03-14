@@ -5,16 +5,16 @@ import useStripeCheckout from "~/compositions/useStripeCheckout";
 import useBitcoinCheckout from "~/compositions/useBitcoinCheckout";
 
 enum Checkout {
-  bitcoin = 'bitcoin',
-  stripe = 'stripe'
+  bitcoin = "bitcoin",
+  stripe = "stripe",
 }
 
 export default defineComponent({
   props: {
     callbackPath: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup: (props) => {
     const cart = computed(() => createStore.cart);
@@ -26,12 +26,12 @@ export default defineComponent({
       error: btcError,
     } = useBitcoinCheckout(cart);
 
-    async function handleCheckout (type: Checkout) {
-      createStore.SERIALIZE()
+    async function handleCheckout(type: Checkout) {
+      createStore.SERIALIZE();
       if (type === Checkout.bitcoin) {
-        await confirmBitcoin()
+        await confirmBitcoin();
       } else if (type === Checkout.stripe) {
-        await stripeCheckout(props.callbackPath)
+        await stripeCheckout(props.callbackPath);
       }
     }
 
@@ -48,10 +48,18 @@ export default defineComponent({
               </VListItem>
             ))}
           </VList>
-          <VBtn block onClick={() => handleCheckout(Checkout.stripe)} loading={loading.value}>
+          <VBtn
+            block
+            onClick={() => handleCheckout(Checkout.stripe)}
+            loading={loading.value}
+          >
             Checkout with Card
           </VBtn>
-          <VBtn block onClick={() => handleCheckout(Checkout.bitcoin) } loading={btcLoading.value}>
+          <VBtn
+            block
+            onClick={() => handleCheckout(Checkout.bitcoin)}
+            loading={btcLoading.value}
+          >
             Checkout with Bitcoin
           </VBtn>
           <div class="text--error">{error.value || btcError.value}</div>
