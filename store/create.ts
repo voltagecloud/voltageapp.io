@@ -1,4 +1,4 @@
-import { Module, VuexModule, Mutation } from "vuex-module-decorators";
+import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
 import { Address4, Address6 } from "ip-address";
 import { Network, Settings } from "~/types/api";
 import {
@@ -7,6 +7,7 @@ import {
   Plan,
   Product,
 } from "~/utils/voltageProducts";
+import { voltageFetch } from "~/utils/fetchClient";
 
 export interface Cart {
   items: {
@@ -15,6 +16,8 @@ export interface Cart {
     type: string;
   }[];
 }
+
+type resError = Error | null;
 
 const defaultSettings = {
   autopilot: false,
@@ -46,12 +49,6 @@ export default class CreateModule extends VuexModule {
   network: Network = Network.testnet;
   // is this a trial node
   trial = false;
-  // seed for the lnd wallet
-  seed: string[] = [];
-  // password to encrypt the backup data
-  password: string = "";
-  // should the admin macaroon be backed up on creation
-  macaroon_backup = true;
   // setttings this node should be creatd with
   settings: Settings = Object.assign({}, defaultSettings);
 
@@ -72,16 +69,6 @@ export default class CreateModule extends VuexModule {
   @Mutation
   NODE_NAME(name: string) {
     this.nodeName = name;
-  }
-
-  @Mutation
-  PASSWORD(password: string) {
-    this.password = password;
-  }
-
-  @Mutation
-  MACAROON_BACKUP(v: boolean) {
-    this.macaroon_backup = v;
   }
 
   @Mutation
@@ -181,7 +168,6 @@ export default class CreateModule extends VuexModule {
       nodeName: this.nodeName,
       network: this.network,
       trial: this.trial,
-      macaroon_backup: this.macaroon_backup,
       settings: this.settings,
       nodeId: this.nodeId,
       referralCode: this.referralCode,
@@ -192,16 +178,15 @@ export default class CreateModule extends VuexModule {
     window.localStorage.setItem("createStore", JSON.stringify(data));
   }
 
+  // should be called to mark the node creation as complete and reset the store
   @Mutation
-  CLEAR () {
-    this.nodeName = ''
-    this.trial = false
-    this.macaroon_backup = true
-    this.nodeId = ''
-    this.referralCode = ''
-    this.planState = Object.assign({}, standardPlans[0])
-    this.planQty = 1
-    this.includeBtcPay = false
+  COMPLETE() {
+    // do some cleanup and reset action
+    this.nodeName = "";
+    this.trial = false;
+    this.planState = Object.assign({}, standardPlans[0]);
+    this.planQty = 1;
+    this.includeBtcPay = false;
   }
 
   @Mutation
@@ -212,12 +197,99 @@ export default class CreateModule extends VuexModule {
     this.nodeName = js.nodeName;
     this.network = js.network;
     this.trial = js.trial;
-    this.macaroon_backup = js.macaroon_backup;
     this.settings = js.settings;
     this.nodeId = js.nodeId;
     this.referralCode = js.referralCode;
     this.planState = js.planState;
     this.planQty = js.planQty;
     this.includeBtcPay = js.includeBtcPay;
+  }
+
+  populateError: resError = null;
+
+  @Mutation
+  POPULATE_ERROR({ error }: { error?: resError }) {
+    this.populateError = error || null;
+  }
+
+  // action to populate a newly created node with settings
+  @Action
+  async dispatchPopulate() {
+    if (!this.nodeId) {
+      this.POPULATE_ERROR({
+        error: Error("This node has not been created yet"),
+      });
+      return;
+    }
+    if (!this.nodeName) {
+      this.POPULATE_ERROR({ error: Error("You must provide a node name") });
+      return;
+    }
+    const res = await voltageFetch("/node/populate", {
+      method: "POST",
+      body: JSON.stringify({
+        node_id: this.nodeId,
+        name: this.nodeName,
+        // force sphinx creation as false for now
+        settings: Object.assign({}, this.settings, { sphinx: false }),
+      }),
+    });
+    const js = await res.json();
+    if (!res.ok) {
+      this.POPULATE_ERROR({ error: Error(js.message) });
+      return;
+    } else {
+      this.POPULATE_ERROR({});
+    }
+  }
+
+  // this is the string type required by the /node/create api
+  get createType() {
+    if (this.trial) return "trial";
+    if (this.planState.nodeType === Product.lite) return "lite";
+    if (this.planState.nodeType === Product.standard) return "standard";
+    return "";
+  }
+
+  createError: resError = null;
+
+  @Mutation
+  CREATE_ERROR({ error }: { error?: resError }) {
+    this.createError = error || null;
+  }
+
+  // action to /create the node
+  @Action
+  async dispatchCreate() {
+    if (!this.network) {
+      this.CREATE_ERROR({ error: Error("Bitcoin network is not selected") });
+      return;
+    }
+    if (!this.createType) {
+      this.CREATE_ERROR({ error: Error("The node type is not selected") });
+      return;
+    }
+    const res = await voltageFetch("/node/create", {
+      method: "POST",
+      body: JSON.stringify({
+        network: this.network,
+        purchased_type: this.trial ? "trial" : "paid",
+        type: this.createType,
+      }),
+    });
+    const js = await res.json();
+    // handle error
+    if (!res.ok) {
+      console.error(js);
+      this.CREATE_ERROR({ error: Error(js.message) });
+      return;
+    } else {
+      // set the node id in this store from response
+      this.NODE_ID(js.node_id);
+      // autofill the users ip from response
+      this.AUTOFILL_WHITELIST(js.user_ip);
+      // set the create error to null
+      this.CREATE_ERROR({});
+    }
   }
 }
