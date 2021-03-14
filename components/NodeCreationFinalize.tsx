@@ -1,5 +1,6 @@
 import { defineComponent, computed, ref } from "@vue/composition-api";
-import { VCard, VContainer, VCol, VTextField, VIcon } from "vuetify/lib";
+import { useRouter } from '@nuxtjs/composition-api'
+import { VCard, VContainer, VCol, VTextField, VIcon, VBtn } from "vuetify/lib";
 import { createStore } from "~/store";
 import { useConfirmPassword } from "~/compositions/useConfirmPassword";
 
@@ -10,7 +11,7 @@ export default defineComponent({
       set: (v: string) => createStore.NODE_NAME(v),
     });
 
-    const nameError = ref("");
+    const createError = computed(() => createStore.createError || createStore.populateError)
 
     const {
       password,
@@ -21,6 +22,28 @@ export default defineComponent({
       showPassword,
       validate,
     } = useConfirmPassword();
+
+    const router = useRouter()
+
+    const message = ref('')
+    async function createNode () {
+      const passwordValid = validate()
+      if (!passwordValid) return
+
+      message.value = 'Creating Node'
+      await createStore.dispatchCreate()
+      message.value = ''
+
+      if (createStore.createError) return
+
+      message.value = 'Populating node settings'
+      await createStore.dispatchPopulate()
+      message.value = ''
+
+      if (!createStore.populateError) {
+        router.push(`/node/${createStore.nodeId}`)
+      }
+    }
 
     return () => (
       <VContainer>
@@ -35,9 +58,6 @@ export default defineComponent({
                   value={nodeName.value}
                   onInput={(v: string) => (nodeName.value = v)}
                 />
-                {nameError.value && (
-                  <div class="text--error">{nameError.value}</div>
-                )}
               </div>
               <div class="text-h5 pa-3">Node Password</div>
               <div class="mx-12 d-flex flex-column">
@@ -62,6 +82,11 @@ export default defineComponent({
                   onInput={handleConfirm}
                   type={inputType.value}
                 />
+              </div>
+              <div class="mx-12 pb-3">
+                <VBtn block onClick={createNode} loading={!!message.value}>Create Node</VBtn>
+                <div>{message.value}</div>
+                <div class="error--text">{createError.value?.message || ''}</div>
               </div>
             </VCard>
           </VCol>
