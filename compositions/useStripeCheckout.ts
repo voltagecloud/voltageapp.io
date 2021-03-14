@@ -1,16 +1,10 @@
-import { ref, Ref } from "@vue/composition-api";
+import { ref, ComputedRef } from "@vue/composition-api";
 import { loadStripe } from "@stripe/stripe-js";
 import { voltageFetch } from "~/utils/fetchClient";
+import type { Cart } from '~/store/create'
 
-export interface Cart {
-  items: {
-    plan: string;
-    quantity: number;
-    type: string;
-  }[];
-}
 
-export default function useStripeCheckout(cart: Ref<Cart>) {
+export default function useStripeCheckout(cart: ComputedRef<Cart>) {
   const stripePromise = loadStripe(process.env.stripeKey as string);
 
   const loading = ref(false);
@@ -32,7 +26,6 @@ export default function useStripeCheckout(cart: Ref<Cart>) {
         }),
       });
       const json = await res.json();
-      console.log({ json });
       const { session_id } = json;
       const stripe = await stripePromise;
 
