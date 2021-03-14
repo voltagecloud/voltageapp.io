@@ -33,7 +33,6 @@ export default defineComponent({
       set: (v: number) => createStore.STEP(v)
     })
     currentStep.value = 0
-    createStore.SEED([])
     const currentComponent = computed(() => {
       if (currentStep.value === 0) {
         return 'create-type'
