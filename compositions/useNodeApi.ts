@@ -1,3 +1,5 @@
+// TODO this file is deprecated, it should be slowly removed from the project
+// use the voltageFetch client instead
 import { Context } from '@nuxt/types'
 import { ref } from '@vue/composition-api'
 import { createStore, nodeStore, exportsStore, dashboardsStore } from '~/store'
@@ -7,7 +9,9 @@ import { Settings, Network, ExportData } from '~/types/api'
 export default function useNodeApi ({ $axios, error }: Context) {
   const loading = ref(false)
 
+  // DEPRECTED
   async function createNode () {
+    /*
     loading.value = true
     try {
       const node = await $axios.post<CreateNode>(
@@ -26,9 +30,12 @@ export default function useNodeApi ({ $axios, error }: Context) {
     } finally {
       loading.value = false
     }
+    */
   }
 
+  // DEPRECATED
   async function populateNode () {
+    /*
     loading.value = true
     try {
       const node = await $axios.post<PopulateNode>(
@@ -48,6 +55,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
     } finally {
       loading.value = false
     }
+    */
   }
 
   async function postNode (id:string) {
