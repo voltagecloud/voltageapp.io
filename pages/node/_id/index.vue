@@ -316,7 +316,6 @@ export default defineComponent({
             }),
           });
         }
-        createStore.WIPE_PASSWORD();
         res.data = {};
         seed.data = {};
         await sleep(4000);

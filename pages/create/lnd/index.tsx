@@ -9,7 +9,7 @@ export default defineComponent({
     const currentStep = ref(route.value.query.session_id ? 1 : 0)
 
     return () => <div>
-      {currentStep.value === 0 ? <NodeCreationSetup btcPayServerToggle /> : ''}
+      {currentStep.value === 0 ? <NodeCreationSetup btcPayServerToggle callbackPath='/create/lnd' /> : ''}
     </div>
   }
 })
