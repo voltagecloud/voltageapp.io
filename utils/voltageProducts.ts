@@ -115,3 +115,6 @@ export const btcPayOnlyPlans: [
     nodeType: Product.btcPay,
   },
 ];
+
+export const subscriptions = [...litePlans, ...standardPlans, ...btcPayOnlyPlans]
+
