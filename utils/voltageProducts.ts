@@ -11,6 +11,7 @@ export enum Product {
   lite = "lite",
   standard = "standard",
   btcPay = "btcpayserver",
+  podcast = "podcast"
 }
 
 export interface Subscription<Plan, Product> {
@@ -116,5 +117,25 @@ export const btcPayOnlyPlans: [
   },
 ];
 
-export const subscriptions = [...litePlans, ...standardPlans, ...btcPayOnlyPlans]
+export const podcastPlans: [
+  Subscription<Plan.yearly, Product.podcast>,
+  Subscription<Plan.monthly, Product.podcast>
+] = [
+  {
+    desc: "Podcasting node with inbound Breez channel. Billed at a yearly interval",
+    name: "Podcast Node/1Yr",
+    cost: 9.99,
+    plan: Plan.yearly,
+    nodeType: Product.podcast
+  },
+  {
+    desc: "Podcasting node with inbound Breez channel. Billed at a monthly interval",
+    name: "Podcast Node/1Mo",
+    cost: 12.99,
+    plan: Plan.monthly,
+    nodeType: Product.podcast
+  }
+]
+
+export const subscriptions = [...litePlans, ...standardPlans, ...btcPayOnlyPlans, ...podcastPlans]
 
