@@ -52,6 +52,8 @@ export default class CreateModule extends VuexModule {
   // setttings this node should be creatd with
   settings: Settings = Object.assign({}, defaultSettings);
 
+  password: string = ''
+
   // Id of the node which is returned at the /create call
   nodeId = "";
 
@@ -114,6 +116,11 @@ export default class CreateModule extends VuexModule {
   @Mutation
   INCLUDE_BTCPAY(include: boolean) {
     this.includeBtcPay = include;
+  }
+
+  @Mutation
+  PASSWORD (v: string) {
+    this.password = v
   }
 
   get btcPayAddonMonthly() {
