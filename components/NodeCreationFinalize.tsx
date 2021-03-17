@@ -11,6 +11,9 @@ export default defineComponent({
       set: (v: string) => createStore.NODE_NAME(v),
     });
 
+    // fill createStore
+    createStore.DESERIALIZE()
+
     const createError = computed(() => createStore.createError || createStore.populateError)
 
     const {
