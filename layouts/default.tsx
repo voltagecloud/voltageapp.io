@@ -100,16 +100,6 @@ export default defineComponent({
       },
     ];
 
-    // these buttons are considered deprecated and should be remove when setup flow is redone
-    const deprecatedButtons: { text: string; to: string; icon: string }[] = [
-      {
-        text: "Purchase",
-        to: "/purchase",
-        icon: "mdi-currency-usd-circle-outline",
-      },
-      { text: "Create", to: "/create/lnd", icon: "mdi-plus" },
-    ];
-
     return () => {
       const btnContent = () => (
         <div>
@@ -168,16 +158,6 @@ export default defineComponent({
                   <VIcon>mdi-account</VIcon>
                 </v-list-item-action>
               </v-list-item>
-              {deprecatedButtons.map((e) => (
-                <v-list-item to={e.to}>
-                  <v-list-item-title>{e.text}</v-list-item-title>
-                  <v-list-item-action>
-                    {/*
-              // @ts-ignore */}
-                    <VIcon>{e.icon}</VIcon>
-                  </v-list-item-action>
-                </v-list-item>
-              ))}
             </v-list>
             {list()}
           </v-navigation-drawer>
@@ -199,14 +179,6 @@ export default defineComponent({
                 >
                   {elem.text}
                 </v-tab>
-              ))}
-              {deprecatedButtons.map((e) => (
-                <div class="d-none d-md-flex flex-column justify-center">
-                  <VBtn text to={e.to}>
-                    {e.text}
-                    <VIcon>{e.icon}</VIcon>
-                  </VBtn>
-                </div>
               ))}
             </v-tabs>
             {isBig.value ? (
