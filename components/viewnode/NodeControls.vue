@@ -32,53 +32,61 @@ v-card(color='info')
   slot(name='append-content')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
-import useNodeControls from '~/compositions/useNodeControls'
-import useNodeStatus from '~/compositions/useNodeStatus'
-import useNodeApi from '~/compositions/useNodeApi'
-import { nodeStore } from '~/store'
+import { defineComponent, computed, ref } from "@vue/composition-api";
+import useNodeControls from "~/compositions/useNodeControls";
+import useNodeStatus from "~/compositions/useNodeStatus";
+import { nodeStore } from "~/store";
+import type { Node } from "~/types/apiResponse";
 
 export default defineComponent({
   props: {
     nodeID: {
       type: String,
-      required: true
-    }
-  },
-  async fetch () {
-    // @ts-ignore
-    const ctx = this.$nuxt.context
-    const { postNode } = useNodeApi(ctx)
-    // @ts-ignore
-    await postNode(this.nodeID)
+      required: true,
+    },
   },
   components: {
-    ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
+    ChooseMacaroon: () => import("~/components/ChoooseMacaroon.vue"),
   },
-  setup (props, { root }) {
-    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
+  setup(props, { root }) {
+    const nodeData = computed<Readonly<Node>>(
+      () =>
+        nodeStore.nodes.find(
+          (nodeObj) => nodeObj.node_id === props.nodeID
+        ) as Node
+    );
 
-    function navigate () {
-      if (root.$route.name !== 'node-id') {
-        root.$router.push(`/node/${nodeData.value.node_id}`)
+    function navigate() {
+      if (root.$route.name !== "node-id") {
+        root.$router.push(`/node/${nodeData.value.node_id}`);
       }
     }
 
-    const deleteModal = ref(false)
+    const deleteModal = ref(false);
 
-    const { canStart, canStop, canDelete, canConnect } = useNodeStatus(nodeData)
+    const { canStart, canStop, canDelete, canConnect } = useNodeStatus(
+      nodeData
+    );
 
-    const { deleteNode, startNode, stopNode, connect, loading } = useNodeControls(nodeData, root.$nuxt.context)
+    const {
+      deleteNode,
+      startNode,
+      stopNode,
+      connect,
+      loading,
+    } = useNodeControls(nodeData, root.$nuxt.context);
 
-    async function closeAndDelete () {
-      deleteModal.value = false
-      await deleteNode()
+    async function closeAndDelete() {
+      deleteModal.value = false;
+      await deleteNode();
     }
 
     const networkText = computed(() => {
-      if (!nodeData.value) return '...'
-      return `${nodeData.value.network } - ${ nodeData.value.purchased_type=='trial' ? 'Trial' : nodeData.value.type }`
-    })
+      if (!nodeData.value) return "...";
+      return `${nodeData.value.network} - ${
+        nodeData.value.purchased_type == "trial" ? "Trial" : nodeData.value.type
+      }`;
+    });
 
     return {
       canStart,
@@ -93,8 +101,8 @@ export default defineComponent({
       stopNode,
       connect,
       loading,
-      networkText
-    }
-  }
-})
+      networkText,
+    };
+  },
+});
 </script>
