@@ -42,9 +42,15 @@ export default defineComponent({
       required: false,
       default: 0,
     },
+    // extra spaces to render for non-item content
+    extra: {
+      type: Number,
+      required: false,
+      default: 0
+    }
   },
   setup: (props) => {
-    const totalHeight = computed(() => props.height * props.items.length);
+    const totalHeight = computed(() => props.height * (props.items.length * props.extra));
 
     const { containerRef: outerContainer, height } = useHeightAware();
     const { containerRef, scrollTop } = useScrollAware();
