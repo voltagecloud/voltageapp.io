@@ -194,6 +194,9 @@ export default class CreateModule extends VuexModule {
     this.planState = Object.assign({}, standardPlans[0]);
     this.planQty = 1;
     this.includeBtcPay = false;
+    this.nodeId = ''
+    this.referralCode = ''
+    window.localStorage.removeItem('createStore')
   }
 
   @Mutation
@@ -253,9 +256,7 @@ export default class CreateModule extends VuexModule {
   // this is the string type required by the /node/create api
   get createType() {
     if (this.trial) return "trial";
-    if (this.planState.nodeType === Product.lite) return "lite";
-    if (this.planState.nodeType === Product.standard) return "standard";
-    return "";
+    return this.planState.nodeType;
   }
 
   createError: resError = null;
@@ -282,6 +283,8 @@ export default class CreateModule extends VuexModule {
         network: this.network,
         purchased_type: this.trial ? "trial" : "paid",
         type: this.createType,
+        // pass the custom podcast role if this is a podcast node
+        custom_roles: this.createType === Product.podcast ? ["podcast"] : undefined
       }),
     });
     const js = await res.json();
