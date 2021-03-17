@@ -115,21 +115,21 @@ export default defineComponent({
             // @ts-ignore
             createStore.NODE_TYPE({ network: Network.testnet, trial: true, type: chosenType.value })
             await createNode()
-            createStore.STEP(1)
+            //createStore.STEP(1)
             window.scrollTo(0,0)
           // @ts-ignore
           } else if (chosenType.value == "standard" && nodeStore.user.available_nodes > 0) {
             // @ts-ignore
             createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
             await createNode()
-            createStore.STEP(1)
+            //createStore.STEP(1)
             window.scrollTo(0,0)
           // @ts-ignore
           } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
             // @ts-ignore
             createStore.NODE_TYPE({ network: Network.testnet, trial: false, type: chosenType.value })
             await createNode()
-            createStore.STEP(1)
+            //createStore.STEP(1)
             window.scrollTo(0,0)
           } else {
             root.$router.push('/purchase')
@@ -140,14 +140,14 @@ export default defineComponent({
             // @ts-ignore
             createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
             await createNode()
-            createStore.STEP(1)
+            //createStore.STEP(1)
             window.scrollTo(0,0)
           // @ts-ignore
           } else if (chosenType.value == "lite" && nodeStore.user.available_lite_nodes > 0) {
             // @ts-ignore
             createStore.NODE_TYPE({ network: Network.mainnet, trial: false, type: chosenType.value })
             await createNode()
-            createStore.STEP(1)
+            //createStore.STEP(1)
             window.scrollTo(0,0)
           } else {
             root.$router.push('/purchase')
