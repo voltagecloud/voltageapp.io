@@ -397,7 +397,8 @@ export default defineComponent({
       createStore.DESERIALIZE();
       if (
         createStore.planState.nodeType === Product.podcast &&
-        createStore.referralCode
+        createStore.referralCode &&
+        createStore.nodeId === nodeData.value.node_id
       ) {
         const info = await fetch(
           `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
@@ -411,19 +412,21 @@ export default defineComponent({
         );
         // get pubkey from getinfo call
         const { identity_pubkey: pubkey } = await info.json();
-        const res = await voltageFetch('/_custom/podcast', {
-          method: 'POST',
+        const res = await voltageFetch("/_custom/podcast", {
+          method: "POST",
           body: JSON.stringify({
             pubkey,
             podcast_id: createStore.referralCode,
-            URI: nodeData.value.api_endpoint
-          })
-        })
-          // we are now done with create store data and it should be cleared
-        if (res.ok) { createStore.COMPLETE() }
+            URI: nodeData.value.api_endpoint,
+          }),
+        });
+        // we are now done with create store data and it should be cleared
+        if (res.ok) {
+          createStore.COMPLETE();
+        }
       } else {
         // store doent hold podcast data, its safe to clear
-        createStore.COMPLETE()
+        createStore.COMPLETE();
       }
     }
 
