@@ -124,11 +124,11 @@ import useFormValidation from "~/compositions/useFormValidation";
 import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
 import Network from "~/components/viewnode/Network";
-import usePodcastReferral from "~/compositions/usePodcastReferral";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import { voltageFetch } from "~/utils/fetchClient";
-import { NodeStatus } from '~/types/api'
+import { NodeStatus } from "~/types/api";
+import { Product } from "~/utils/voltageProducts";
 
 export default defineComponent({
   components: {
@@ -242,12 +242,6 @@ export default defineComponent({
           type: MacaroonType.admin,
         }).macaroonHex
     );
-    // apply watchers to macaroon state if podcast code is present
-    usePodcastReferral({
-      macaroonHex,
-      nodeId: ctx.root.$route.params.id,
-      podcastCode: createStore.referralCode,
-    });
 
     async function initialize() {
       lndStore.CURRENT_NODE(nodeData.value);
@@ -399,6 +393,40 @@ export default defineComponent({
       ctx.root.$nuxt.$router.go();
     }
 
+    async function verifyPodcastReferral() {
+      createStore.DESERIALIZE();
+      if (
+        createStore.planState.nodeType === Product.podcast &&
+        createStore.referralCode
+      ) {
+        const info = await fetch(
+          `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Grpc-Metadata-macaroon": macaroonHex.value,
+              "Content-Type": "application/json",
+            }),
+          }
+        );
+        // get pubkey from getinfo call
+        const { identity_pubkey: pubkey } = await info.json();
+        const res = await voltageFetch('/_custom/podcast', {
+          method: 'POST',
+          body: JSON.stringify({
+            pubkey,
+            podcast_id: createStore.referralCode,
+            URI: nodeData.value.api_endpoint
+          })
+        })
+          // we are now done with create store data and it should be cleared
+        if (res.ok) { createStore.COMPLETE() }
+      } else {
+        // store doent hold podcast data, its safe to clear
+        createStore.COMPLETE()
+      }
+    }
+
     // clear errors on typing in password field
     watch(nodePassword, () => {
       error.value = "";
@@ -406,8 +434,11 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
-    watch(status, (newStatus: string|NodeStatus) => {
-      if (newStatus === NodeStatus.initializing || newStatus === NodeStatus.provisioning) {
+    watch(status, (newStatus: string | NodeStatus) => {
+      if (
+        newStatus === NodeStatus.initializing ||
+        newStatus === NodeStatus.provisioning
+      ) {
         nodeCreating.value = true;
         createText.value = newStatus;
       } else {
@@ -420,6 +451,8 @@ export default defineComponent({
       }
       if (newStatus === NodeStatus.running) {
         createText.value = "complete";
+        // determine if this podcast node needs to send pubkey
+        verifyPodcastReferral();
       }
     });
 
