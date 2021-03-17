@@ -9,7 +9,7 @@ export default defineComponent({
   setup: () => {
     const displayContent = computed(() => {
       //TEMP
-      return <PodcastLandingCard />
+      //return <PodcastLandingCard />
       if (nodeStore.IDNames.length) {
         return <NodeListView />
       } else if (createStore.referralCode) {
