@@ -496,14 +496,14 @@ export default defineComponent({
       const res = await dispatchPopulate({
         method: "POST",
         body: JSON.stringify({
-          node_id: createStore.newNodeID,
+          node_id: createStore.nodeId,
           name: createStore.nodeName,
           // force sphinx creation as false for now
           settings: Object.assign(createStore.settings, { sphinx: false }),
         }),
       });
       if (!populateError.value) {
-        root.$router.push(`/node/${createStore.newNodeID}`);
+        root.$router.push(`/node/${createStore.nodeId}`);
       }
     }
 
