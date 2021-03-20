@@ -4,12 +4,12 @@ import {
   computed,
   ref,
   watchEffect,
+  ComputedRef,
 } from "@vue/composition-api";
 import { VContainer, VBtn } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
-import { MacaroonType } from "~/utils/bakeMacaroon";
-
+import SlottedREST from "~/components/viewnode/SlottedREST";
 
 export default defineComponent({
   components: {
@@ -23,37 +23,45 @@ export default defineComponent({
       type: Object as PropType<Node>,
       required: true,
     },
+    macaroon: {
+      type: Object as PropType<
+        ComputedRef<ReturnType<typeof macaroonStore.macaroonState>>
+      >,
+      required: true,
+    },
+    meta: {
+      type: Object as PropType<
+        ComputedRef<ReturnType<typeof macaroonStore.findNodeMeta>>
+      >,
+      required: true,
+    },
   },
   setup: (props) => {
-    const adminMacaroon = computed(() =>
-      macaroonStore.macaroonState({
-        nodeId: props.node.node_id,
-        type: MacaroonType.admin,
-      })
-    );
-
-    const endpoint = computed(
-      () => macaroonStore.findNodeMeta({ nodeId: props.node.node_id })?.endpoint
-    );
-
     const payload = ref<Record<string, any>>({});
     const responseError = ref("");
 
     function canFetch() {
-      return props.node.status === "running" && adminMacaroon.value.macaroonHex;
+      return (
+        props.node.status === "running" &&
+        props.macaroon.value.macaroonHex &&
+        props.meta.value?.endpoint
+      );
     }
 
     async function getNetworkInfo() {
       if (!canFetch()) return;
 
       try {
-        const res = await fetch(`https://${endpoint.value}:8080/v1/getinfo`, {
-          method: "GET",
-          headers: new Headers({
-            "Grpc-Metadata-macaroon": adminMacaroon.value.macaroonHex,
-            "Content-Type": "application/json",
-          }),
-        });
+        const res = await fetch(
+          `https://${props.meta.value?.endpoint}:8080/v1/getinfo`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "Grpc-Metadata-macaroon": props.macaroon.value.macaroonHex,
+              "Content-Type": "application/json",
+            }),
+          }
+        );
         const json = await res.json();
         payload.value = {
           "Identity Pubkey": json.identity_pubkey,
@@ -74,47 +82,12 @@ export default defineComponent({
     }
 
     watchEffect(async () => {
-      if (!adminMacaroon.value.macaroonHex) return;
+      if (!props.macaroon.value.macaroonHex) return;
       await getNetworkInfo();
     });
 
-    function handlePassword(password: string) {
-      macaroonStore.FETCH_MACAROON({
-        nodeId: props.node.node_id,
-        macaroonType: MacaroonType.admin,
-        password,
-      });
-    }
-
     return () => {
-      if (props.node.status !== "running") {
-        return (
-          <v-container class="text-center">
-            <div>
-              This not is not running. Your node must be running to retrieve
-              this info
-            </div>
-          </v-container>
-        );
-      } else if (!props.node.settings.rest) {
-        return (
-          <v-container class="text-center">
-            <div>
-              This node does not have the REST api enabled. You must enable REST
-              to view network information inside Voltage
-            </div>
-            <v-btn onClick={getNetworkInfo}>Retry</v-btn>
-          </v-container>
-        );
-      } else if (!adminMacaroon.value.macaroonHex) {
-        return (
-          <node-password-input
-            onDone={handlePassword}
-            text={"Decrypt Macaroon"}
-            error={adminMacaroon.value.error}
-          />
-        );
-      } else if (Object.keys(payload.value).length > 0) {
+      if (Object.keys(payload.value).length > 0) {
         return (
           <v-container>
             <json-table data={() => payload.value} />
