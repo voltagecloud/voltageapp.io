@@ -123,7 +123,7 @@ import useNodeApi from "~/compositions/useNodeApi";
 import useFormValidation from "~/compositions/useFormValidation";
 import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
-import Network from "~/components/viewnode/Network";
+import WrappedNetwork from "~/components/viewnode/WrappedNetwork";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import { voltageFetch } from "~/utils/fetchClient";
@@ -137,7 +137,7 @@ export default defineComponent({
     NodeSettings: () => import("~/components/viewnode/NodeSettings.vue"),
     ExportData: () => import("~/components/ExportData.vue"),
     DashboardData: () => import("~/components/DashboardData.vue"),
-    Network,
+    WrappedNetwork,
     ConnectTab: () => import("~/components/viewnode/Connect"),
     Logs: () => import("~/components/viewnode/Logs.vue"),
     CoreDialog: () => import("~/components/core/Dialog.vue"),
