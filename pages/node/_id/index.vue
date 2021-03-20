@@ -47,7 +47,7 @@ v-container
                   core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
                     export-data(:nodeID='nodeID' :nodeStatus='status')
               v-tab-item
-                network(:node='nodeData')
+                WrappedNetwork(:node='nodeData')
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
