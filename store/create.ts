@@ -282,7 +282,7 @@ export default class CreateModule extends VuexModule {
       body: JSON.stringify({
         network: this.network,
         purchased_type: this.trial ? "trial" : "paid",
-        type: this.createType,
+        type: this.createType === Product.podcast ? "lite" : this.createType,
         // pass the custom podcast role if this is a podcast node
         custom_roles: this.createType === Product.podcast ? ["podcast"] : undefined
       }),
