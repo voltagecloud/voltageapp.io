@@ -3,7 +3,6 @@ import {
   defineComponent,
   PropType,
   computed,
-  ComputedRef,
 } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
@@ -11,6 +10,9 @@ import type { Node } from "~/types/apiResponse";
 import useFetch from "~/compositions/useFetch";
 
 export default defineComponent({
+  components: {
+    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
+  },
   props: {
     node: {
       type: Object as PropType<Node>,
