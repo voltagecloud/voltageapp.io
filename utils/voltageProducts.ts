@@ -124,14 +124,14 @@ export const podcastPlans: [
   {
     desc: "Podcasting node with inbound Breez channel. Billed at a yearly interval",
     name: "Podcast Node/1Yr",
-    cost: 9.99,
+    cost: 14.99,
     plan: Plan.yearly,
     nodeType: Product.podcast
   },
   {
     desc: "Podcasting node with inbound Breez channel. Billed at a monthly interval",
     name: "Podcast Node/1Mo",
-    cost: 12.99,
+    cost: 17.99,
     plan: Plan.monthly,
     nodeType: Product.podcast
   }
