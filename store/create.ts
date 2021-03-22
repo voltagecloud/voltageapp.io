@@ -46,7 +46,7 @@ export default class CreateModule extends VuexModule {
   // what the voltage name of the node should be
   nodeName: string = "";
   // what bitcoin network to create the node on
-  network: Network = Network.testnet;
+  network: Network = Network.mainnet;
   // is this a trial node
   trial = false;
   // setttings this node should be creatd with
