@@ -22,14 +22,14 @@ export default defineComponent({
           macaroon,
           meta,
         }: {
-          macaroon: ComputedRef<ReturnType<typeof macaroonStore.macaroonState>>;
-          meta: ComputedRef<ReturnType<typeof macaroonStore.findNodeMeta>>;
+          macaroon: ReturnType<typeof macaroonStore.macaroonState>;
+          meta: ReturnType<typeof macaroonStore.findNodeMeta>;
         }) => JSX.Element
       >,
       required: true,
     },
   },
-  setup: (props, { emit }) => {
+  setup: (props) => {
     const adminMacaroon = computed(() =>
       macaroonStore.macaroonState({ nodeId: props.node.node_id, type: "admin" })
     );
@@ -83,7 +83,7 @@ export default defineComponent({
         );
       } else {
         // render child component
-        return props.child({ macaroon: adminMacaroon, meta: nodeMeta });
+        return props.child({ macaroon: adminMacaroon.value, meta: nodeMeta.value });
       }
     };
   },

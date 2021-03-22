@@ -1,15 +1,12 @@
 import {
   defineComponent,
   PropType,
-  computed,
   ref,
   watchEffect,
-  ComputedRef,
 } from "@vue/composition-api";
 import { VContainer, VBtn } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
-import SlottedREST from "~/components/viewnode/SlottedREST";
 
 export default defineComponent({
   components: {
@@ -24,14 +21,12 @@ export default defineComponent({
       required: true,
     },
     macaroon: {
-      type: Object as PropType<
-        ComputedRef<ReturnType<typeof macaroonStore.macaroonState>>
+      type: Object as PropType<ReturnType<typeof macaroonStore.macaroonState>
       >,
       required: true,
     },
     meta: {
-      type: Object as PropType<
-        ComputedRef<ReturnType<typeof macaroonStore.findNodeMeta>>
+      type: Object as PropType<ReturnType<typeof macaroonStore.findNodeMeta>
       >,
       required: true,
     },
@@ -43,8 +38,8 @@ export default defineComponent({
     function canFetch() {
       return (
         props.node.status === "running" &&
-        props.macaroon.value.macaroonHex &&
-        props.meta.value?.endpoint
+        props.macaroon.macaroonHex &&
+        props.meta?.endpoint
       );
     }
 
@@ -53,11 +48,11 @@ export default defineComponent({
 
       try {
         const res = await fetch(
-          `https://${props.meta.value?.endpoint}:8080/v1/getinfo`,
+          `https://${props.meta?.endpoint}:8080/v1/getinfo`,
           {
             method: "GET",
             headers: new Headers({
-              "Grpc-Metadata-macaroon": props.macaroon.value.macaroonHex,
+              "Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
               "Content-Type": "application/json",
             }),
           }
@@ -82,7 +77,7 @@ export default defineComponent({
     }
 
     watchEffect(async () => {
-      if (!props.macaroon.value.macaroonHex) return;
+      if (!props.macaroon.macaroonHex) return;
       await getNetworkInfo();
     });
 
