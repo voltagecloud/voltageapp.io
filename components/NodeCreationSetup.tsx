@@ -8,13 +8,20 @@ import {
   VRadio,
   VSelect,
   VSwitch,
-  VDialog
+  VDialog,
 } from "vuetify/lib";
 import useNodePricing from "~/compositions/useNodePricing";
-import { Plan, Subscription, Product, subscriptions } from "~/utils/voltageProducts";
+import {
+  Plan,
+  Subscription,
+  Product,
+  subscriptions,
+  standardPlans,
+} from "~/utils/voltageProducts";
 import { Network } from "~/types/api";
 import { createStore, nodeStore } from "~/store";
-import PrepayPurchaseCard from '~/components/PrepayPurchaseCard'
+import PrepayPurchaseCard from "~/components/PrepayPurchaseCard";
+import { voltageFetch } from "~/utils/fetchClient";
 
 export default defineComponent({
   props: {
@@ -25,8 +32,8 @@ export default defineComponent({
     },
     callbackPath: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup: (props, { emit }) => {
     const lightningSoftwares = [
@@ -62,10 +69,12 @@ export default defineComponent({
       set: (v: Network) => createStore.NETWORK(v),
     });
 
-    const billingOptions = computed(() => Object.keys(Plan).filter(plan => {
-      // only allow trial option if its available on this user
-      return plan !== Plan.trial || nodeStore.user?.trial_available
-    }));
+    const billingOptions = computed(() =>
+      Object.keys(Plan).filter((plan) => {
+        // only allow trial option if its available on this user
+        return plan !== Plan.trial || nodeStore.user?.trial_available;
+      })
+    );
 
     function pricingText(monthlyPrice?: number) {
       if (typeof monthlyPrice !== "undefined") {
@@ -89,7 +98,10 @@ export default defineComponent({
       selectedNetwork.value = Network.testnet;
       disableMainnet.value = billing === Plan.trial;
       billingCycle.value = billing;
-      planState.value = Object.assign({}, subscriptions.find(sub => sub.plan === billing))
+      planState.value = Object.assign(
+        {},
+        subscriptions.find((sub) => sub.plan === billing)
+      );
     }
 
     // create logic
@@ -101,8 +113,10 @@ export default defineComponent({
 
     const showPrepayModal = ref(false);
 
-    const availableLiteNodes = computed(() => nodeStore.user?.available_lite_nodes || 0)
-    const availableNodes = computed(() => nodeStore.user?.available_nodes || 0)
+    const availableLiteNodes = computed(
+      () => nodeStore.user?.available_lite_nodes || 0
+    );
+    const availableNodes = computed(() => nodeStore.user?.available_nodes || 0);
 
     async function handleCreation() {
       if (planState.value.plan === Plan.payAsYouGo) {
@@ -111,19 +125,41 @@ export default defineComponent({
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
         emit("next");
-      } else if (planState.value.nodeType === Product.lite && availableLiteNodes.value) {
+      } else if (
+        planState.value.nodeType === Product.lite &&
+        availableLiteNodes.value
+      ) {
         // the user has availalbe nodes purchased of this type, continue to settings
-        console.log(`user has ${availableLiteNodes.value} nodes available`)
-        emit('next')
-      } else if (planState.value.nodeType === Product.standard && availableNodes.value) {
+        console.log(`user has ${availableLiteNodes.value} nodes available`);
+        emit("next");
+      } else if (
+        planState.value.nodeType === Product.standard &&
+        availableNodes.value
+      ) {
         // the user has availalbe nodes purchased of this type, continue to settings
-        console.log(`user has ${availableNodes.value} nodes available`)
-        emit('next')
+        console.log(`user has ${availableNodes.value} nodes available`);
+        emit("next");
       } else {
         // customer is prepaying, show payment methods
         showPrepayModal.value = true;
       }
     }
+
+    //determine if trial type should be selected
+    async function determineTrial() {
+      const res = await voltageFetch("/user", { method: "GET" });
+      if (!res.ok) return;
+      const { trial_available } = await res.json();
+      if (trial_available) {
+        createStore.PLAN_STATE(
+          standardPlans.find((sub) => sub.plan === Plan.trial) as Subscription<
+            Plan,
+            Product
+          >
+        );
+      }
+    }
+    determineTrial()
 
     return () => (
       <VContainer>
@@ -142,7 +178,9 @@ export default defineComponent({
                       borderRadius: software.disabled ? "" : "5px",
                       border: software.disabled ? "" : "solid",
                       borderColor: software.disabled ? "" : "#1d437b",
-                      background: software.disabled ? "rgba(0,0,0, 0.1)" : "#ffffff",
+                      background: software.disabled
+                        ? "rgba(0,0,0, 0.1)"
+                        : "#ffffff",
                       width: "200px",
                       height: "150px",
                     }}
@@ -154,7 +192,9 @@ export default defineComponent({
                   </VBtn>
                 ))}
               </div>
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Billing Option</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                Billing Option
+              </div>
               <div class="mx-12">
                 <VSelect
                   items={billingOptions.value}
@@ -165,7 +205,9 @@ export default defineComponent({
                   outlined
                 />
               </div>
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Choose Node Type</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                Choose Node Type
+              </div>
               <div class="d-flex flex-row flex-wrap justify-space-around">
                 <VCol cols="8" md="5" lg="4">
                   <button
@@ -200,7 +242,9 @@ export default defineComponent({
                   </button>
                 </VCol>
               </div>
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Network</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                Network
+              </div>
               <div class="d-flex flex-column justify-start ml-12">
                 <VRadioGroup
                   value={selectedNetwork.value}
@@ -220,7 +264,9 @@ export default defineComponent({
               </div>
               {props.btcPayServerToggle && billingCycle.value !== Plan.trial && (
                 <div>
-                  <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Include BtcPay Server</div>
+                  <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                    Include BtcPay Server
+                  </div>
                   <div class="d-flex flex-column justify-start ml-12">
                     <VSwitch
                       value={includeBtcPay.value}
@@ -231,7 +277,9 @@ export default defineComponent({
                   </div>
                 </div>
               )}
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Region</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                Region
+              </div>
               <div class="mx-12">
                 <VSelect
                   items={["us-west"]}
