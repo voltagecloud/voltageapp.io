@@ -6,7 +6,10 @@
         style="height: 120px; background-color: white"
       >
         <v-col cols="12" md="10" lg="8" class="mx-auto">
-          <div class="d-flex flex-row align-center justify-space-between" style="height: 100%;">
+          <div
+            class="d-flex flex-row align-center justify-space-between"
+            style="height: 100%"
+          >
             <div class="text-h5">{{ numRunning }} Nodes Running</div>
             <v-btn dark color="highlight" @click="$router.push('/create/lnd')"
               >Launch New</v-btn
@@ -27,6 +30,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from "@vue/composition-api";
+import { NodeStatus } from "~/types/api";
 import { nodeStore } from "~/store";
 
 export default defineComponent({
@@ -36,7 +40,9 @@ export default defineComponent({
   },
   setup: () => {
     return {
-      nodes: computed(() => nodeStore.IDNames),
+      nodes: computed(() =>
+        nodeStore.IDNames.filter((node) => node.status !== NodeStatus.deleted)
+      ),
       numRunning: computed(
         () => nodeStore.nodes.filter((node) => node.status === "running").length
       ),
