@@ -1,9 +1,9 @@
 import { computed, ref } from "@vue/composition-api";
 import { standardPlans, litePlans, Plan } from "~/utils/voltageProducts";
 
-type planName = "Pay per Month" | "Pay per Year" | "Pay per Hour" | "Trial";
+export type planName = "Pay per Month" | "Pay per Year" | "Pay per Hour" | "Trial";
 
-const namedPlans: { name: planName; plan: Plan }[] = [
+export const namedPlans: { name: planName; plan: Plan }[] = [
   { name: "Pay per Month", plan: Plan.monthly },
   { name: "Pay per Year", plan: Plan.yearly },
   { name: "Pay per Hour", plan: Plan.payAsYouGo },
@@ -18,7 +18,7 @@ export default function useNodePricing() {
     set: (v: boolean) => (billingCycle.value = v ? Plan.yearly : Plan.monthly),
   });
 
-  const mappedBillingNames = computed({
+  const mappedBillingName = computed({
     get: () => {
       return namedPlans.find((mapping) => mapping.plan === billingCycle.value)
         ?.name as planName;
@@ -41,6 +41,6 @@ export default function useNodePricing() {
     litePlan,
     standardPlan,
     yearlyBilling,
-    mappedBillingNames,
+    mappedBillingName,
   };
 }
