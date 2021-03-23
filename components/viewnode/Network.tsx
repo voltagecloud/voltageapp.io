@@ -21,13 +21,11 @@ export default defineComponent({
       required: true,
     },
     macaroon: {
-      type: Object as PropType<ReturnType<typeof macaroonStore.macaroonState>
-      >,
+      type: Object as PropType<ReturnType<typeof macaroonStore.macaroonState>>,
       required: true,
     },
     meta: {
-      type: Object as PropType<ReturnType<typeof macaroonStore.findNodeMeta>
-      >,
+      type: Object as PropType<ReturnType<typeof macaroonStore.findNodeMeta>>,
       required: true,
     },
   },
