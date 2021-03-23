@@ -13,7 +13,6 @@ export default defineComponent({
       <div>
         {currentStep.value === 0 ? (
           <NodeCreationSetup
-            btcPayServerToggle
             callbackPath="/create/lnd"
             onNext={() => (currentStep.value = 1)}
           />
