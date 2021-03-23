@@ -1,5 +1,5 @@
 import { Context, Middleware } from "@nuxt/types";
-import { createStore, nodeStore } from "~/store";
+import { createStore } from "~/store";
 
 const captureReferral: Middleware = ({ route }: Context) => {
   const code: string | null =
