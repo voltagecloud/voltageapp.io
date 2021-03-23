@@ -300,6 +300,8 @@ export default class CreateModule extends VuexModule {
       this.AUTOFILL_WHITELIST(js.user_ip);
       // set the create error to null
       this.CREATE_ERROR({});
+      // incase flow is interupted, serialize
+      this.SERIALIZE()
     }
   }
 }
