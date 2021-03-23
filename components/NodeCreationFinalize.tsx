@@ -64,11 +64,13 @@ export default defineComponent({
                   onInput={(v: string) => (nodeName.value = v)}
                 />
               </div>
-              <div class="text-h5 pa-3">Node Password</div>
+              <div class="text-h5 px-3 pt-3">Node Password</div>
+              <div class="text-caption px-3 pb-3">Each node requires a unique password used for encryption.</div> 
               <div class="mx-12 d-flex flex-column">
                 <VTextField
                   outlined
                   background-color="secondary"
+                  label="Password"
                   value={password.value}
                   onInput={handlePassword}
                   type={inputType.value}
@@ -83,6 +85,7 @@ export default defineComponent({
                 <VTextField
                   outlined
                   background-color="secondary"
+                  label="Confirm Password"
                   value={confirmPassword.value}
                   onInput={handleConfirm}
                   type={inputType.value}
