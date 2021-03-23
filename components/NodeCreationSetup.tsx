@@ -154,7 +154,7 @@ export default defineComponent({
                   </VBtn>
                 ))}
               </div>
-              <div class="text-h5 pa-3">Billing Option</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Billing Option</div>
               <div class="mx-12">
                 <VSelect
                   items={billingOptions.value}
@@ -165,7 +165,7 @@ export default defineComponent({
                   outlined
                 />
               </div>
-              <div class="text-h5 pa-3">Node Type</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Choose Node Type</div>
               <div class="d-flex flex-row flex-wrap justify-space-around">
                 <VCol cols="8" md="5" lg="4">
                   <button
@@ -200,7 +200,7 @@ export default defineComponent({
                   </button>
                 </VCol>
               </div>
-              <div class="pa-3 text-h5">Network</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Network</div>
               <div class="d-flex flex-column justify-start ml-12">
                 <VRadioGroup
                   value={selectedNetwork.value}
@@ -220,7 +220,7 @@ export default defineComponent({
               </div>
               {props.btcPayServerToggle && billingCycle.value !== Plan.trial && (
                 <div>
-                  <div class="pa-3 text-h5">Include BtcPay Server</div>
+                  <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Include BtcPay Server</div>
                   <div class="d-flex flex-column justify-start ml-12">
                     <VSwitch
                       value={includeBtcPay.value}
@@ -231,7 +231,7 @@ export default defineComponent({
                   </div>
                 </div>
               )}
-              <div class="pa-3 text-h5">Region</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Region</div>
               <div class="mx-12">
                 <VSelect
                   items={["us-west"]}
