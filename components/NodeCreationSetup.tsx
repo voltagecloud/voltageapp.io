@@ -249,7 +249,7 @@ export default defineComponent({
                     <VCard color="secondary" class="py-3">
                       <div class="d-flex flex-column">
                         <div class="text-h4">Standard</div>
-                        <div>Backed by Bitcoin Core</div>
+                        <div>Backed by Bitcoin Full Node</div>
                         <div>{pricingText(standardPlan.value?.cost)}</div>
                       </div>
                     </VCard>

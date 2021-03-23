@@ -63,7 +63,7 @@ export const standardPlans: [
 ] = [
   {
     desc:
-      "One year of hosting for a Lightning node backend by a Bitcoin Core node. Recommended option for anything outside of a personal wallet.",
+      "One year of hosting for a Lightning node backend by a Bitcoin Full Node. Recommended option for anything outside of a personal wallet.",
     name: "Standard Node/1Yr",
     cost: 26.99,
     plan: Plan.yearly,
@@ -71,7 +71,7 @@ export const standardPlans: [
   },
   {
     desc:
-      "One month of hosting for a Lightning node backend by a Bitcoin Core node. Recommended option for anything outside of a personal wallet.",
+      "One month of hosting for a Lightning node backend by a Bitcoin Full Node. Recommended option for anything outside of a personal wallet.",
     name: "Standard Node/1Mo",
     cost: 31.99,
     plan: Plan.monthly,
@@ -79,7 +79,7 @@ export const standardPlans: [
   },
   {
     desc:
-      "Pay as you pricing for a Lightning node backed by a Bitcoin Core node. Recommended optin for anything outside of a personal wallet",
+      "Pay as you pricing for a Lightning node backed by a Bitcoin Full Node. Recommended optin for anything outside of a personal wallet",
     name: "Standard Node/Pay as you go",
     cost: 31.99,
     plan: Plan.payAsYouGo,
@@ -87,7 +87,7 @@ export const standardPlans: [
   },
   {
     desc:
-      "7 day free trial of a lightning node backed by a Bitcoin Core node on the bitcoin testnet. This node can only transact in test bitcoins and will expire after 7 days",
+      "7 day free trial of a lightning node backed by a Bitcoin Full Node on the bitcoin testnet. This node can only transact in test bitcoins and will expire after 7 days",
     name: "Standard Node/Trial",
     cost: 0.0,
     plan: Plan.trial,
