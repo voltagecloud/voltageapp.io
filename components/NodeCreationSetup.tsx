@@ -10,7 +10,10 @@ import {
   VSwitch,
   VDialog,
 } from "vuetify/lib";
-import useNodePricing from "~/compositions/useNodePricing";
+import useNodePricing, {
+  planName,
+  namedPlans,
+} from "~/compositions/useNodePricing";
 import {
   Plan,
   Subscription,
@@ -70,10 +73,16 @@ export default defineComponent({
     });
 
     const billingOptions = computed(() =>
-      Object.keys(Plan).filter((plan) => {
-        // only allow trial option if its available on this user
-        return plan !== Plan.trial || nodeStore.user?.trial_available;
-      })
+      Object.keys(Plan)
+        .filter(
+          (plan) =>
+            // only allow trial option if its available on this user
+            plan !== Plan.trial || nodeStore.user?.trial_available
+        )
+        .map(
+          (p) =>
+            namedPlans.find((mapping) => mapping.plan === p)?.name as planName
+        )
     );
 
     function pricingText(monthlyPrice?: number) {
@@ -83,7 +92,12 @@ export default defineComponent({
       return "Not Available";
     }
 
-    const { litePlan, standardPlan, billingCycle } = useNodePricing();
+    const {
+      litePlan,
+      standardPlan,
+      billingCycle,
+      mappedBillingName,
+    } = useNodePricing();
 
     function handleSelectProduct(subscription?: Subscription<Plan, Product>) {
       if (subscription) {
@@ -94,13 +108,13 @@ export default defineComponent({
     const networks = Object.keys(Network);
     const disableMainnet = ref(false);
 
-    function handleBillingChange(billing: Plan) {
+    function handleBillingChange(billing: planName) {
+      mappedBillingName.value = billing;
       selectedNetwork.value = Network.testnet;
-      disableMainnet.value = billing === Plan.trial;
-      billingCycle.value = billing;
+      disableMainnet.value = billingCycle.value === Plan.trial;
       planState.value = Object.assign(
         {},
-        subscriptions.find((sub) => sub.plan === billing)
+        subscriptions.find((sub) => sub.plan === billingCycle.value)
       );
     }
 
@@ -159,7 +173,7 @@ export default defineComponent({
         );
       }
     }
-    determineTrial()
+    determineTrial();
 
     return () => (
       <VContainer>
@@ -198,7 +212,7 @@ export default defineComponent({
               <div class="mx-12">
                 <VSelect
                   items={billingOptions.value}
-                  value={billingCycle.value}
+                  value={mappedBillingName.value}
                   onChange={(v: Plan) => handleBillingChange(v)}
                   color="highlight"
                   background-color="secondary"
