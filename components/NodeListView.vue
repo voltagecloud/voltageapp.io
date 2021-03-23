@@ -11,10 +11,9 @@
             style="height: 100%"
           >
             <div class="text-h5">
-              {{ numRunning }} Node{{
-                numRunning.length === 1 ? "" : "s"
+              {{ nodes.length }} Node{{
+                nodes.length === 1 ? "" : "s"
               }}
-              Running
             </div>
             <v-btn dark color="highlight" @click="$router.push('/create/lnd')"
               >Launch New</v-btn
@@ -47,9 +46,6 @@ export default defineComponent({
     return {
       nodes: computed(() =>
         nodeStore.IDNames.filter((node) => node.status !== NodeStatus.deleted)
-      ),
-      numRunning: computed(
-        () => nodeStore.nodes.filter((node) => node.status === "running").length
       ),
     };
   },
