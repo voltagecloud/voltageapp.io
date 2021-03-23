@@ -10,7 +10,12 @@
             class="d-flex flex-row align-center justify-space-between"
             style="height: 100%"
           >
-            <div class="text-h5">{{ numRunning }} Nodes Running</div>
+            <div class="text-h5">
+              {{ numRunning }} Node{{
+                numRunning.length === 1 ? "" : "s"
+              }}
+              Running
+            </div>
             <v-btn dark color="highlight" @click="$router.push('/create/lnd')"
               >Launch New</v-btn
             >
