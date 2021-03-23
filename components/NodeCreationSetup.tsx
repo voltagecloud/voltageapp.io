@@ -142,7 +142,7 @@ export default defineComponent({
                       borderRadius: software.disabled ? "" : "5px",
                       border: software.disabled ? "" : "solid",
                       borderColor: software.disabled ? "" : "#1d437b",
-                      background: "#ffffff",
+                      background: software.disabled ? "rgba(0,0,0, 0.1)" : "#ffffff",
                       width: "200px",
                       height: "150px",
                     }}
