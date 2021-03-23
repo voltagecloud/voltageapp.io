@@ -56,6 +56,8 @@ v-container
                 node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
+              v-tab-item
+                WrappedPodcast(:node='nodeData')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
@@ -114,7 +116,7 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from "@vue/composition-api";
+import { defineComponent, computed, ref, watch, watchEffect } from "@vue/composition-api";
 import axios from "axios";
 import crypto from "crypto-js";
 import { nodeStore, lndStore, createStore, dashboardsStore } from "~/store";
@@ -124,6 +126,7 @@ import useFormValidation from "~/compositions/useFormValidation";
 import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
 import WrappedNetwork from "~/components/viewnode/WrappedNetwork";
+import WrappedPodcast from "~/components/viewnode/WrappedPodcast";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import { voltageFetch } from "~/utils/fetchClient";
@@ -138,6 +141,7 @@ export default defineComponent({
     ExportData: () => import("~/components/ExportData.vue"),
     DashboardData: () => import("~/components/DashboardData.vue"),
     WrappedNetwork,
+    WrappedPodcast,
     ConnectTab: () => import("~/components/viewnode/Connect"),
     Logs: () => import("~/components/viewnode/Logs.vue"),
     CoreDialog: () => import("~/components/core/Dialog.vue"),
@@ -422,13 +426,24 @@ export default defineComponent({
         });
         // we are now done with create store data and it should be cleared
         if (res.ok) {
+          console.log('podcast success')
           createStore.COMPLETE();
+          localStorage.removeItem("podcast_id");
         }
       } else {
         // store doent hold podcast data, its safe to clear
+        console.log("no podcast data found");
         createStore.COMPLETE();
       }
     }
+
+    watch([nodeData, macaroonHex], async () => {
+      console.log('watch triggered')
+      if (nodeData.value && nodeData.value.status === 'running' && macaroonHex.value) {
+        console.log('verifying podcast')
+        await verifyPodcastReferral()
+      }
+    })
 
     // clear errors on typing in password field
     watch(nodePassword, () => {
@@ -454,8 +469,6 @@ export default defineComponent({
       }
       if (newStatus === NodeStatus.running) {
         createText.value = "complete";
-        // determine if this podcast node needs to send pubkey
-        verifyPodcastReferral();
       }
     });
 
@@ -466,14 +479,21 @@ export default defineComponent({
     }
 
     // data for tab state
-    const tabs = ref([
-      "Info",
-      "Network",
-      "Connect",
-      "Dashboards",
-      "Settings",
-      "Logs",
-    ]);
+    const tabs = computed(() => {
+      const tabs = [
+        "Info",
+        "Network",
+        "Connect",
+        "Dashboards",
+        "Settings",
+        "Logs",
+      ];
+      const roles = nodeData.value?.custom_roles || [];
+      if (roles && roles.includes("podcast")) {
+        tabs.push("Podcast");
+      }
+      return tabs
+    });
 
     const curTab = ref(0);
 
