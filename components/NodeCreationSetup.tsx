@@ -292,7 +292,7 @@ export default defineComponent({
                 </div>
               )}
               <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
-                Region
+                Zone
               </div>
               <div class="mx-12">
                 <VSelect
