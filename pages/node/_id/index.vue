@@ -71,11 +71,16 @@ v-container
                   v-card-title Node is being created
                   v-container
                     v-row(justify='center')
-                      v-col(cols='12')
+                      v-col(v-if="status !== 'running'" cols='12')
                         p
                           | Please wait while your node is creating. This can take up to a couple of minutes. Please do not close your browser until the node is running.
                         p(style='font-family: monospace')
                           | Current stage: {{ createText }}
+                      v-col(v-else cols="12")
+                        div(class="d-flex flex-column align-center")
+                          div Your node is ready to use!
+                          div You can start using your node by connecting your favorite Lightning app.
+                          v-btn(class="mt-3" block @click="confirmReady") Continue
                     v-container(v-if='passwordInit && status === "waiting_init"')
                       div(v-if='passwordInit')
                         div(justify='center' align='center' style='margin: auto;')
@@ -445,6 +450,7 @@ export default defineComponent({
       }
     })
 
+
     // clear errors on typing in password field
     watch(nodePassword, () => {
       error.value = "";
@@ -452,15 +458,13 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
-    watch(status, (newStatus: string | NodeStatus) => {
+    watch(status, (newStatus: string | NodeStatus, prev: string | NodeStatus) => {
       if (
         newStatus === NodeStatus.initializing ||
         newStatus === NodeStatus.provisioning
       ) {
         nodeCreating.value = true;
         createText.value = newStatus;
-      } else {
-        nodeCreating.value = false;
       }
       if (newStatus === NodeStatus.waiting_init) {
         nodeCreating.value = true;
@@ -499,6 +503,12 @@ export default defineComponent({
 
     // only load logs on tab click
     const logsRef = ref<null | typeof LogsComponent>(null);
+
+    // confirm ready feature
+    function confirmReady () {
+      nodeCreating.value = false
+      curTab.value = 2
+    }
 
     return {
       nodeData,
@@ -540,6 +550,7 @@ export default defineComponent({
       tabs,
       curTab,
       logsRef,
+      confirmReady
     };
   },
 });
