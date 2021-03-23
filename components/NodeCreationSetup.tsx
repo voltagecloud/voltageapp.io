@@ -296,8 +296,8 @@ export default defineComponent({
               </div>
               <div class="mx-12">
                 <VSelect
-                  items={["us-west"]}
-                  value={"us-west"}
+                  items={["US West"]}
+                  value={"US West"}
                   aria-label="Region"
                   outlined
                   color="highlight"
