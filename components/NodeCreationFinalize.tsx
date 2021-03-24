@@ -38,11 +38,6 @@ export default defineComponent({
       // commit to store for use during node waiting_init
       createStore.PASSWORD(password.value);
 
-      message.value = "Creating Node";
-      await createStore.dispatchCreate();
-      message.value = "";
-
-      if (createStore.createError) return;
 
       message.value = "Populating node settings";
       await createStore.dispatchPopulate();
