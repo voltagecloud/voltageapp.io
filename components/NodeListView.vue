@@ -1,6 +1,6 @@
 <template>
   <VirtualScroll :items="nodes" :height="120" :renderAhead="1" :extra="1">
-    <template v-slot:default="{ items }">
+    <template v-slot:before>
       <div
         class="d-flex flex-row justify-space-between"
         style="height: 120px; background-color: white"
@@ -20,10 +20,9 @@
             >
           </div>
         </v-col>
-        <v-col cols="12" md="10" lg="8" class="mx-auto">
-          <!--v-autocomplete -->
-        </v-col>
       </div>
+    </template>
+    <template v-slot:default="{ items }">
       <div v-for="(node, i) in items" :key="`${node.node_id}_${i}`">
         <v-col cols="12" md="10" lg="8" class="mx-auto">
           <node-controls :nodeID="node.node_id" />
