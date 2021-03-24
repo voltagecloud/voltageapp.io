@@ -20,6 +20,9 @@
             >
           </div>
         </v-col>
+        <v-col cols="12" md="10" lg="8" class="mx-auto">
+          <!--v-autocomplete -->
+        </v-col>
       </div>
     </template>
     <template v-slot:default="{ items }">
