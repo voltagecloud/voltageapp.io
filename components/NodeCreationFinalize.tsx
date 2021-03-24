@@ -1,8 +1,9 @@
 import { defineComponent, computed, ref } from "@vue/composition-api";
-import { useRouter } from '@nuxtjs/composition-api'
+import { useRouter } from "@nuxtjs/composition-api";
 import { VCard, VContainer, VCol, VTextField, VIcon, VBtn } from "vuetify/lib";
 import { createStore } from "~/store";
 import { useConfirmPassword } from "~/compositions/useConfirmPassword";
+import useFetch from '~/compositions/useFetch'
 
 export default defineComponent({
   setup: () => {
@@ -12,9 +13,11 @@ export default defineComponent({
     });
 
     // fill createStore
-    createStore.DESERIALIZE()
+    createStore.DESERIALIZE();
 
-    const createError = computed(() => createStore.createError || createStore.populateError)
+    const createError = computed(
+      () => createStore.createError || createStore.populateError
+    );
 
     const {
       password,
@@ -26,46 +29,74 @@ export default defineComponent({
       validate,
     } = useConfirmPassword();
 
-    const router = useRouter()
+    const router = useRouter();
 
-    const message = ref('')
-    async function createNode () {
-      const passwordValid = validate()
-      if (!passwordValid) return
+    const message = ref("");
+    async function createNode() {
+      const passwordValid = validate();
+      if (!passwordValid) return;
       // commit to store for use during node waiting_init
-      createStore.PASSWORD(password.value)
+      createStore.PASSWORD(password.value);
 
-      message.value = 'Creating Node'
-      await createStore.dispatchCreate()
-      message.value = ''
+      message.value = "Creating Node";
+      await createStore.dispatchCreate();
+      message.value = "";
 
-      if (createStore.createError) return
+      if (createStore.createError) return;
 
-      message.value = 'Populating node settings'
-      await createStore.dispatchPopulate()
-      message.value = ''
+      message.value = "Populating node settings";
+      await createStore.dispatchPopulate();
+      message.value = "";
 
       if (!createStore.populateError) {
-        router.push(`/node/${createStore.nodeId}`)
+        router.push(`/node/${createStore.nodeId}`);
       }
     }
+
+    // node name checking
+    const reqOpts = computed(() => ({
+      method: "POST",
+      body: JSON.stringify({
+        network: createStore.network,
+        node_name: nodeName.value,
+      }),
+    }));
+
+    const { loading, data } = useFetch<{
+      taken: boolean;
+      valid: boolean;
+      node_name: string;
+    }>("/node/name", reqOpts);
+    const errorMessage = computed(() => {
+      if (!data.value) return ''
+      else if (data.value.taken) return 'This node name is already taken'
+      else if (!data.value.valid) return 'This node name is not valid'
+    });
 
     return () => (
       <VContainer>
         <div class="d-flex flex-row justify-center">
           <VCol cols="12" md="10" lg="8">
             <VCard color="info">
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">Node Name</div>
+              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+                Node Name
+              </div>
               <div class="mx-12">
                 <VTextField
                   outlined
                   background-color="secondary"
                   value={nodeName.value}
                   onInput={(v: string) => (nodeName.value = v)}
+                  loading={loading.value && "highlight"}
+                  error-messages={errorMessage.value}
                 />
               </div>
-              <div class="font-weight-light warning--text text--darken-1 text-h5 px-3 pt-3">Node Password</div>
-              <div class="text-caption px-3 pb-3">Each node requires a unique password used for encryption.</div> 
+              <div class="font-weight-light warning--text text--darken-1 text-h5 px-3 pt-3">
+                Node Password
+              </div>
+              <div class="text-caption px-3 pb-3">
+                Each node requires a unique password used for encryption.
+              </div>
               <div class="mx-12 d-flex flex-column">
                 <VTextField
                   outlined
@@ -92,9 +123,13 @@ export default defineComponent({
                 />
               </div>
               <div class="mx-12 pb-3">
-                <VBtn block onClick={createNode} loading={!!message.value}>Create Node</VBtn>
+                <VBtn block onClick={createNode} loading={!!message.value}>
+                  Create Node
+                </VBtn>
                 <div>{message.value}</div>
-                <div class="error--text">{createError.value?.message || ''}</div>
+                <div class="error--text">
+                  {createError.value?.message || ""}
+                </div>
               </div>
             </VCard>
           </VCol>
