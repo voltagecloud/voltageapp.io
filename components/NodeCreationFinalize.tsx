@@ -3,7 +3,7 @@ import { useRouter } from "@nuxtjs/composition-api";
 import { VCard, VContainer, VCol, VTextField, VIcon, VBtn } from "vuetify/lib";
 import { createStore } from "~/store";
 import { useConfirmPassword } from "~/compositions/useConfirmPassword";
-import useFetch from '~/compositions/useFetch'
+import useFetch from "~/compositions/useFetch";
 
 export default defineComponent({
   setup: () => {
@@ -23,7 +23,7 @@ export default defineComponent({
       inputType,
       showPassword,
       validate,
-      error
+      error,
     } = useConfirmPassword();
 
     const router = useRouter();
@@ -35,7 +35,6 @@ export default defineComponent({
       // commit to store for use during node waiting_init
       createStore.PASSWORD(password.value);
 
-
       message.value = "Populating node settings";
       await createStore.dispatchPopulate();
       message.value = "";
@@ -46,7 +45,7 @@ export default defineComponent({
     }
 
     // node name checking
-    const onBlurName = ref('')
+    const onBlurName = ref("");
     const reqOpts = computed(() => ({
       method: "POST",
       body: JSON.stringify({
@@ -61,9 +60,9 @@ export default defineComponent({
       node_name: string;
     }>("/node/name", reqOpts);
     const errorMessage = computed(() => {
-      if (!data.value) return ''
-      else if (data.value.taken) return 'This node name is already taken'
-      else if (!data.value.valid) return 'This node name is not valid'
+      if (!data.value) return "";
+      else if (data.value.taken) return "This node name is already taken";
+      else if (!data.value.valid) return "This node name is not valid";
     });
 
     return () => (
@@ -74,17 +73,21 @@ export default defineComponent({
               <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
                 Node Name
               </div>
-              <div class="mx-12">
+              <div class="mx-12 mb-4">
                 <VTextField
                   outlined
                   background-color="secondary"
                   label="Name"
                   value={nodeName.value}
                   onInput={(v: string) => (nodeName.value = v)}
-                  onBlur={() => onBlurName.value = nodeName.value}
+                  onBlur={() => (onBlurName.value = nodeName.value)}
                   loading={loading.value && "highlight"}
                   error-messages={errorMessage.value}
                 />
+                <div class="warning--text text--darken-1">
+                  Give your node a name. This will be part of your API endpoint
+                  and can't be changed.
+                </div>
               </div>
               <div class="font-weight-light warning--text text--darken-1 text-h5 px-3 pt-3">
                 Node Password
@@ -92,7 +95,7 @@ export default defineComponent({
               <div class="text-caption px-3 pb-3">
                 Each node requires a unique password used for encryption.
               </div>
-              <div class="mx-12 d-flex flex-column">
+              <div class="mx-12 d-flex flex-column mb-6">
                 <VTextField
                   outlined
                   background-color="secondary"
@@ -117,6 +120,12 @@ export default defineComponent({
                   onInput={handleConfirm}
                   type={inputType.value}
                 />
+                <div class="warning--text text--darken-1">
+                  Write this password down! You need it to unlock your node.
+                  Also your node's seed and macaroons are encrypted to this
+                  password. Losing this password means losing access to your
+                  node and backups. Voltage can not reset it.
+                </div>
               </div>
               <div class="mx-12 pb-3">
                 <VBtn block onClick={createNode} loading={!!message.value}>
