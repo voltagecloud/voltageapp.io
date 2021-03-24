@@ -74,14 +74,13 @@ export default defineComponent({
 
     const billingOptions = computed(() =>
       Object.keys(Plan)
-        .filter(
-          (plan) => {
-            // TEMP
-            // disable pay as you go for now
-            if (plan === Plan.payAsYouGo) return false
-            // only allow trial option if its available on this user
-            return plan !== Plan.trial || nodeStore.user?.trial_available
-          })
+        .filter((plan) => {
+          // TEMP
+          // disable pay as you go for now
+          if (plan === Plan.payAsYouGo) return false;
+          // only allow trial option if its available on this user
+          return plan !== Plan.trial || nodeStore.user?.trial_available;
+        })
         .map(
           (p) =>
             namedPlans.find((mapping) => mapping.plan === p)?.name as planName
@@ -102,10 +101,20 @@ export default defineComponent({
       mappedBillingName,
     } = useNodePricing();
 
-    function handleSelectProduct(subscription?: Subscription<Plan, Product>) {
+    function handleSelectProduct(subscription: Subscription<Plan, Product>) {
       if (subscription) {
         planState.value = Object.assign({}, subscription);
       }
+    }
+
+    function selectedStyle(subscription: Subscription<Plan, Product>) {
+      return subscription.nodeType === planState.value.nodeType
+        ? {
+            borderColor: "#343851 !important",
+            borderWidth: "2px",
+            borderStyle: "solid"
+          }
+        : {};
     }
 
     const networks = Object.keys(Network);
@@ -141,36 +150,36 @@ export default defineComponent({
         // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
-        await moveToPopulate()
+        await moveToPopulate();
       } else if (
         planState.value.nodeType === Product.lite &&
         availableLiteNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
         console.log(`user has ${availableLiteNodes.value} nodes available`);
-        await moveToPopulate()
+        await moveToPopulate();
       } else if (
         planState.value.nodeType === Product.standard &&
         availableNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
         console.log(`user has ${availableNodes.value} nodes available`);
-        await moveToPopulate()
+        await moveToPopulate();
       } else {
         // customer is prepaying, show payment methods
         showPrepayModal.value = true;
       }
     }
 
-    const creating = ref("")
-    async function moveToPopulate () {
+    const creating = ref("");
+    async function moveToPopulate() {
       creating.value = "Creating Node";
       await createStore.dispatchCreate();
       creating.value = "";
 
       if (createStore.createError) return;
 
-      emit("next")
+      emit("next");
     }
 
     //determine if trial type should be selected
@@ -244,7 +253,11 @@ export default defineComponent({
                     class="d-block"
                     style="width: 100%"
                   >
-                    <VCard color="secondary" class="py-3">
+                    <VCard
+                      color="secondary"
+                      class="py-3"
+                      style={selectedStyle(litePlan.value)}
+                    >
                       <div class="d-flex flex-column">
                         <div class="text-h4">Lite</div>
                         <div>Backed by Neutrino</div>
@@ -260,7 +273,11 @@ export default defineComponent({
                     class="d-block"
                     style="width: 100%"
                   >
-                    <VCard color="secondary" class="py-3">
+                    <VCard
+                      color="secondary"
+                      class="py-3"
+                      style={selectedStyle(standardPlan.value)}
+                    >
                       <div class="d-flex flex-column">
                         <div class="text-h4">Standard</div>
                         <div>Backed by Bitcoin Full Node</div>
@@ -329,7 +346,9 @@ export default defineComponent({
                 >
                   Create Node
                 </VBtn>
-                <div class="error--text">{createStore.createError?.message || ''}</div>
+                <div class="error--text">
+                  {createStore.createError?.message}
+                </div>
               </div>
             </VCard>
           </VCol>
