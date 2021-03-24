@@ -52,7 +52,7 @@ export default class CreateModule extends VuexModule {
   // setttings this node should be creatd with
   settings: Settings = Object.assign({}, defaultSettings);
 
-  password: string = ''
+  password: string = "";
 
   // Id of the node which is returned at the /create call
   nodeId = "";
@@ -119,8 +119,8 @@ export default class CreateModule extends VuexModule {
   }
 
   @Mutation
-  PASSWORD (v: string) {
-    this.password = v
+  PASSWORD(v: string) {
+    this.password = v;
   }
 
   get btcPayAddonMonthly() {
@@ -194,9 +194,9 @@ export default class CreateModule extends VuexModule {
     this.planState = Object.assign({}, standardPlans[0]);
     this.planQty = 1;
     this.includeBtcPay = false;
-    this.nodeId = ''
-    this.referralCode = ''
-    window.localStorage.removeItem('createStore')
+    this.nodeId = "";
+    this.referralCode = "";
+    window.localStorage.removeItem("createStore");
   }
 
   @Mutation
@@ -240,8 +240,15 @@ export default class CreateModule extends VuexModule {
       body: JSON.stringify({
         node_id: this.nodeId,
         name: this.nodeName,
-        // force sphinx creation as false for now
-        settings: Object.assign({}, this.settings, { sphinx: false }),
+        settings: Object.assign({}, this.settings, {
+          // force sphinx creation as false for now
+          sphinx: false,
+          // alias should be node node on podcast nodes
+          alias:
+            this.planState.nodeType === Product.podcast
+              ? this.nodeName
+              : this.settings.alias,
+        }),
       }),
     });
     const js = await res.json();
@@ -284,7 +291,8 @@ export default class CreateModule extends VuexModule {
         purchased_type: this.trial ? "trial" : "paid",
         type: this.createType === Product.podcast ? "lite" : this.createType,
         // pass the custom podcast role if this is a podcast node
-        custom_roles: this.createType === Product.podcast ? ["podcast"] : undefined
+        custom_roles:
+          this.createType === Product.podcast ? ["podcast"] : undefined,
       }),
     });
     const js = await res.json();
@@ -301,7 +309,7 @@ export default class CreateModule extends VuexModule {
       // set the create error to null
       this.CREATE_ERROR({});
       // incase flow is interupted, serialize
-      this.SERIALIZE()
+      this.SERIALIZE();
     }
   }
 }
