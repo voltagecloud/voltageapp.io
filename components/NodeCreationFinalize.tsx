@@ -15,10 +15,6 @@ export default defineComponent({
     // fill createStore
     createStore.DESERIALIZE();
 
-    const createError = computed(
-      () => createStore.createError || createStore.populateError
-    );
-
     const {
       password,
       confirmPassword,
@@ -27,6 +23,7 @@ export default defineComponent({
       inputType,
       showPassword,
       validate,
+      error
     } = useConfirmPassword();
 
     const router = useRouter();
@@ -80,6 +77,7 @@ export default defineComponent({
                 <VTextField
                   outlined
                   background-color="secondary"
+                  label="Name"
                   value={nodeName.value}
                   onInput={(v: string) => (nodeName.value = v)}
                   loading={loading.value && "highlight"}
@@ -100,6 +98,7 @@ export default defineComponent({
                   value={password.value}
                   onInput={handlePassword}
                   type={inputType.value}
+                  error-messages={error.value}
                 >
                   <VIcon
                     slot="append"
@@ -122,7 +121,7 @@ export default defineComponent({
                   Create Node
                 </VBtn>
                 <div class="error--text">
-                  {createError.value?.message || ""}
+                  {createStore.populateError?.message || ""}
                 </div>
               </div>
             </VCard>
