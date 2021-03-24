@@ -126,7 +126,6 @@ export default defineComponent({
                 <VBtn block onClick={createNode} loading={!!message.value}>
                   Create Node
                 </VBtn>
-                <div>{message.value}</div>
                 <div class="error--text">
                   {createError.value?.message || ""}
                 </div>
