@@ -75,10 +75,13 @@ export default defineComponent({
     const billingOptions = computed(() =>
       Object.keys(Plan)
         .filter(
-          (plan) =>
+          (plan) => {
+            // TEMP
+            // disable pay as you go for now
+            if (plan === Plan.payAsYouGo) return false
             // only allow trial option if its available on this user
-            plan !== Plan.trial || nodeStore.user?.trial_available
-        )
+            return plan !== Plan.trial || nodeStore.user?.trial_available
+          })
         .map(
           (p) =>
             namedPlans.find((mapping) => mapping.plan === p)?.name as planName
@@ -213,7 +216,7 @@ export default defineComponent({
                 <VSelect
                   items={billingOptions.value}
                   value={mappedBillingName.value}
-                  onChange={(v: Plan) => handleBillingChange(v)}
+                  onChange={(v: planName) => handleBillingChange(v)}
                   color="highlight"
                   background-color="secondary"
                   outlined
@@ -268,11 +271,14 @@ export default defineComponent({
                   {networks.map((net) => (
                     <VRadio
                       key={net}
-                      label={net}
                       value={net}
                       disabled={net === Network.mainnet && disableMainnet.value}
                       color="highlight"
-                    />
+                    >
+                      <div class="text-h6" slot="label">
+                        {net.charAt(0).toUpperCase() + net.slice(1)}
+                      </div>
+                    </VRadio>
                   ))}
                 </VRadioGroup>
               </div>
