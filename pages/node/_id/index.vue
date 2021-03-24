@@ -121,7 +121,14 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch, watchEffect } from "@vue/composition-api";
+import {
+  defineComponent,
+  computed,
+  ref,
+  watch,
+  watchEffect,
+} from "@vue/composition-api";
+import { useRoute } from "@nuxtjs/composition-api";
 import axios from "axios";
 import crypto from "crypto-js";
 import { nodeStore, lndStore, createStore, dashboardsStore } from "~/store";
@@ -214,6 +221,7 @@ export default defineComponent({
     }, 5000);
   },
   setup(_, ctx) {
+    const route = useRoute();
     const nodeID = ref(ctx.root.$nuxt.context.params.id);
     const nodeData = computed(
       () => nodeStore.nodes.filter((elem) => elem.node_id === nodeID.value)[0]
@@ -247,7 +255,7 @@ export default defineComponent({
     const macaroonHex = computed(
       () =>
         macaroonStore.macaroonState({
-          nodeId: nodeData.value.node_id,
+          nodeId: route.value.params.id,
           type: MacaroonType.admin,
         }).macaroonHex
     );
@@ -295,7 +303,7 @@ export default defineComponent({
           ).toString();
           // write the macaroon to macaroon store
           macaroonStore.MACAROON({
-            nodeId: nodeData.value.node_id,
+            nodeId: route.value.params.id,
             type: MacaroonType.admin,
             macaroon: encryptedMacaroon,
           });
@@ -306,7 +314,7 @@ export default defineComponent({
           await voltageFetch("/node/macaroon", {
             method: "POST",
             body: JSON.stringify({
-              node_id: nodeData.value.node_id,
+              node_id: route.value.params.id,
               name: "admin",
               macaroon: encryptedMacaroon,
             }),
@@ -314,7 +322,7 @@ export default defineComponent({
           await voltageFetch("/node/seed", {
             method: "POST",
             body: JSON.stringify({
-              node_id: nodeData.value.node_id,
+              node_id: route.value.params.id,
               seed: encryptedSeed,
             }),
           });
@@ -370,11 +378,11 @@ export default defineComponent({
         });
         // node has been unlocked so password is correct write to state
         macaroonStore.NODE_PASSWORD({
-          nodeId: nodeData.value.node_id,
+          nodeId: route.value.params.id,
           password,
         });
         // update the status of the node in the api
-        await updateStatus(nodeData.value.node_id, "unlocking");
+        await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
           const api = nodeData.value.api_endpoint.replace(
@@ -397,7 +405,7 @@ export default defineComponent({
     }
 
     async function update() {
-      await updateNode(nodeData.value.node_id);
+      await updateNode(route.value.params.id);
       // @ts-ignore
       ctx.root.$nuxt.$router.go();
     }
@@ -407,7 +415,7 @@ export default defineComponent({
       if (
         createStore.planState.nodeType === Product.podcast &&
         createStore.referralCode &&
-        createStore.nodeId === nodeData.value.node_id
+        createStore.nodeId === route.value.params.id
       ) {
         const info = await fetch(
           `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
@@ -431,7 +439,7 @@ export default defineComponent({
         });
         // we are now done with create store data and it should be cleared
         if (res.ok) {
-          console.log('podcast success')
+          console.log("podcast success");
           createStore.COMPLETE();
           localStorage.removeItem("podcast_id");
         }
@@ -443,13 +451,16 @@ export default defineComponent({
     }
 
     watch([nodeData, macaroonHex], async () => {
-      console.log('watch triggered')
-      if (nodeData.value && nodeData.value.status === 'running' && macaroonHex.value) {
-        console.log('verifying podcast')
-        await verifyPodcastReferral()
+      console.log("watch triggered");
+      if (
+        nodeData.value &&
+        nodeData.value.status === "running" &&
+        macaroonHex.value
+      ) {
+        console.log("verifying podcast");
+        await verifyPodcastReferral();
       }
-    })
-
+    });
 
     // clear errors on typing in password field
     watch(nodePassword, () => {
@@ -458,23 +469,26 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
-    watch(status, (newStatus: string | NodeStatus, prev: string | NodeStatus) => {
-      if (
-        newStatus === NodeStatus.initializing ||
-        newStatus === NodeStatus.provisioning
-      ) {
-        nodeCreating.value = true;
-        createText.value = newStatus;
+    watch(
+      status,
+      (newStatus: string | NodeStatus, prev: string | NodeStatus) => {
+        if (
+          newStatus === NodeStatus.initializing ||
+          newStatus === NodeStatus.provisioning
+        ) {
+          nodeCreating.value = true;
+          createText.value = newStatus;
+        }
+        if (newStatus === NodeStatus.waiting_init) {
+          nodeCreating.value = true;
+          createText.value = "waiting_init";
+          initialize();
+        }
+        if (newStatus === NodeStatus.running) {
+          createText.value = "complete";
+        }
       }
-      if (newStatus === NodeStatus.waiting_init) {
-        nodeCreating.value = true;
-        createText.value = "waiting_init";
-        initialize();
-      }
-      if (newStatus === NodeStatus.running) {
-        createText.value = "complete";
-      }
-    });
+    );
 
     const confirmUpdate = ref(false);
     async function closeAndUpdate() {
@@ -496,7 +510,7 @@ export default defineComponent({
       if (roles && roles.includes("podcast")) {
         tabs.push("Podcast");
       }
-      return tabs
+      return tabs;
     });
 
     const curTab = ref(0);
@@ -505,9 +519,9 @@ export default defineComponent({
     const logsRef = ref<null | typeof LogsComponent>(null);
 
     // confirm ready feature
-    function confirmReady () {
-      nodeCreating.value = false
-      curTab.value = 2
+    function confirmReady() {
+      nodeCreating.value = false;
+      curTab.value = 2;
     }
 
     return {
@@ -550,7 +564,7 @@ export default defineComponent({
       tabs,
       curTab,
       logsRef,
-      confirmReady
+      confirmReady,
     };
   },
 });
