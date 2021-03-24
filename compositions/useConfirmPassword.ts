@@ -35,6 +35,7 @@ export function useConfirmPassword () {
     inputType,
     handlePassword,
     handleConfirm,
-    validate
+    validate,
+    error
   }
 }
