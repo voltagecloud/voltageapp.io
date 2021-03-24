@@ -329,7 +329,7 @@ export default defineComponent({
                 >
                   Create Node
                 </VBtn>
-                <div class="error--text">{createStore.createError}</div>
+                <div class="error--text">{createStore.createError?.message || ''}</div>
               </div>
             </VCard>
           </VCol>
