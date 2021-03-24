@@ -46,11 +46,12 @@ export default defineComponent({
     }
 
     // node name checking
+    const onBlurName = ref('')
     const reqOpts = computed(() => ({
       method: "POST",
       body: JSON.stringify({
         network: createStore.network,
-        node_name: nodeName.value,
+        node_name: onBlurName.value,
       }),
     }));
 
@@ -80,6 +81,7 @@ export default defineComponent({
                   label="Name"
                   value={nodeName.value}
                   onInput={(v: string) => (nodeName.value = v)}
+                  onBlur={() => onBlurName.value = nodeName.value}
                   loading={loading.value && "highlight"}
                   error-messages={errorMessage.value}
                 />
