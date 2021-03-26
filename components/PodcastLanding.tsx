@@ -10,6 +10,7 @@ import useStripeCheckout from "~/compositions/useStripeCheckout";
 import { createStore } from "~/store";
 import { Subscription, Plan, Product } from "~/utils/voltageProducts";
 import useNodePricing from "~/compositions/useNodePricing";
+import { Network } from '~/types/api'
 
 export default defineComponent({
   setup: () => {
@@ -27,7 +28,8 @@ export default defineComponent({
     async function checkout(plan?: Subscription<Plan, Product.podcast>) {
       planState.value = Object.assign({}, podcastPlan.value);
       // serialize store for retrieval after redirect
-      createStore.SERIALIZE();
+      createStore.NETWORK(Network.mainnet)
+      createStore.dispatchCreate();
       await stripeCheckout("/create/lnd");
     }
 
