@@ -70,8 +70,12 @@ export default defineComponent({
         <div class="d-flex flex-row justify-center">
           <VCol cols="12" md="10" lg="8">
             <VCard color="info">
-              <div class="font-weight-light warning--text text--darken-1 text-h5 pa-3">
+              <div class="font-weight-light warning--text text--darken-1 text-h5 px-3 pt-3">
                 Node Name
+              </div>
+              <div class="text-caption px-3 pb-3">
+                Give your node a name. This will be part of your API endpoint
+                and can't be changed.
               </div>
               <div class="mx-12 mb-4">
                 <VTextField
@@ -84,10 +88,6 @@ export default defineComponent({
                   loading={loading.value && "highlight"}
                   error-messages={errorMessage.value}
                 />
-                <div class="warning--text text--darken-1">
-                  Give your node a name. This will be part of your API endpoint
-                  and can't be changed.
-                </div>
               </div>
               <div class="font-weight-light warning--text text--darken-1 text-h5 px-3 pt-3">
                 Node Password
@@ -122,9 +122,9 @@ export default defineComponent({
                 />
                 <div class="warning--text text--darken-1">
                   Write this password down! You need it to unlock your node.
-                  Also your node's seed and macaroons are encrypted to this
+                  Also, your node's seed and macaroons are encrypted to this
                   password. Losing this password means losing access to your
-                  node and backups. Voltage can not reset it.
+                  node and backups. <b>Voltage can not reset it.</b>
                 </div>
               </div>
               <div class="mx-12 pb-3">
