@@ -7,7 +7,7 @@ export default defineComponent({
   setup: () => {
     const route = useRoute();
 
-    const currentStep = ref(route.value.query.session_id ? 1 : 0);
+    const currentStep = ref(route.value.query.session_id || route.value.query.paid_with ? 1 : 0);
 
     return () => (
       <div>
