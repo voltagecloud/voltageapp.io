@@ -60,10 +60,12 @@ export default defineComponent({
       return podcastObjects.length > 0 ? podcastObjects : null
     })
 
+    console.log(reducedHTLC)
+
     return () => {
       if (loading.value) {
         return <VProgressCircular indeterminate class="mx-auto" />;
-      } else if (reducedHTLC.value && reducedHTLC.value.length === 0) {
+      } else if (!reducedHTLC.value) {
         return <div>No Podcast stream data found for this node</div>
       } else {
         return <JsonTable data={() => reducedHTLC.value as JsonData} />;
