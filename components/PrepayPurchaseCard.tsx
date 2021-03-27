@@ -63,8 +63,8 @@ export default defineComponent({
             {planState.value.nodeType !== Product.btcPay && (
               <div>
                 <div class="my-3">
-                  <div>Node Quantity:</div>
-                  {props.allowChangeQty ? (
+                  <div>Node Quantity: {planQty.value}</div>
+                  {props.allowChangeQty && (
                     <VSlider
                       class="mt-10"
                       onChange={(val: number) => {
@@ -77,8 +77,6 @@ export default defineComponent({
                       max="25"
                       min="1"
                     />
-                  ) : (
-                    <div>{planQty.value}</div>
                   )}
                 </div>
                 <VDivider />
