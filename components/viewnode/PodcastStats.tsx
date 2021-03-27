@@ -63,7 +63,9 @@ export default defineComponent({
     return () => {
       if (loading.value) {
         return <VProgressCircular indeterminate class="mx-auto" />;
-      } else if (reducedHTLC.value) {
+      } else if (reducedHTLC.value && reducedHTLC.value.length === 0) {
+        return <div>No Podcast stream data found for this node</div>
+      } else {
         return <JsonTable data={() => reducedHTLC.value as JsonData} />;
       }
     };
