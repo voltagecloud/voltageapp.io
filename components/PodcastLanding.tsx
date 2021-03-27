@@ -10,7 +10,7 @@ import useStripeCheckout from "~/compositions/useStripeCheckout";
 import { createStore } from "~/store";
 import { Subscription, Plan, Product } from "~/utils/voltageProducts";
 import useNodePricing from "~/compositions/useNodePricing";
-import { Network } from '~/types/api'
+import { Network } from "~/types/api";
 
 export default defineComponent({
   setup: () => {
@@ -28,7 +28,7 @@ export default defineComponent({
     async function checkout(plan?: Subscription<Plan, Product.podcast>) {
       planState.value = Object.assign({}, podcastPlan.value);
       // serialize store for retrieval after redirect
-      createStore.NETWORK(Network.mainnet)
+      createStore.NETWORK(Network.mainnet);
       createStore.dispatchCreate();
       await stripeCheckout("/create/lnd");
     }
@@ -48,7 +48,13 @@ export default defineComponent({
               </div>
               <div class="overline d-flex flex-row align-center justify-center">
                 Automatically get inbound channels from
-                <img src={require("~/assets/breez.png")} height="100" contain />
+                <a href="https://breez.technology/" target="_blank">
+                  <img
+                    src={require("~/assets/breez.png")}
+                    height="100"
+                    contain
+                  />
+                </a>
               </div>
               <div class="my-6 text-h4">Create your node to get started</div>
               <div
