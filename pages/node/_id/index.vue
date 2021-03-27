@@ -302,6 +302,10 @@ export default defineComponent({
             initPassword.value
           ).toString();
           // write the macaroon to macaroon store
+          macaroonStore.NODE_PASSWORD({
+            nodeId: route.value.params.id,
+            password: initPassword.value
+          })
           macaroonStore.MACAROON({
             nodeId: route.value.params.id,
             type: MacaroonType.admin,
