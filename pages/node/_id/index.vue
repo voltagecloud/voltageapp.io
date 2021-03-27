@@ -67,7 +67,7 @@ v-container
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
             v-container(v-if='nodeCreating' color='primary')
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
-                v-card.text-center(style='padding: 20px;' :loading='nodeCreating')
+                v-card.text-center(style='padding: 20px;' :loading='nodeCreating && status !== "running"')
                   v-card-title Node is being created
                   v-container
                     v-row(justify='center')
@@ -78,9 +78,9 @@ v-container
                           | Current stage: {{ createText }}
                       v-col(v-else cols="12")
                         div(class="d-flex flex-column align-center")
-                          div Your node is ready to use!
+                          div(class="font-weight-bold") Your node is ready to use!
                           div You can start using your node by connecting your favorite Lightning app.
-                          v-btn(class="mt-3" block @click="confirmReady") Continue
+                          v-btn(class="mt-3" block @click="confirmReady" color="highlight") Continue
                     v-container(v-if='passwordInit && status === "waiting_init"')
                       div(v-if='passwordInit')
                         div(justify='center' align='center' style='margin: auto;')
