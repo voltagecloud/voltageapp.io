@@ -16,13 +16,18 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    allowChangeQty: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   setup: (props) => {
     const cart = computed(() => createStore.cart);
     const planQty = computed({
       get: () => createStore.planQty,
-      set: (v: number) => createStore.PLAN_QTY(v)
-    })
+      set: (v: number) => createStore.PLAN_QTY(v),
+    });
 
     const { stripeCheckout, loading, error } = useStripeCheckout(cart);
     const {
@@ -45,60 +50,64 @@ export default defineComponent({
     return () => (
       <VCard>
         <VContainer>
-        <div class="d-flex flex-column justify-center">
-          <div class="text-h5 text-center">Order Details</div>
-          <div class="d-flex justify-space-between my-3">
-            <div>{planState.value.name}</div>
-            <div>${planState.value.cost}/mo</div>
-          </div>
-          <div class="d-flex flex-column justify-space-between my-3">
-            <div class="text-h6">Description</div>
-            <div class="text-caption">{planState.value.desc}</div>
-          </div>
-          {planState.value.nodeType !== Product.btcPay && (
-            <div>
-              <div class="my-3">
-                <div>Node Quantity:</div>
-                <VSlider
-                  class="mt-10"
-                  onChange={(val: number) => {
-                    planQty.value = val;
-                  }}
-                  value={planQty.value}
-                  thumb-label="always"
-                  track-color="highlight"
-                  color="primary"
-                  max="25"
-                  min="1"
-                />
-              </div>
-              <VDivider />
+          <div class="d-flex flex-column justify-center">
+            <div class="text-h5 text-center">Order Details</div>
+            <div class="d-flex justify-space-between my-3">
+              <div>{planState.value.name}</div>
+              <div>${planState.value.cost}/mo</div>
             </div>
-          )}
-          <div class="d-flex justify-space-between">
-            <div>Total:</div>
-            <div class="font-weight-bold">${cart.value.totalPrice}</div>
+            <div class="d-flex flex-column justify-space-between my-3">
+              <div class="text-h6">Description</div>
+              <div class="text-caption">{planState.value.desc}</div>
+            </div>
+            {planState.value.nodeType !== Product.btcPay && (
+              <div>
+                <div class="my-3">
+                  <div>Node Quantity:</div>
+                  {props.allowChangeQty ? (
+                    <VSlider
+                      class="mt-10"
+                      onChange={(val: number) => {
+                        planQty.value = val;
+                      }}
+                      value={planQty.value}
+                      thumb-label="always"
+                      track-color="highlight"
+                      color="primary"
+                      max="25"
+                      min="1"
+                    />
+                  ) : (
+                    <div>{planQty.value}</div>
+                  )}
+                </div>
+                <VDivider />
+              </div>
+            )}
+            <div class="d-flex justify-space-between">
+              <div>Total:</div>
+              <div class="font-weight-bold">${cart.value.totalPrice}</div>
+            </div>
+            <VDivider />
+            <VBtn
+              block
+              onClick={() => handleCheckout(Checkout.stripe)}
+              loading={loading.value}
+              class="my-2"
+            >
+              Checkout with Card
+            </VBtn>
+            <VBtn
+              block
+              onClick={() => handleCheckout(Checkout.bitcoin)}
+              loading={btcLoading.value}
+              class="my-2"
+            >
+              Checkout with Bitcoin
+            </VBtn>
+            <div class="text--error">{error.value || btcError.value}</div>
           </div>
-          <VDivider />
-          <VBtn
-            block
-            onClick={() => handleCheckout(Checkout.stripe)}
-            loading={loading.value}
-            class="my-2"
-          >
-            Checkout with Card
-          </VBtn>
-          <VBtn
-            block
-            onClick={() => handleCheckout(Checkout.bitcoin)}
-            loading={btcLoading.value}
-            class="my-2"
-          >
-            Checkout with Bitcoin
-          </VBtn>
-          <div class="text--error">{error.value || btcError.value}</div>
-        </div>
-          </VContainer>
+        </VContainer>
       </VCard>
     );
   },
