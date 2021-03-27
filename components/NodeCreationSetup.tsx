@@ -107,8 +107,8 @@ export default defineComponent({
       }
     }
 
-    function selectedStyle(subscription: Subscription<Plan, Product>) {
-      return subscription.nodeType === planState.value.nodeType
+    function selectedStyle(subscription?: Subscription<Plan, Product>) {
+      return subscription?.nodeType === planState.value.nodeType
         ? {
             borderColor: "#343851 !important",
             borderWidth: "2px",
