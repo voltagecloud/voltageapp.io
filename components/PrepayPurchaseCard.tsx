@@ -92,6 +92,7 @@ export default defineComponent({
               onClick={() => handleCheckout(Checkout.stripe)}
               loading={loading.value}
               class="my-2"
+              color="highlight"
             >
               Checkout with Card
             </VBtn>
@@ -100,6 +101,7 @@ export default defineComponent({
               onClick={() => handleCheckout(Checkout.bitcoin)}
               loading={btcLoading.value}
               class="my-2"
+              color="highlight"
             >
               Checkout with Bitcoin
             </VBtn>
