@@ -75,7 +75,7 @@ export default defineComponent({
               <VCheckbox
                 value={yearlyBilling.value}
                 onChange={(v: boolean) => (yearlyBilling.value = v)}
-                label="Pay for the year, save 23%"
+                label="Pay for the year, save 16%"
               />
             </VCol>
           </div>
