@@ -353,7 +353,7 @@ export default defineComponent({
             </VCard>
           </VCol>
         </div>
-        <VDialog value={showPrepayModal.value}>
+        <VDialog value={showPrepayModal.value} max-width="800">
           <PrepayPurchaseCard callbackPath={props.callbackPath} />
         </VDialog>
       </VContainer>
