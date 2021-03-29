@@ -47,13 +47,16 @@ export default defineComponent({
       if (!htlcs.value) return null
       const podcasts: Record<string, {
         title: string;
+        subtitle?: string 
         amount: number;
       }> = {}
       for (const htlc of htlcs.value) {
-        const curTitle = htlc?.custom_records?.title
-        const curAmount = podcasts[curTitle]?.amount || 0
+        const curTitle = htlc?.custom_records?.title || htlc?.custom_records?.podcast_title || ""
+        const curSubtitle = htlc?.custom_records?.text || htlc?.custom_records?.episode_title || ''
+        const episodeKey = curTitle + curSubtitle
+        const curAmount = podcasts[episodeKey]?.amount || 0
         if (curTitle) {
-          podcasts[curTitle] = { title: curTitle, amount: curAmount + htlc.custom_records.amount }
+          podcasts[curTitle] = { title: curTitle, amount: curAmount + (+htlc.amt_msat), subtitle: curSubtitle }
         }
       }
       const podcastObjects = Object.values(podcasts)
