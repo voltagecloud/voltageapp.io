@@ -80,7 +80,7 @@ v-container
                         div(class="d-flex flex-column align-center")
                           div(class="font-weight-bold") Your node is ready to use!
                           div You can start using your node by connecting your favorite Lightning app.
-                          v-btn(class="mt-3" block @click="confirmReady" color="highlight") Continue
+                          v-btn(class="mt-3" block @click="confirmReady" color="highlight" dark) Continue
                     v-container(v-if='passwordInit && status === "waiting_init"')
                       div(v-if='passwordInit')
                         div(justify='center' align='center' style='margin: auto;')
@@ -304,8 +304,8 @@ export default defineComponent({
           // write the macaroon to macaroon store
           macaroonStore.NODE_PASSWORD({
             nodeId: route.value.params.id,
-            password: initPassword.value
-          })
+            password: initPassword.value,
+          });
           macaroonStore.MACAROON({
             nodeId: route.value.params.id,
             type: MacaroonType.admin,
