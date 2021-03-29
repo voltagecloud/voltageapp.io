@@ -67,7 +67,7 @@ export default defineComponent({
         if (curTitle) {
           podcasts[curTitle] = {
             title: curTitle,
-            amount: curAmount + +htlc.amt_msat,
+            amount: +htlc.amt_msat + curAmount,
             subtitle: curSubtitle,
           };
         }
