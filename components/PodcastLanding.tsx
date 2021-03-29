@@ -5,8 +5,10 @@ import {
   VCol,
   VCheckbox,
   VProgressCircular,
+  VBtn,
 } from "vuetify/lib";
 import useStripeCheckout from "~/compositions/useStripeCheckout";
+import useBitcoinCheckout from "~/compositions/useBitcoinCheckout";
 import { createStore } from "~/store";
 import { Subscription, Plan, Product } from "~/utils/voltageProducts";
 import useNodePricing from "~/compositions/useNodePricing";
@@ -23,14 +25,19 @@ export default defineComponent({
     });
 
     const { stripeCheckout, loading } = useStripeCheckout(cart);
+    const { bitcoinCheckout, loading: loadingBitcoin } = useBitcoinCheckout(
+      cart
+    );
     const { yearlyBilling, podcastPlan } = useNodePricing();
 
-    async function checkout(plan?: Subscription<Plan, Product.podcast>) {
+    async function checkout(method: "stripe" | "bitcoin") {
       planState.value = Object.assign({}, podcastPlan.value);
-      // serialize store for retrieval after redirect
       createStore.NETWORK(Network.mainnet);
+      // serialize store for retrieval after redirect
       createStore.dispatchCreate();
-      await stripeCheckout("/create/lnd");
+      return method === "stripe"
+        ? await stripeCheckout("/create/lnd")
+        : await bitcoinCheckout();
     }
 
     return () => (
@@ -62,18 +69,10 @@ export default defineComponent({
                 style="width: 100%"
               >
                 <VCol cols="12" md="6" lg="4">
-                  <VCard onClick={checkout} class="pa-6" color="secondary">
+                  <VCard class="pa-6" color="secondary">
                     <div class="d-flex flex-column align-center">
-                      {loading.value ? (
-                        <VProgressCircular indeterminate />
-                      ) : (
-                        <div>
-                          <div class="text-h5">Podcast Node</div>
-                          <div class="text-h6">
-                            ${podcastPlan.value.cost}/mo
-                          </div>
-                        </div>
-                      )}
+                      <div class="text-h5">Podcast Node</div>
+                      <div class="text-h6">${podcastPlan.value.cost}/mo</div>
                     </div>
                   </VCard>
                 </VCol>
@@ -83,6 +82,24 @@ export default defineComponent({
                 onChange={(v: boolean) => (yearlyBilling.value = v)}
                 label="Pay for the year, save 16%"
               />
+              <VBtn
+                class="ma-2"
+                color="highlight"
+                dark
+                loading={loading.value}
+                onClick={() => checkout("stripe")}
+              >
+                Checkout with Card
+              </VBtn>
+              <VBtn
+                class="ma-2"
+                color="highlight"
+                dark
+                loading={loadingBitcoin.value}
+                onClick={() => checkout("bitcoin")}
+              >
+                Checkout with Bitcoin
+              </VBtn>
             </VCol>
           </div>
         </VContainer>
