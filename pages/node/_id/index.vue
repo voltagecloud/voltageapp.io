@@ -301,16 +301,6 @@ export default defineComponent({
             res.data.admin_macaroon,
             initPassword.value
           ).toString();
-          // write the macaroon to macaroon store
-          macaroonStore.NODE_PASSWORD({
-            nodeId: route.value.params.id,
-            password: initPassword.value,
-          });
-          macaroonStore.MACAROON({
-            nodeId: route.value.params.id,
-            type: MacaroonType.admin,
-            macaroon: encryptedMacaroon,
-          });
           const encryptedSeed = crypto.AES.encrypt(
             btoa(seed.data.cipher_seed_mnemonic.join(",")),
             initPassword.value
@@ -329,6 +319,12 @@ export default defineComponent({
               node_id: route.value.params.id,
               seed: encryptedSeed,
             }),
+          });
+          // write the macaroon to macaroon store
+          await macaroonStore.FETCH_MACAROON({
+            nodeId: route.value.params.id,
+            macaroonType: "admin",
+            password: initPassword.value,
           });
         }
         res.data = {};
