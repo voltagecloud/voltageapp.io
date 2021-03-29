@@ -41,35 +41,48 @@ export default defineComponent({
       // see response data shape at https://api.lightning.community/?javascript#v1-invoices
       htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
     }
-    loadData()
+    loadData();
 
     const reducedHTLC = computed(() => {
-      if (!htlcs.value) return null
-      const podcasts: Record<string, {
-        title: string;
-        subtitle?: string 
-        amount: number;
-      }> = {}
+      if (!htlcs.value) return null;
+      const podcasts: Record<
+        string,
+        {
+          title: string;
+          subtitle?: string;
+          amount: number;
+        }
+      > = {};
       for (const htlc of htlcs.value) {
-        const curTitle = htlc?.custom_records?.title || htlc?.custom_records?.podcast_title || ""
-        const curSubtitle = htlc?.custom_records?.text || htlc?.custom_records?.episode_title || ''
-        const episodeKey = curTitle + curSubtitle
-        const curAmount = podcasts[episodeKey]?.amount || 0
+        const curTitle =
+          htlc?.custom_records?.title ||
+          htlc?.custom_records?.podcast_title ||
+          "";
+        const curSubtitle =
+          htlc?.custom_records?.text ||
+          htlc?.custom_records?.episode_title ||
+          "";
+        const episodeKey = curTitle + curSubtitle;
+        const curAmount = podcasts[episodeKey]?.amount || 0;
         if (curTitle) {
-          podcasts[curTitle] = { title: curTitle, amount: curAmount + (+htlc.amt_msat), subtitle: curSubtitle }
+          podcasts[curTitle] = {
+            title: curTitle,
+            amount: curAmount + +htlc.amt_msat,
+            subtitle: curSubtitle,
+          };
         }
       }
-      const podcastObjects = Object.values(podcasts)
-      return podcastObjects.length > 0 ? podcastObjects : null
-    })
+      const podcastObjects = Object.values(podcasts);
+      return podcastObjects.length > 0 ? podcastObjects : null;
+    });
 
-    console.log(reducedHTLC)
+    console.log(reducedHTLC);
 
     return () => {
       if (loading.value) {
         return <VProgressCircular indeterminate class="mx-auto" />;
       } else if (!reducedHTLC.value) {
-        return <div>No Podcast stream data found for this node</div>
+        return <div>No Podcast stream data found for this node</div>;
       } else {
         return <JsonTable data={() => reducedHTLC.value as JsonData} />;
       }
