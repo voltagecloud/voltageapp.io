@@ -45,6 +45,7 @@ export default function useBitcoinCheckout(cart: ComputedRef<Cart>) {
   return {
     loading,
     error,
-    confirmBitcoin
+    confirmBitcoin,
+    bitcoinCheckout
   }
 }
