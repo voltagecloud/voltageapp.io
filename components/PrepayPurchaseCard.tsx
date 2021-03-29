@@ -93,6 +93,7 @@ export default defineComponent({
               loading={loading.value}
               class="my-2"
               color="highlight"
+              dark
             >
               Checkout with Card
             </VBtn>
@@ -102,6 +103,7 @@ export default defineComponent({
               loading={btcLoading.value}
               class="my-2"
               color="highlight"
+              dark
             >
               Checkout with Bitcoin
             </VBtn>
