@@ -34,7 +34,7 @@ export default defineComponent({
       planState.value = Object.assign({}, podcastPlan.value);
       createStore.NETWORK(Network.mainnet);
       // serialize store for retrieval after redirect
-      createStore.dispatchCreate();
+      await createStore.dispatchCreate();
       return method === "stripe"
         ? await stripeCheckout("/create/lnd")
         : await bitcoinCheckout();
