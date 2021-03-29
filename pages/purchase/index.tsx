@@ -82,7 +82,7 @@ export default defineComponent({
     });
 
     function renderPlans(plans: Subscription<Plan, Product>[]) {
-      return plans.map((plan) => {
+      return plans.filter((plan) => plan.plan !== Plan.trial && plan.plan !== Plan.payAsYouGo).map((plan) => {
         const active = planState.value.name === plan.name;
         const disabled =
           plan.nodeType === Product.btcPay && !canPurchaseBTCPay.value;
