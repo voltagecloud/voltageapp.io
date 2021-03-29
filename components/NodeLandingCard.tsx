@@ -1,8 +1,28 @@
 import { defineComponent, computed } from "@vue/composition-api";
 import { useRouter } from "@nuxtjs/composition-api";
 import useFetch from "~/compositions/useFetch";
+import {
+  VCard,
+  VCardTitle,
+  VCardText,
+  VCardActions,
+  VContainer,
+  VRow,
+  VCol,
+  VImg,
+} from "vuetify/lib";
 
 export default defineComponent({
+  components: {
+    VCard,
+    VCardTitle,
+    VCardText,
+    VCardActions,
+    VContainer,
+    VRow,
+    VCol,
+    VImg,
+  },
   setup: () => {
     const { data, dispatch } = useFetch<any>("/user");
     dispatch({ method: "GET" });
@@ -43,7 +63,7 @@ export default defineComponent({
               {products.value.map((product, i) => (
                 <v-col key={i} cols="12" sm="6">
                   <v-card
-                    onClick={router.push(product.to)}
+                    onClick={() => router.push(product.to)}
                     class="text-center d-flex flex-column justify-space-between"
                     style="height: 200px"
                   >
