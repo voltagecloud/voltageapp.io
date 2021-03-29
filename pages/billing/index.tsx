@@ -1,4 +1,4 @@
-import { defineComponent, reactive } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 import { VContainer, VRow, VCol, VCard, VSimpleTable, VChip, VBtn, VProgressCircular } from 'vuetify/lib'
 import { nodeStore } from '~/store'
 import useFetch  from '~/compositions/useFetch'
@@ -56,6 +56,9 @@ export default defineComponent({
       } else if (data.value?.status) {
         return <v-container>
           <v-row justify="center">
+            <v-col cols="12" lg="10">
+              <v-btn color="highlight" dark class="ml-auto" nuxt to="/purchase">Buy New Subscription</v-btn>
+            </v-col>
             <v-col cols="12" lg="10">
               { error.value && <v-card class="pa-3 text-h4">{error.value}</v-card> }
               { data.value && data.value.status !== 'active' && <v-card class="pa-3 text-center">
