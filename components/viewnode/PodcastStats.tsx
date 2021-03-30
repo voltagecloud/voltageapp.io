@@ -59,6 +59,7 @@ export default defineComponent({
           let payload: Record<string, string>;
           try {
             payload = JSON.parse(atob(value as string));
+            console.log({ payload })
           } catch (e) {
             console.log(e);
             continue;
@@ -76,10 +77,10 @@ export default defineComponent({
             "";
           const episodeKey = curTitle + curSubtitle;
           const curAmount = podcasts[episodeKey]?.amount || 0;
-          if (curTitle) {
-            podcasts[curTitle] = {
+          if (episodeKey) {
+            podcasts[episodeKey] = {
               title: curTitle,
-              amount: +htlc.amt_msat + curAmount,
+              amount: (+htlc.amt_msat / 1000) + curAmount,
               subtitle: curSubtitle,
             };
           }
@@ -88,6 +89,8 @@ export default defineComponent({
       const podcastObjects = Object.values(podcasts);
       return podcastObjects.length > 0 ? podcastObjects : null;
     });
+
+    console.log({ reducedHTLC })
 
 
     return () => {
