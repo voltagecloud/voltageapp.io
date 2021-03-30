@@ -54,29 +54,41 @@ export default defineComponent({
         }
       > = {};
       for (const htlc of htlcs.value) {
-        const curTitle =
-          htlc?.custom_records?.title ||
-          htlc?.custom_records?.podcast_title ||
-          "";
-        const curSubtitle =
-          htlc?.custom_records?.text ||
-          htlc?.custom_records?.episode_title ||
-          "";
-        const episodeKey = curTitle + curSubtitle;
-        const curAmount = podcasts[episodeKey]?.amount || 0;
-        if (curTitle) {
-          podcasts[curTitle] = {
-            title: curTitle,
-            amount: +htlc.amt_msat + curAmount,
-            subtitle: curSubtitle,
-          };
+        // determine if this htlc has podcast relevant custom record
+        for (const [_, value] of Object.entries(htlc?.custom_records || {})) {
+          let payload: Record<string, string>;
+          try {
+            payload = JSON.parse(atob(value as string));
+          } catch (e) {
+            console.log(e);
+            continue;
+          }
+
+          if (!payload) continue;
+
+          const curTitle =
+            payload?.title ||
+            payload?.podcast_title ||
+            "";
+          const curSubtitle =
+            payload?.text ||
+            payload?.episode_title ||
+            "";
+          const episodeKey = curTitle + curSubtitle;
+          const curAmount = podcasts[episodeKey]?.amount || 0;
+          if (curTitle) {
+            podcasts[curTitle] = {
+              title: curTitle,
+              amount: +htlc.amt_msat + curAmount,
+              subtitle: curSubtitle,
+            };
+          }
         }
       }
       const podcastObjects = Object.values(podcasts);
       return podcastObjects.length > 0 ? podcastObjects : null;
     });
 
-    console.log(reducedHTLC);
 
     return () => {
       if (loading.value) {
