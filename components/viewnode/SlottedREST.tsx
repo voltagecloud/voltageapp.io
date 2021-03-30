@@ -1,17 +1,15 @@
 // higher oder component to handle rest reliant data
-import {
-  defineComponent,
-  PropType,
-  computed,
-} from "@vue/composition-api";
+import { defineComponent, PropType, computed } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import type { Node } from "~/types/apiResponse";
 import useFetch from "~/compositions/useFetch";
+import { VContainer } from "vuetify/lib";
 
 export default defineComponent({
   components: {
-    NodePasswordInput: () => import('~/components/NodePasswordInput.vue')
+    NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
+    VContainer,
   },
   props: {
     node: {
@@ -85,7 +83,10 @@ export default defineComponent({
         );
       } else {
         // render child component
-        return props.child({ macaroon: adminMacaroon.value, meta: nodeMeta.value });
+        return props.child({
+          macaroon: adminMacaroon.value,
+          meta: nodeMeta.value,
+        });
       }
     };
   },
