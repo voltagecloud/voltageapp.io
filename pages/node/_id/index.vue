@@ -56,7 +56,7 @@ v-container
                 node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
-              v-tab-item
+              v-tab-item(class="text-center")
                 WrappedPodcast(:node='nodeData')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
