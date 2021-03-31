@@ -410,15 +410,13 @@ export default defineComponent({
       ctx.root.$nuxt.$router.go();
     }
 
-    async function verifyPodcastReferral() {
+    async function verifyPodcastReferral(pubkey: string) {
       createStore.DESERIALIZE();
       if (
         createStore.planState.nodeType === Product.podcast &&
         createStore.nodeId === route.value.params.id
       ) {
-        console.log("attempting to establish breez channel");
-        // get pubkey once this node is synced to the chain
-        const pubkey = await checkChainSyncStatus(5000);
+        // get pubkey from getinfo call
         const res = await voltageFetch("/_custom/podcast", {
           method: "POST",
           body: JSON.stringify({
@@ -437,7 +435,7 @@ export default defineComponent({
     }
 
     // recursively check chain sync status and return pubkey when synced
-    async function checkChainSyncStatus(pollInterval: number): Promise<string> {
+    async function checkChainSyncStatus(): Promise<string> {
       const info = await fetch(
         `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
         {
@@ -448,13 +446,13 @@ export default defineComponent({
           }),
         }
       );
-      const { synced_to_chain, identity_pubkey } = await info.json();
+      const { synced_to_chain, identity_pubkey } = await info.json()
       if (synced_to_chain) {
-        return identity_pubkey as string;
+        return identity_pubkey as string
       } else {
         // sleep for 5 secs
-        await (() => new Promise((resolve) => setTimeout(resolve, pollInterval)))();
-        return await checkChainSyncStatus();
+        await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
+        return await checkChainSyncStatus()
       }
     }
 
@@ -466,7 +464,8 @@ export default defineComponent({
         macaroonHex.value
       ) {
         console.log("verifying podcast");
-        await verifyPodcastReferral();
+        const pubkey = await checkChainSyncStatus()
+        await verifyPodcastReferral(pubkey)
       }
     });
 
