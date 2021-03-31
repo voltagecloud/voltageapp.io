@@ -24,6 +24,7 @@ export default function useFetch<T>(
       if (!res.ok) {
         error.value = json.message;
       } else {
+        error.value = null
         data.value = json;
       }
     } catch (e) {
