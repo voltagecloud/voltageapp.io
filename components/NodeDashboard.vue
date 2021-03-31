@@ -35,19 +35,7 @@
     p(v-if='isPending' style="padding-left: 30px").font-weight-light.warning--text.text--darken-1
       | Provisioning takes approximately 45 seconds
     v-container
-      v-simple-table(
-        :style='{"background-color": $vuetify.theme.currentTheme.secondary}'
-      )
-        tbody
-          template(v-for='(v, k) in dashboardInfo')
-            tr(v-if='!!v' :key='k')
-              td {{ k }}
-              td.text-end
-                copy-pill(
-                  color='accent'
-                  text-color='warning'
-                  :text='v'
-                ).mr-3
+      JsonTable(:data='dashboardInfo')
 </template>
 <script lang="ts">
 import { defineComponent, computed, ref } from '@vue/composition-api'
@@ -67,14 +55,15 @@ export default defineComponent({
     }
   },
   components: {
-    CopyPill: () => import('~/components/core/CopyPill.vue')
+    CopyPill: () => import('~/components/core/CopyPill.vue'),
+    JsonTable: () => import('~/components/core/JsonTable')
   },
   setup ({ dashboardID, includeNodeButton }, { root }) {
     const dashboardData = computed(() => dashboardsStore.dashboards.filter(elem => elem.dashboard_id === dashboardID)[0])
     const isPending = computed(() => dashboardData.value.status === NodeDashboardStatus.provisioning)
     const nodeButton = ref(includeNodeButton)
 
-    const dashboardInfo = computed(() => ({
+    const dashboardInfo = computed(() => () => ({
       'Endpoint': `https://${dashboardData.value.endpoint}`,
       Type: dashboardData.value.type,
       'Status': dashboardData.value.status,
