@@ -414,7 +414,6 @@ export default defineComponent({
       createStore.DESERIALIZE();
       if (
         createStore.planState.nodeType === Product.podcast &&
-        createStore.referralCode &&
         createStore.nodeId === route.value.params.id
       ) {
         const info = await fetch(
