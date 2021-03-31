@@ -39,13 +39,15 @@
 import { defineComponent, ref } from "@vue/composition-api";
 import useFormValidation from "~/compositions/useFormValidation";
 import useAuthentication from "~/compositions/useAuthentication";
+import { useRouter } from "@nuxtjs/composition-api";
+import { authStore } from "~/store";
 
 export default defineComponent({
   layout: "plain",
   components: {
     BaseMaterialCard: () => import("~/components/core/MaterialCard.vue"),
   },
-  setup(_, { root }) {
+  setup() {
     const logic = useFormValidation();
     const currentStep = ref(0);
 
@@ -70,13 +72,17 @@ export default defineComponent({
 
     const confirmCode = ref("");
 
+    const router = useRouter();
+
     async function confirm() {
       // set error to none so when retrying it will reset the error
       error.value = "";
       await confirmApi(logic.email.value.trim(), confirmCode.value);
       if (error.value === "") {
         await login(logic.email.value.trim(), logic.password.value);
-        root.$router.push("/");
+        const to = authStore.redirect;
+        authStore.REDIRECT("");
+        router.push(to || "/");
       }
     }
 
