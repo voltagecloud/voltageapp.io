@@ -3,6 +3,20 @@ import { macaroonStore } from "~/store";
 import JsonTable, { JsonData } from "~/components/core/JsonTable";
 import { VProgressCircular } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
+import PodcastChart from "~/components/PodcastChart";
+
+function isSphinxPayload(payload: Record<string, string>) {
+  return "ts" in payload && "feedID" in payload && "itemID" in payload;
+}
+
+function isBreezPayload(payload: Record<string, string>) {
+  return (
+    "podcast_title" in payload &&
+    "episode_title" in payload &&
+    "action" in payload &&
+    "action_time" in payload
+  );
+}
 
 export default defineComponent({
   props: {
@@ -19,7 +33,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup: (props) => {
+  setup: (props, { refs }) => {
     const htlcs = ref<Array<Record<string, any>> | null>(null);
     const loading = ref(false);
 
@@ -45,61 +59,95 @@ export default defineComponent({
 
     const reducedHTLC = computed(() => {
       if (!htlcs.value) return null;
-      const podcasts: Record<
+      // see https://api.lightning.community/?javascript#lnrpcinvoicehtlc
+      let htlcOutput: any[] = [];
+      for (const htlc of htlcs.value) {
+        // determine if this htlc has podcast relevant custom record
+        for (const [_, value] of Object.entries(htlc?.custom_records || {})) {
+          let payload: Record<string, string>;
+          try {
+            const decode = atob(value as string);
+            console.log(decode);
+            payload = JSON.parse(decode);
+            if (!payload) continue;
+            // check if payload conforms to breez or sphinx structure
+            if (!isBreezPayload(payload) && !isSphinxPayload(payload)) continue;
+            htlcOutput.push(
+              Object.assign({}, htlc, { custom_records: payload })
+            );
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+      return htlcOutput;
+    });
+
+    const podcastData = computed(() => {
+      if (!reducedHTLC.value) return null;
+      const episodes = new Map<
         string,
         {
           title: string;
           subtitle?: string;
           amount: number;
         }
-      > = {};
-      for (const htlc of htlcs.value) {
-        // determine if this htlc has podcast relevant custom record
-        for (const [_, value] of Object.entries(htlc?.custom_records || {})) {
-          let payload: Record<string, string>;
-          try {
-            payload = JSON.parse(atob(value as string));
-            console.log({ payload })
-          } catch (e) {
-            console.log(e);
-            continue;
-          }
+      >();
+      const timeSeries = new Map<string, { x: string; y: number }>();
+      for (const htlc of reducedHTLC.value) {
+        const curTitle =
+          htlc?.custom_records?.title ||
+          htlc?.custom_records?.podcast_title ||
+          "";
+        const curSubtitle =
+          htlc?.custom_records?.text ||
+          htlc?.custom_records?.episode_title ||
+          "";
+        const episodeKey = curTitle + curSubtitle;
+        const curAmount = episodes.get(episodeKey)?.amount || 0;
+        if (episodeKey) {
+          const amount = +htlc.amt_msat / 1000 + curAmount;
 
-          if (!payload) continue;
+          episodes.set(episodeKey, {
+            title: curTitle,
+            amount,
+            subtitle: curSubtitle,
+          });
 
-          const curTitle =
-            payload?.title ||
-            payload?.podcast_title ||
-            "";
-          const curSubtitle =
-            payload?.text ||
-            payload?.episode_title ||
-            "";
-          const episodeKey = curTitle + curSubtitle;
-          const curAmount = podcasts[episodeKey]?.amount || 0;
-          if (episodeKey) {
-            podcasts[episodeKey] = {
-              title: curTitle,
-              amount: (+htlc.amt_msat / 1000) + curAmount,
-              subtitle: curSubtitle,
-            };
-          }
+          timeSeries.set(episodeKey, {
+            x: curTitle + (curSubtitle ? ` - ${curSubtitle}` : ""),
+            y: amount,
+          });
         }
       }
-      const podcastObjects = Object.values(podcasts);
-      return podcastObjects.length > 0 ? podcastObjects : null;
+      const tableData = Array.from(episodes.values());
+      const chartData = Array.from(timeSeries.values());
+      return tableData.length > 0
+        ? {
+            tableData,
+            chartData,
+          }
+        : null;
     });
-
-    console.log({ reducedHTLC })
-
 
     return () => {
       if (loading.value) {
         return <VProgressCircular indeterminate class="mx-auto" />;
-      } else if (!reducedHTLC.value) {
-        return <div>No Podcast stream data found for this node</div>;
+      } else if (podcastData.value) {
+        return (
+          <div>
+            {/*<JsonTable data={() => podcastData.value?.tableData as JsonData} />*/}
+            {podcastData.value?.chartData && (
+              <PodcastChart podcastData={podcastData.value.chartData} />
+            )}
+          </div>
+        );
       } else {
-        return <JsonTable data={() => reducedHTLC.value as JsonData} />;
+        return (
+          <div class="ma-3 text-h6">
+            No Podcast stream data found for this node
+          </div>
+        );
       }
     };
   },
