@@ -29,6 +29,17 @@ export default class NodeModule extends VuexModule {
     nodes: Node[] = []
 
     @Mutation
+    RESET () {
+      this.nodes = []
+      this.purchased = 0
+      this.mainnetAvailable = 0
+      this.mainnetNodeIDName = []
+      this.testnetAvailable = 0
+      this.testnetNodeIDName = []
+      this.user = null
+    }
+
+    @Mutation
     HYDRATE_USER ({ user, nodes }: { user: User; nodes: Node[]; }) {
       this.user = user
       this.nodes = nodes
@@ -82,4 +93,5 @@ export default class NodeModule extends VuexModule {
       }
       return []
     }
+
 }
