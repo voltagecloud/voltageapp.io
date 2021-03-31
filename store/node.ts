@@ -30,22 +30,8 @@ export default class NodeModule extends VuexModule {
 
     @Mutation
     HYDRATE_USER ({ user, nodes }: { user: User; nodes: Node[]; }) {
-      for (const n of nodes) {
-        if (n.network === Network.testnet) {
-          for (const tn of user.testnet_nodes) {
-            if (n.node_id === tn.node_id) {
-              tn.created = n.created
-            }
-          }
-        } else if (n.network === Network.mainnet) {
-          for (const mn of user.mainnet_nodes) {
-            if (n.node_id === mn.node_id) {
-              mn.created = n.created
-            }
-          }
-        }
-      }
       this.user = user
+      this.nodes = nodes
     }
 
     @Mutation
@@ -90,33 +76,10 @@ export default class NodeModule extends VuexModule {
       return shown
     }
 
-    // @Mutation
-    // PURGE_NODE ({ id, network }: PurgePayload) {
-    //     this.nodes = this.nodes.filter(n => n.node_id !== id)
-    //     if (network == 'testnet')
-    //         this.testnetNodeIDName = this.testnetNodeIDName.filter(n => n.node_id !== id)
-    //     else if (network == 'mainnet') {
-    //         this.mainnetNodeIDName = this.mainnetNodeIDName.filter(n => n.node_id !== id)
-    //     }
-    // }
-
     get IDNames () {
-      if (this.user) {
-        return [...this.user.testnet_nodes, ...this.user.mainnet_nodes].sort((a, b) => (a.created || 0) > (b.created || 0) ? -1 : 1)
+      if (this.nodes.length) {
+        return [...this.nodes].sort((a, b) => (a.created || 0) > (b.created || 0) ? -1 : 1)
       }
       return []
-    }
-
-    get showTrialBox () {
-      /*
-      Disabling this for now because it doesn't work that great and can be annoying
-      let showedTrial = localStorage.getItem("showedTrial")
-      if (this.user?.trial_available === true && (showedTrial === null || showedTrial === "false")) {
-        return true
-      }
-      return false
-      */
-
-     return false
     }
 }

@@ -4,6 +4,7 @@
     ref="outerContainer"
   >
     <div :style="containerStyle" ref="containerRef">
+      <slot name="before" />
       <div :style="contentStyle">
         <div :style="visibleStyle">
           <slot :items="visibleChildren" />
@@ -42,9 +43,15 @@ export default defineComponent({
       required: false,
       default: 0,
     },
+    // extra spaces to render for non-item content
+    extra: {
+      type: Number,
+      required: false,
+      default: 0
+    }
   },
   setup: (props) => {
-    const totalHeight = computed(() => props.height * props.items.length);
+    const totalHeight = computed(() => props.height * (props.items.length + props.extra));
 
     const { containerRef: outerContainer, height } = useHeightAware();
     const { containerRef, scrollTop } = useScrollAware();
@@ -62,7 +69,7 @@ export default defineComponent({
       return output;
     });
 
-    const offsetY = computed(() => startNode.value * props.height);
+    const offsetY = computed(() => (startNode.value) * props.height);
 
     const visibleChildren = computed(() =>
       new Array(visibleNodesCount.value)

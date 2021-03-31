@@ -12,83 +12,17 @@ import {
   VDialog,
   VTooltip,
 } from "vuetify/lib";
-import { loadStripe } from "@stripe/stripe-js";
-import { voltageFetch } from "~/utils/fetchClient";
 import useFetch from "~/compositions/useFetch";
-
-enum Plan {
-  yearly = "yearly",
-  monthly = "monthly",
-}
-
-enum NodeType {
-  lite = "lite",
-  standard = "standard",
-  btcPay = "btcpayserver",
-}
-
-interface Subscription {
-  desc: string;
-  name: string;
-  cost: number;
-  plan: Plan;
-  nodeType: NodeType;
-  // is this subscription type just btcpay server
-}
-const litePlans: Subscription[] = [
-  {
-    desc:
-      "One year of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.",
-    name: "Lite Node/1Yr",
-    cost: 9.99,
-    plan: Plan.yearly,
-    nodeType: NodeType.lite,
-  },
-  {
-    desc:
-      "One month of hosting for a Lightning node backend by Neutrino. Ideal for personal wallets or testing purposes.",
-    name: "Lite Node/1Mo",
-    cost: 12.99,
-    plan: Plan.monthly,
-    nodeType: NodeType.lite,
-  },
-];
-const standardPlans: Subscription[] = [
-  {
-    desc:
-      "One year of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.",
-    name: "Standard Node/1Yr",
-    cost: 26.99,
-    plan: Plan.yearly,
-    nodeType: NodeType.standard,
-  },
-  {
-    desc:
-      "One month of hosting for a Lightning node backend by a Bitcoin full node. Recommended option for anything outside of a personal wallet.",
-    name: "Standard Node/1Mo",
-    cost: 31.99,
-    plan: Plan.monthly,
-    nodeType: NodeType.standard,
-  },
-];
-const btcPayOnlyPlans: Subscription[] = [
-  {
-    desc:
-      "One BTCPay Server account for one year. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
-    name: "BTCPay Server/1Yr",
-    cost: 6.99,
-    plan: Plan.yearly,
-    nodeType: NodeType.btcPay,
-  },
-  {
-    desc:
-      "One BTCPay Server account for one month. This option doesn't include any Lightning nodes. However, you can add Lightning nodes later.",
-    name: "BTCPay Server/1Mo",
-    cost: 8.99,
-    plan: Plan.monthly,
-    nodeType: NodeType.btcPay,
-  },
-];
+import useStripeCheckout from "~/compositions/useStripeCheckout";
+import {
+  standardPlans,
+  Product,
+  Subscription,
+  litePlans,
+  Plan,
+  btcPayOnlyPlans,
+} from "~/utils/voltageProducts";
+import useCart from "~/compositions/useCart";
 
 interface SubscriptionItem {
   item: string;
@@ -111,7 +45,6 @@ export default defineComponent({
     VDialog,
     VTooltip,
   },
-  middleware: ["loadCognito", "assertAuthed", "loadUser"],
   setup: (_, ctx) => {
     // add typed api calls
     const { loading, dispatch, data } = useFetch<{
@@ -119,26 +52,40 @@ export default defineComponent({
     }>("/billing");
     dispatch({ method: "GET" });
 
+    const {
+      cart,
+      planQty,
+      includeBtcPay,
+      btcPayAddonMonthly,
+      planState,
+    } = useCart();
+
+    const {
+      stripeCheckout,
+      loading: stripeLoading,
+      error: stripeError,
+    } = useStripeCheckout(cart);
+
+    async function handleCheckout () {
+      const isBtcPayOnly = planState.value.nodeType === Product.btcPay
+      await stripeCheckout(isBtcPayOnly ? '/create/btcpay' : '/create/lnd')
+    }
+
     const canPurchaseBTCPay = computed(() => {
       if (loading.value || !data.value) return false;
-      console.log({ response: data.value });
       const subsWithBTCPay = data.value.subscriptions.filter(
         (sub: SubscriptionResponse) => {
-          console.log({ items: sub.items });
           return !!sub.items.find((item) => item.item === "btcpayserver");
         }
       );
       return subsWithBTCPay.length === 0;
     });
-    console.log({ canPurchaseBTCPay });
 
-    const planState = ref<Subscription>(Object.assign(standardPlans[0]));
-
-    function renderPlans(plans: Subscription[]) {
-      return plans.map((plan) => {
+    function renderPlans(plans: Subscription<Plan, Product>[]) {
+      return plans.filter((plan) => plan.plan !== Plan.trial && plan.plan !== Plan.payAsYouGo).map((plan) => {
         const active = planState.value.name === plan.name;
         const disabled =
-          plan.nodeType === NodeType.btcPay && !canPurchaseBTCPay.value;
+          plan.nodeType === Product.btcPay && !canPurchaseBTCPay.value;
         return (
           <v-col cols="12">
             <v-tooltip
@@ -179,84 +126,12 @@ export default defineComponent({
       });
     }
 
-    const planQty = ref(1);
-    const includeBtcPay = ref(false);
-    const btcPayAddonMonthly = computed(() =>
-      planState.value.plan === Plan.monthly ? 8.99 : 6.99
-    );
-
-    const cart = computed(() => {
-      const isBtcPay = planState.value.nodeType === NodeType.btcPay;
-      const timeMultiplier = planState.value.plan === Plan.monthly ? 1 : 12;
-      const addonPrice =
-        includeBtcPay.value && !isBtcPay
-          ? timeMultiplier * btcPayAddonMonthly.value
-          : 0;
-      const multiplier =
-        planState.value.nodeType === NodeType.btcPay ? 1 : planQty.value;
-      const totalPrice = (
-        timeMultiplier * multiplier * planState.value.cost +
-        addonPrice
-      ).toFixed(2);
-      const items: { plan: string; quantity: number; type: string }[] = [
-        {
-          plan: isBtcPay
-            ? planState.value.plan
-            : `node_${planState.value.plan}`,
-          quantity: isBtcPay ? 1 : planQty.value,
-          type: planState.value.nodeType,
-        },
-      ];
-      if (addonPrice) {
-        const btcPayPlanName = planState.value.plan.replace("node_", "");
-        items.push({
-          plan: btcPayPlanName,
-          quantity: 1,
-          type: NodeType.btcPay,
-        });
-      }
-      return {
-        totalPrice,
-        items,
-      };
-    });
-
     // form states
     const state = reactive({
       loading: false,
       errorMessage: "",
       confirmModal: false,
     });
-
-    const stripePromise = loadStripe(process.env.stripeKey as string);
-    async function cardCheckout() {
-      state.loading = true;
-      try {
-        const res = await voltageFetch("/stripe/session", {
-          method: "POST",
-          body: JSON.stringify({
-            items: cart.value.items,
-          }),
-        });
-        const { session_id } = await res.json();
-        const stripe = await stripePromise;
-
-        if (!stripe) {
-          state.errorMessage = "There was a problem contacting stripe servers";
-          return;
-        }
-
-        const { error } = await stripe.redirectToCheckout({
-          sessionId: session_id,
-        });
-        state.errorMessage = error.message || "";
-      } catch (e) {
-        console.log(e);
-        state.errorMessage = "There was a problem processing request";
-      } finally {
-        state.loading = false;
-      }
-    }
 
     async function confirmBitcoin() {
       if (planState.value.plan === Plan.monthly) {
@@ -320,7 +195,7 @@ export default defineComponent({
                   <div class="text-h6">Description</div>
                   <div class="text-caption">{planState.value.desc}</div>
                 </div>
-                {planState.value.nodeType !== NodeType.btcPay && (
+                {planState.value.nodeType !== Product.btcPay && (
                   <div>
                     <div class="my-3">
                       <div>Node Quantity:</div>
@@ -367,8 +242,10 @@ export default defineComponent({
                   <v-row>
                     <v-col cols="12" xl="6">
                       <VBtn
-                        onClick={cardCheckout}
-                        loading={loading.value || state.loading}
+                        onClick={handleCheckout}
+                        loading={
+                          loading.value || state.loading || stripeLoading.value
+                        }
                         block
                         color="highlight"
                         class="info--text"
@@ -388,6 +265,9 @@ export default defineComponent({
                       </VBtn>
                     </v-col>
                   </v-row>
+                  <div class="text--error">
+                    {state.errorMessage || stripeError.value}
+                  </div>
                 </v-container>
               </v-container>
             </v-card>

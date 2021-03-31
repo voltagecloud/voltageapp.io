@@ -19,7 +19,6 @@ export default defineComponent({
   components: {
     VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog, CopyPill
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   // @ts-ignore
   setup: (_, { refs, root }) => {
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])

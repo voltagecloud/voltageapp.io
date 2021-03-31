@@ -25,23 +25,27 @@
     "bip32": "^2.0.6",
     "bip39": "^3.0.3",
     "bitcoinjs-lib": "^5.2.0",
+    "chart.js": "^2.9.4",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.0.0",
+    "fuse.js": "^6.4.6",
     "ip-address": "^6.3.0",
     "nuxt": "^2.0.0",
-    "opennode": "^1.2.1",
     "qrcode.vue": "^1.7.0",
     "vuex-module-decorators": "^0.16.1"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.15.3",
     "@nuxt/typescript-build": "^0.6.0",
     "@nuxtjs/eslint-config-typescript": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
     "@nuxtjs/vuetify": "^1.0.0",
+    "@types/chart.js": "^2.9.31",
     "@types/crypto-js": "^3.1.47",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.1.0",
     "eslint-plugin-nuxt": ">=0.4.2",
+    "nuxt-vite": "^0.0.28",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0"
   }

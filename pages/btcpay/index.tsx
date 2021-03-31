@@ -7,7 +7,6 @@ export default defineComponent({
   components: {
     VContainer, VCol, VRow, VCard, VProgressCircular
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
     const { data, loading, dispatch } = useFetch<any>('/btcpayserver')
 

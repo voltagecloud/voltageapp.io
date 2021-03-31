@@ -1,11 +1,15 @@
-import { Context, Middleware } from '@nuxt/types'
-import { createStore } from '~/store'
+import { Context, Middleware } from "@nuxt/types";
+import { createStore } from "~/store";
 
 const captureReferral: Middleware = ({ route }: Context) => {
-  const code = route.query.podcast_id as string|null
-  if (code) {
-    createStore.REFERRAL(code)
+  const code: string | null =
+    (route.query.podcast_id as string | null) ||
+    localStorage.getItem("podcast_id") ||
+    null;
+  if (code && !createStore.referralCode) {
+    localStorage.setItem("podcast_id", code);
+    createStore.REFERRAL(code);
   }
-}
+};
 
-export default captureReferral
+export default captureReferral;

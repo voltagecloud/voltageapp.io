@@ -36,41 +36,53 @@
                   a(@click='currentStep = 0') Register
 </template>
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
-import useFormValidation from '~/compositions/useFormValidation'
-import useAuthentication from '~/compositions/useAuthentication'
+import { defineComponent, ref } from "@vue/composition-api";
+import useFormValidation from "~/compositions/useFormValidation";
+import useAuthentication from "~/compositions/useAuthentication";
+import { useRouter } from "@nuxtjs/composition-api";
+import { authStore } from "~/store";
 
 export default defineComponent({
-  layout: 'plain',
-  middleware: ['loadCognito', 'assertUnAuthed'],
+  layout: "plain",
   components: {
-    BaseMaterialCard: () => import('~/components/core/MaterialCard.vue')
+    BaseMaterialCard: () => import("~/components/core/MaterialCard.vue"),
   },
-  setup (_, { root }) {
-    const logic = useFormValidation()
-    const currentStep = ref(0)
+  setup() {
+    const logic = useFormValidation();
+    const currentStep = ref(0);
 
-    const { register: registerApi, confirm: confirmApi, login, loading, resend, error } = useAuthentication()
+    const {
+      register: registerApi,
+      confirm: confirmApi,
+      login,
+      loading,
+      resend,
+      error,
+    } = useAuthentication();
 
-    async function register () {
+    async function register() {
       // set error to none so when retrying it will reset the error
-      error.value = ''
-      await registerApi(logic.email.value.trim(), logic.password.value)
-      if (error.value === '') {
-        currentStep.value += 1
-        logic.valid.value = null
+      error.value = "";
+      await registerApi(logic.email.value.trim(), logic.password.value);
+      if (error.value === "") {
+        currentStep.value += 1;
+        logic.valid.value = null;
       }
     }
 
-    const confirmCode = ref('')
+    const confirmCode = ref("");
 
-    async function confirm () {
+    const router = useRouter();
+
+    async function confirm() {
       // set error to none so when retrying it will reset the error
-      error.value = ''
-      await confirmApi(logic.email.value.trim(), confirmCode.value)
-      if (error.value === '') {
-        await login(logic.email.value.trim(), logic.password.value)
-        root.$router.push('/')
+      error.value = "";
+      await confirmApi(logic.email.value.trim(), confirmCode.value);
+      if (error.value === "") {
+        await login(logic.email.value.trim(), logic.password.value);
+        const to = authStore.redirect;
+        authStore.REDIRECT("");
+        router.push(to || "/");
       }
     }
 
@@ -82,8 +94,8 @@ export default defineComponent({
       confirm,
       currentStep,
       confirmCode,
-      error
-    }
-  }
-})
+      error,
+    };
+  },
+});
 </script>

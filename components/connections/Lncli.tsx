@@ -32,22 +32,9 @@ export default defineComponent({
       return data.macaroon;
     });
 
-    const endpoint = computed(() => {
-      const data = macaroonStore.findNodeMeta({ nodeId: props.node.node_id });
-      return data?.endpoint || "";
-    });
+    const endpoint = computed(() => macaroonStore.findNodeMeta({ nodeId: props.node.node_id })?.endpoint || "");
 
-    const cert = computed(() => {
-      const data = macaroonStore.findNodeMeta({ nodeId: props.node.node_id });
-      return data?.endpoint || "";
-    });
-
-    const { uri } = useBuildUri({
-      endpoint,
-      macaroon,
-      cert: ref(''),
-      api: ref("GRPC"),
-    });
+    const cert = computed(() => macaroonStore.findNodeMeta({ nodeId: props.node.node_id })?.tlsCert || "");
 
     const certValid = computed(() => cert.value && cert.value !== "pending");
     const certButtonText = computed(() =>
