@@ -244,10 +244,7 @@ export default class CreateModule extends VuexModule {
           // force sphinx creation as false for now
           sphinx: false,
           // alias should be node node on podcast nodes
-          alias:
-            this.planState.nodeType === Product.podcast
-              ? this.nodeName
-              : this.settings.alias,
+          alias: this.nodeName
         }),
       }),
     });
