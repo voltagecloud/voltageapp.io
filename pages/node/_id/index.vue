@@ -410,24 +410,13 @@ export default defineComponent({
       ctx.root.$nuxt.$router.go();
     }
 
-    async function verifyPodcastReferral() {
+    async function verifyPodcastReferral(pubkey: string) {
       createStore.DESERIALIZE();
       if (
         createStore.planState.nodeType === Product.podcast &&
         createStore.nodeId === route.value.params.id
       ) {
-        const info = await fetch(
-          `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
-          {
-            method: "GET",
-            headers: new Headers({
-              "Grpc-Metadata-macaroon": macaroonHex.value,
-              "Content-Type": "application/json",
-            }),
-          }
-        );
         // get pubkey from getinfo call
-        const { identity_pubkey: pubkey } = await info.json();
         const res = await voltageFetch("/_custom/podcast", {
           method: "POST",
           body: JSON.stringify({
@@ -442,10 +431,28 @@ export default defineComponent({
           createStore.COMPLETE();
           localStorage.removeItem("podcast_id");
         }
+      }
+    }
+
+    // recursively check chain sync status and return pubkey when synced
+    async function checkChainSyncStatus(): Promise<string> {
+      const info = await fetch(
+        `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
+        {
+          method: "GET",
+          headers: new Headers({
+            "Grpc-Metadata-macaroon": macaroonHex.value,
+            "Content-Type": "application/json",
+          }),
+        }
+      );
+      const { synced_to_chain, identity_pubkey } = await info.json()
+      if (synced_to_chain) {
+        return identity_pubkey as string
       } else {
-        // store doent hold podcast data, its safe to clear
-        console.log("no podcast referral data found");
-        createStore.COMPLETE();
+        // sleep for 5 secs
+        await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
+        return await checkChainSyncStatus()
       }
     }
 
@@ -457,7 +464,8 @@ export default defineComponent({
         macaroonHex.value
       ) {
         console.log("verifying podcast");
-        await verifyPodcastReferral();
+        const pubkey = await checkChainSyncStatus()
+        await verifyPodcastReferral(pubkey)
       }
     });
 
