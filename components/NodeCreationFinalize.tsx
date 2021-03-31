@@ -28,8 +28,16 @@ export default defineComponent({
 
     const router = useRouter();
 
+    // hold status message of request
     const message = ref("");
+    // hold state of if /create has been called
+    // used to prevent recurring /create requests
+    const hasRetried = ref(false);
     async function createNode() {
+      // reset store errors
+      createStore.CREATE_ERROR({});
+      createStore.POPULATE_ERROR({});
+
       const passwordValid = validate();
       if (!passwordValid) return;
       // commit to store for use during node waiting_init
@@ -41,6 +49,15 @@ export default defineComponent({
 
       if (!createStore.populateError) {
         router.push(`/node/${createStore.nodeId}`);
+      } else if (
+        createStore.populateError?.message ===
+          "This node has not been created yet" &&
+        createStore.nodeId &&
+        !hasRetried.value
+      ) {
+        createStore.dispatchCreate();
+        hasRetried.value = true;
+        await createNode();
       }
     }
 
@@ -132,7 +149,9 @@ export default defineComponent({
                   Create Node
                 </VBtn>
                 <div class="error--text">
-                  {createStore.populateError?.message || ""}
+                  {createStore.populateError?.message ||
+                    createStore.createError?.message ||
+                    ""}
                 </div>
               </div>
             </VCard>
