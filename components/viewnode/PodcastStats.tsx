@@ -33,7 +33,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup: (props, { refs }) => {
+  setup: (props) => {
     const htlcs = ref<Array<Record<string, any>> | null>(null);
     const loading = ref(false);
 
