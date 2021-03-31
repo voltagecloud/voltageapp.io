@@ -61,7 +61,7 @@ export default defineComponent({
             </div>
           </v-container>
         );
-      } else if (!props.node.settings.rest) {
+      } else if (!props.node?.settings?.rest) {
         return (
           <v-container class="text-center">
             <div>
