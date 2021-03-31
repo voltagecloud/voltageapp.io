@@ -445,7 +445,7 @@ export default defineComponent({
         }
       } else {
         // store doent hold podcast data, its safe to clear
-        console.log("no podcast data found");
+        console.log("no podcast referral data found");
         createStore.COMPLETE();
       }
     }
