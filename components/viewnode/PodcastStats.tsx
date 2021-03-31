@@ -67,7 +67,6 @@ export default defineComponent({
           let payload: Record<string, string>;
           try {
             const decode = atob(value as string);
-            console.log(decode);
             payload = JSON.parse(decode);
             if (!payload) continue;
             // check if payload conforms to breez or sphinx structure

@@ -10,14 +10,11 @@ export default defineComponent({
   },
   setup: (props, { refs }) => {
     function renderChart() {
-      console.log("attempting render");
       const chartData = props.podcastData;
       const canvas = refs.chart;
       if (!chartData || !canvas) {
-        console.log({ chartData, canvas });
         return;
       }
-      console.log(canvas);
       const ch = new Chart(canvas as HTMLCanvasElement, {
         type: "bar",
         data: {
@@ -45,7 +42,6 @@ export default defineComponent({
           },
         },
       });
-      console.log({ ch });
     }
 
     onMounted(renderChart);
