@@ -49,7 +49,6 @@ export default defineComponent({
     const { loading, error, bakeBackupMacaroon } = useBackupMacaroon();
 
     async function handleCreation() {
-      console.log({ admin: adminMacaroon.value });
       return await bakeBackupMacaroon({
         endpoint: meta.value?.endpoint as string,
         macaroonType: MacaroonType.readonly,
