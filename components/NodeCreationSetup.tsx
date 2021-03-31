@@ -343,6 +343,7 @@ export default defineComponent({
                   block
                   onClick={handleCreation}
                   disabled={createDisabled.value}
+                  loading={creating.value}
                 >
                   Create Node
                 </VBtn>
