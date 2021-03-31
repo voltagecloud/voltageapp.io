@@ -112,7 +112,7 @@ export default defineComponent({
         ? {
             borderColor: "#343851 !important",
             borderWidth: "2px",
-            borderStyle: "solid"
+            borderStyle: "solid",
           }
         : {};
     }
@@ -124,12 +124,15 @@ export default defineComponent({
       mappedBillingName.value = billing;
       selectedNetwork.value = Network.testnet;
       disableMainnet.value = billingCycle.value === Plan.trial;
-      const bestCasePlan = subscriptions.find((sub) => sub.plan === billingCycle.value && sub.nodeType === planState.value.nodeType)
-      const worstCasePlan = subscriptions.find((sub) => sub.plan === billingCycle.value) as Subscription<Plan, Product>
-      planState.value = Object.assign(
-        {},
-        bestCasePlan || worstCasePlan
+      const bestCasePlan = subscriptions.find(
+        (sub) =>
+          sub.plan === billingCycle.value &&
+          sub.nodeType === planState.value.nodeType
       );
+      const worstCasePlan = subscriptions.find(
+        (sub) => sub.plan === billingCycle.value
+      ) as Subscription<Plan, Product>;
+      planState.value = Object.assign({}, bestCasePlan || worstCasePlan);
     }
 
     // create logic
@@ -147,6 +150,9 @@ export default defineComponent({
     const availableNodes = computed(() => nodeStore.user?.available_nodes || 0);
 
     async function handleCreation() {
+      // reset store errors
+      createStore.CREATE_ERROR({});
+
       if (planState.value.plan === Plan.payAsYouGo) {
         // handle some pay as you go state
         // TODO implement pay as you go
