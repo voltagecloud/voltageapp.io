@@ -88,11 +88,13 @@ export default defineComponent({
         );
       } else if (error.value) {
         return (
-          <v-container class="text-center">
-            <div>
-              There was an error retrieving your billing information. Please try
-              again later
-            </div>
+          <v-container>
+            <v-card color="info" class="text-center pa-3 my-3">
+              <div>
+                There was an error retrieving your billing information. Please
+                try again later
+              </div>
+            </v-card>
           </v-container>
         );
       } else if (data.value?.status) {
