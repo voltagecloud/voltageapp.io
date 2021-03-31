@@ -15,13 +15,13 @@ export default defineComponent({
       if (!chartData || !canvas) {
         return;
       }
-      const ch = new Chart(canvas as HTMLCanvasElement, {
+      new Chart(canvas as HTMLCanvasElement, {
         type: "bar",
         data: {
           labels: chartData.map((e) => e.x),
           datasets: [
             {
-              label: "Satoshis",
+              label: "Sats Streamed",
               data: chartData,
               barPercentage: 0.5,
               minBarLength: 2,
