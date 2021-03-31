@@ -124,9 +124,11 @@ export default defineComponent({
       mappedBillingName.value = billing;
       selectedNetwork.value = Network.testnet;
       disableMainnet.value = billingCycle.value === Plan.trial;
+      const bestCasePlan = subscriptions.find((sub) => sub.plan === billingCycle.value && sub.nodeType === planState.value.nodeType)
+      const worstCasePlan = subscriptions.find((sub) => sub.plan === billingCycle.value) as Subscription<Plan, Product>
       planState.value = Object.assign(
         {},
-        subscriptions.find((sub) => sub.plan === billingCycle.value)
+        bestCasePlan || worstCasePlan
       );
     }
 
