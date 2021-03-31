@@ -24,15 +24,16 @@ export default defineComponent({
           labels: chartData.map((e) => e.x),
           datasets: [
             {
-              label: "Podcasts",
+              label: "Satoshis",
               data: chartData,
               barPercentage: 0.5,
-              barThickness: 6,
               minBarLength: 2,
+              backgroundColor: '#343851'
             },
           ],
         },
         options: {
+          maintainAspectRatio: false,
           scales: {
             yAxes: [
               {
@@ -49,6 +50,10 @@ export default defineComponent({
 
     onMounted(renderChart);
 
-    return () => <canvas ref="chart" width="400" height="400" />;
+    return () => (
+      <div style="width: 100%; max-height: 600px;">
+        <canvas ref="chart" width="400" height="400" />;
+      </div>
+    );
   },
 });
