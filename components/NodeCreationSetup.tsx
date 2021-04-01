@@ -37,6 +37,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    loading: {
+      type: Boolean,
+      required: true
+    }
   },
   setup: (props, { emit }) => {
     const lightningSoftwares = [
@@ -158,37 +162,27 @@ export default defineComponent({
         // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
-        await moveToPopulate();
+        emit('next')
       } else if (
         planState.value.nodeType === Product.lite &&
         availableLiteNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
         console.log(`user has ${availableLiteNodes.value} nodes available`);
-        await moveToPopulate();
+        emit('next')
       } else if (
         planState.value.nodeType === Product.standard &&
         availableNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
         console.log(`user has ${availableNodes.value} nodes available`);
-        await moveToPopulate();
+        emit('next')
       } else {
         // customer is prepaying, show payment methods
         showPrepayModal.value = true;
       }
     }
 
-    const creating = ref("");
-    async function moveToPopulate() {
-      creating.value = "Creating Node";
-      await createStore.dispatchCreate();
-      creating.value = "";
-
-      if (createStore.createError) return;
-
-      emit("next");
-    }
 
     //determine if trial type should be selected
     async function determineTrial() {
@@ -351,7 +345,7 @@ export default defineComponent({
                   block
                   onClick={handleCreation}
                   disabled={createDisabled.value}
-                  loading={!!creating.value}
+                  loading={props.loading}
                 >
                   Create Node
                 </VBtn>
