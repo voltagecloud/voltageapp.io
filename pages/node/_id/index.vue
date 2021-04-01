@@ -427,7 +427,6 @@ export default defineComponent({
         });
         // we are now done with create store data and it should be cleared
         if (res.ok) {
-          console.log("podcast success");
           createStore.COMPLETE();
           localStorage.removeItem("podcast_id");
         }
@@ -457,13 +456,11 @@ export default defineComponent({
     }
 
     watch([nodeData, macaroonHex], async () => {
-      console.log("watch triggered");
       if (
         nodeData.value &&
         nodeData.value.status === "running" &&
         macaroonHex.value
       ) {
-        console.log("verifying podcast");
         const pubkey = await checkChainSyncStatus()
         await verifyPodcastReferral(pubkey)
       }

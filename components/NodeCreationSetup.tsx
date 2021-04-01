@@ -39,8 +39,8 @@ export default defineComponent({
     },
     loading: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   setup: (props, { emit }) => {
     const lightningSoftwares = [
@@ -162,27 +162,24 @@ export default defineComponent({
         // TODO implement pay as you go
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
-        emit('next')
+        emit("next");
       } else if (
         planState.value.nodeType === Product.lite &&
         availableLiteNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
-        console.log(`user has ${availableLiteNodes.value} nodes available`);
-        emit('next')
+        emit("next");
       } else if (
         planState.value.nodeType === Product.standard &&
         availableNodes.value
       ) {
         // the user has availalbe nodes purchased of this type, continue to settings
-        console.log(`user has ${availableNodes.value} nodes available`);
-        emit('next')
+        emit("next");
       } else {
         // customer is prepaying, show payment methods
         showPrepayModal.value = true;
       }
     }
-
 
     //determine if trial type should be selected
     async function determineTrial() {
@@ -356,7 +353,11 @@ export default defineComponent({
             </VCard>
           </VCol>
         </div>
-        <VDialog value={showPrepayModal.value} onInput={(v: boolean) => showPrepayModal.value = v} max-width="800">
+        <VDialog
+          value={showPrepayModal.value}
+          onInput={(v: boolean) => (showPrepayModal.value = v)}
+          max-width="800"
+        >
           <PrepayPurchaseCard callbackPath={props.callbackPath} />
         </VDialog>
       </VContainer>

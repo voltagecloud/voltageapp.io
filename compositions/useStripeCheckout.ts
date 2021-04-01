@@ -16,7 +16,6 @@ export default function useStripeCheckout(cart: ComputedRef<Cart>) {
   async function stripeCheckout(path: string) {
     loading.value = true;
     const redirect = `${base}${path}`
-    console.log({ redirect })
     try {
       const res = await voltageFetch("/stripe/session", {
         method: "POST",
