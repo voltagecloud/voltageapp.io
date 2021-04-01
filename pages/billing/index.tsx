@@ -182,6 +182,11 @@ export default defineComponent({
                             match: "lite_node",
                             items: sub.items,
                           })}
+                          {renderPurchasedNodes({
+                            title: "Podcast Nodes",
+                            match: "podcast_node",
+                            items: sub.items,
+                          })}
                           <tr>
                             <td>
                               <b>Linked Items</b>
