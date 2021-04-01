@@ -440,11 +440,12 @@ export default defineComponent({
         `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
         {
           method: "GET",
+          cache: "no-store",
           headers: new Headers({
             "Grpc-Metadata-macaroon": macaroonHex.value,
             "Content-Type": "application/json",
             "pragma": "no-cache",
-            "cache-control": "no-cache"
+            "cache-control": "no-store"
           }),
         }
       );
