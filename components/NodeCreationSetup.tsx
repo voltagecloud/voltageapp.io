@@ -356,7 +356,7 @@ export default defineComponent({
             </VCard>
           </VCol>
         </div>
-        <VDialog value={showPrepayModal.value} max-width="800">
+        <VDialog value={showPrepayModal.value} onInput={(v: boolean) => showPrepayModal.value = v} max-width="800">
           <PrepayPurchaseCard callbackPath={props.callbackPath} />
         </VDialog>
       </VContainer>
