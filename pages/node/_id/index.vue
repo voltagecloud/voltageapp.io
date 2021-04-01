@@ -435,6 +435,7 @@ export default defineComponent({
 
     // recursively check chain sync status and return pubkey when synced
     async function checkChainSyncStatus(): Promise<string> {
+      await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
       const info = await fetch(
         `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
         {
@@ -450,7 +451,6 @@ export default defineComponent({
         return identity_pubkey as string
       } else {
         // sleep for 5 secs
-        await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
         return await checkChainSyncStatus()
       }
     }
