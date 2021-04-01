@@ -1,6 +1,5 @@
 import { defineComponent, PropType, computed, ref } from "@vue/composition-api";
 import { macaroonStore } from "~/store";
-import JsonTable, { JsonData } from "~/components/core/JsonTable";
 import { VProgressCircular } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import PodcastChart from "~/components/PodcastChart";
@@ -17,6 +16,8 @@ function isBreezPayload(payload: Record<string, string>) {
     "action_time" in payload
   );
 }
+
+type DataPayload = Map<string, { x: string; boostY: number; streamY: number }>;
 
 export default defineComponent({
   props: {
@@ -84,49 +85,53 @@ export default defineComponent({
 
     const podcastData = computed(() => {
       if (!reducedHTLC.value) return null;
-      const episodes = new Map<
-        string,
-        {
-          title: string;
-          subtitle?: string;
-          amount: number;
-        }
-      >();
-      const timeSeries = new Map<string, { x: string; y: number }>();
+      const data: DataPayload = new Map();
       for (const htlc of reducedHTLC.value) {
+        // get podcast name
         const curTitle =
           htlc?.custom_records?.title ||
           htlc?.custom_records?.podcast_title ||
           "";
+
+        // get podcast episode title
         const curSubtitle =
           htlc?.custom_records?.text ||
           htlc?.custom_records?.episode_title ||
           "";
+
+        // determine payment type of boost or stream
+        let htlcAction: "streamY" | "boostY";
+        let otherAction: "streamY" | "boostY";
+        const payloadType =
+          htlc?.custom_records?.type || htlc?.custom_records?.action || "";
+
+        if (payloadType === "boost") {
+          htlcAction = "boostY";
+          otherAction = "streamY";
+        } else if (payloadType === "stream") {
+          htlcAction = "streamY";
+          otherAction = "boostY";
+        } else {
+          continue;
+        }
+
         const episodeKey = curTitle + curSubtitle;
-        const curAmount = episodes.get(episodeKey)?.amount || 0;
+        const curAmount = data.get(episodeKey)?.[htlcAction] || 0;
+        const otherAmount = data.get(episodeKey)?.[otherAction] || 0;
         if (episodeKey) {
           const amount = +htlc.amt_msat / 1000 + curAmount;
+          const xAxisVal = curTitle + (curSubtitle ? ` - ${curSubtitle}` : "");
 
-          episodes.set(episodeKey, {
-            title: curTitle,
-            amount,
-            subtitle: curSubtitle,
-          });
-
-          timeSeries.set(episodeKey, {
-            x: curTitle + (curSubtitle ? ` - ${curSubtitle}` : ""),
-            y: amount,
+          data.set(episodeKey, {
+            x: xAxisVal,
+            boostY: htlcAction === "boostY" ? amount + curAmount : otherAmount,
+            streamY:
+              htlcAction === "streamY" ? amount + curAmount : otherAmount,
           });
         }
       }
-      const tableData = Array.from(episodes.values());
-      const chartData = Array.from(timeSeries.values());
-      return tableData.length > 0
-        ? {
-            tableData,
-            chartData,
-          }
-        : null;
+      const output = Array.from(data.values());
+      return output.length > 0 ? output : null;
     });
 
     return () => {
@@ -136,8 +141,8 @@ export default defineComponent({
         return (
           <div>
             {/*<JsonTable data={() => podcastData.value?.tableData as JsonData} />*/}
-            {podcastData.value?.chartData && (
-              <PodcastChart podcastData={podcastData.value.chartData} />
+            {podcastData.value && (
+              <PodcastChart chartData={podcastData.value} />
             )}
           </div>
         );
