@@ -443,6 +443,8 @@ export default defineComponent({
           headers: new Headers({
             "Grpc-Metadata-macaroon": macaroonHex.value,
             "Content-Type": "application/json",
+            "pragma": "no-cache",
+            "cache-control": "no-cache"
           }),
         }
       );
