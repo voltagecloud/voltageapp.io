@@ -410,13 +410,14 @@ export default defineComponent({
       ctx.root.$nuxt.$router.go();
     }
 
-    async function verifyPodcastReferral(pubkey: string) {
+    async function verifyPodcastReferral() {
       createStore.DESERIALIZE();
       if (
         createStore.planState.nodeType === Product.podcast &&
         createStore.nodeId === route.value.params.id
       ) {
         // get pubkey from getinfo call
+        const pubkey = await checkChainSyncStatus()
         const res = await voltageFetch("/_custom/podcast", {
           method: "POST",
           body: JSON.stringify({
@@ -430,6 +431,10 @@ export default defineComponent({
           createStore.COMPLETE();
           localStorage.removeItem("podcast_id");
         }
+      } else if (createStore.nodeId === route.value.params.id){
+        // this node was just created but is not a podcast node
+        // clear its store state
+        createStore.COMPLETE()
       }
     }
 
@@ -467,8 +472,7 @@ export default defineComponent({
         nodeData.value.status === "running" &&
         macaroonHex.value
       ) {
-        const pubkey = await checkChainSyncStatus()
-        await verifyPodcastReferral(pubkey)
+        await verifyPodcastReferral()
       }
     });
 
