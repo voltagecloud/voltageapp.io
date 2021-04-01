@@ -49,6 +49,7 @@ export default defineComponent({
           `https://${props.meta?.endpoint}:8080/v1/getinfo`,
           {
             method: "GET",
+            cache: "no-store",
             headers: new Headers({
               "Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
               "Content-Type": "application/json",
