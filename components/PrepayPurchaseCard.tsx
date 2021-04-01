@@ -31,7 +31,7 @@ export default defineComponent({
 
     const { stripeCheckout, loading, error } = useStripeCheckout(cart);
     const {
-      confirmBitcoin,
+      bitcoinCheckout,
       loading: btcLoading,
       error: btcError,
     } = useBitcoinCheckout(cart);
@@ -39,7 +39,7 @@ export default defineComponent({
     async function handleCheckout(type: Checkout) {
       createStore.SERIALIZE();
       if (type === Checkout.bitcoin) {
-        await confirmBitcoin();
+        await bitcoinCheckout();
       } else if (type === Checkout.stripe) {
         await stripeCheckout(props.callbackPath);
       }
