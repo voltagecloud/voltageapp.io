@@ -3,6 +3,7 @@ import { nodeStore } from '~/store'
 import type { User, Node } from '~/types/apiResponse'
 
 const loadUser: Middleware = async ({ $axios }: Context) => {
+  if (!!nodeStore.user) return
   const user = await $axios.get<User>('/user')
   const nodes = await $axios.get<{nodes: Node[]}>('/node')
 

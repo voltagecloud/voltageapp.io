@@ -1,17 +1,13 @@
 import {
   defineComponent,
-  createElement,
   PropType,
   computed,
   reactive,
 } from "@vue/composition-api";
 import { Node } from "~/types/apiResponse";
-import { base64ToHex, decryptString } from "~/utils/crypto";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import useBackupMacaroon from "~/compositions/useBackupMacaroon";
 import { macaroonStore } from "~/store";
-
-const h = createElement;
 
 export default defineComponent({
   components: {

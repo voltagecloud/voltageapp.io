@@ -13,7 +13,6 @@ export default defineComponent({
     SeedPassword: () => import('~/components/SeedPassword.vue'),
     DownloadMacaroon: () => import('~/components/DownloadMacaroon.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup (_, context) {
     if (lndStore.cipher_seed_mnemonic.length !== 24) {
       back()

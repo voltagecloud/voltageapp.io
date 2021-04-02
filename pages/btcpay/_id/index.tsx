@@ -1,4 +1,4 @@
-import { defineComponent, createElement, reactive, computed, ref } from '@vue/composition-api'
+import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
 import JsonTable, { JsonData } from '~/components/core/JsonTable'
@@ -7,7 +7,6 @@ import GetSeedBackup from '~/components/GetSeedBackup'
 import UpdateBTCPayNode from '~/components/UpdateBTCPayNode'
 import { authStore } from '~/store'
 
-const h = createElement
 
 export default defineComponent({
   components: {
@@ -25,7 +24,6 @@ export default defineComponent({
     VDialog,
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
     const { data, loading, dispatch } = useFetch<any>('/btcpayserver')
 

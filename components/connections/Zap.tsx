@@ -1,6 +1,5 @@
 import {
   defineComponent,
-  createElement,
   ref,
   PropType,
   computed
@@ -9,7 +8,6 @@ import useBuildUri from "~/compositions/useBuildUri";
 import { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 
-const h = createElement;
 
 export default defineComponent({
   components: {
@@ -40,7 +38,7 @@ export default defineComponent({
     const { uri } = useBuildUri({
       endpoint,
       macaroon,
-      cert: ref(false),
+      cert: ref(''),
       api: ref("GRPC")
     });
 

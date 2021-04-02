@@ -1,15 +1,12 @@
-import { defineComponent, createElement } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 import { VContainer, VRow, VCol, VCard, VProgressCircular } from 'vuetify/lib'
 import useFetch from '~/compositions/useFetch'
 import BTCPayLandingCard from '~/components/BTCPayLandingCard'
-
-const h = createElement
 
 export default defineComponent({
   components: {
     VContainer, VCol, VRow, VCard, VProgressCircular
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   setup: (_, { root }) => {
     const { data, loading, dispatch } = useFetch<any>('/btcpayserver')
 

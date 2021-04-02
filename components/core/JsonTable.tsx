@@ -2,12 +2,10 @@ import {
   defineComponent,
   PropType,
   computed,
-  createElement,
 } from "@vue/composition-api";
 import CopyPill from "~/components/core/CopyPill.vue";
 import { VSimpleTable } from "vuetify/lib";
 
-const h = createElement;
 
 type Primitive = String | Number | Boolean;
 type JsonObject = Record<string, Primitive | JsonArray>;
@@ -78,15 +76,16 @@ export default defineComponent({
           <v-simple-table
             style={{
               "background-color": root.$vuetify.theme.currentTheme.secondary,
+              "overflow-x": 'auto'
             }}
           >
             <tbody>
               {Object.entries(data.value).map(([key, val]) => (
                 <tr>
                   <td>
-                    <div>{key}</div>
+                    <div style="word-break: normal;">{key}</div>
                   </td>
-                  <td class="text-end" style="max-width: 40vw;">
+                  <td class="text-end">
                     <json-table data={() => val} />
                   </td>
                 </tr>

@@ -47,7 +47,7 @@ v-container
                   core-dialog(v-if='status !== "provisioning"' useActivator :value='false' activatorText='Export Data')
                     export-data(:nodeID='nodeID' :nodeStatus='status')
               v-tab-item
-                network(:node='nodeData')
+                WrappedNetwork(:node='nodeData')
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
@@ -56,6 +56,8 @@ v-container
                 node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
+              v-tab-item(class="text-center")
+                WrappedPodcast(:node='nodeData')
             v-container(v-if='errorText !== ""')
               v-card-text.error--text.text--darken-1(style='font-size: 16px;')
                 | {{ errorText }}
@@ -65,15 +67,20 @@ v-container
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
             v-container(v-if='nodeCreating' color='primary')
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
-                v-card.text-center(style='padding: 20px;' :loading='nodeCreating')
+                v-card.text-center(style='padding: 20px;' :loading='nodeCreating && status !== "running"')
                   v-card-title Node is being created
                   v-container
                     v-row(justify='center')
-                      v-col(cols='12')
+                      v-col(v-if="status !== 'running'" cols='12')
                         p
                           | Please wait while your node is creating. This can take up to a couple of minutes. Please do not close your browser until the node is running.
                         p(style='font-family: monospace')
                           | Current stage: {{ createText }}
+                      v-col(v-else cols="12")
+                        div(class="d-flex flex-column align-center")
+                          div(class="font-weight-bold") Your node is ready to use!
+                          div You can start using your node by connecting your favorite Lightning app.
+                          v-btn(class="mt-3" block @click="confirmReady" color="highlight" dark) Continue
                     v-container(v-if='passwordInit && status === "waiting_init"')
                       div(v-if='passwordInit')
                         div(justify='center' align='center' style='margin: auto;')
@@ -114,7 +121,14 @@ v-container
 
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from "@vue/composition-api";
+import {
+  defineComponent,
+  computed,
+  ref,
+  watch,
+  watchEffect,
+} from "@vue/composition-api";
+import { useRoute } from "@nuxtjs/composition-api";
 import axios from "axios";
 import crypto from "crypto-js";
 import { nodeStore, lndStore, createStore, dashboardsStore } from "~/store";
@@ -123,11 +137,13 @@ import useNodeApi from "~/compositions/useNodeApi";
 import useFormValidation from "~/compositions/useFormValidation";
 import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
-import Network from "~/components/viewnode/Network";
-import usePodcastReferral from "~/compositions/usePodcastReferral";
+import WrappedNetwork from "~/components/viewnode/WrappedNetwork";
+import WrappedPodcast from "~/components/viewnode/WrappedPodcast";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
-import { voltageFetch } from '~/utils/fetchClient'
+import { voltageFetch } from "~/utils/fetchClient";
+import { NodeStatus } from "~/types/api";
+import { Product } from "~/utils/voltageProducts";
 
 export default defineComponent({
   components: {
@@ -136,7 +152,8 @@ export default defineComponent({
     NodeSettings: () => import("~/components/viewnode/NodeSettings.vue"),
     ExportData: () => import("~/components/ExportData.vue"),
     DashboardData: () => import("~/components/DashboardData.vue"),
-    Network,
+    WrappedNetwork,
+    WrappedPodcast,
     ConnectTab: () => import("~/components/viewnode/Connect"),
     Logs: () => import("~/components/viewnode/Logs.vue"),
     CoreDialog: () => import("~/components/core/Dialog.vue"),
@@ -144,7 +161,6 @@ export default defineComponent({
     CopyPill: () => import("~/components/core/CopyPill.vue"),
     QrcodeVue: () => import("qrcode.vue"),
   },
-  middleware: ["loadCognito", "assertAuthed", "loadUser"],
   async fetch() {
     // @ts-ignore
     const axios = this.$nuxt.context.$axios;
@@ -205,6 +221,7 @@ export default defineComponent({
     }, 5000);
   },
   setup(_, ctx) {
+    const route = useRoute();
     const nodeID = ref(ctx.root.$nuxt.context.params.id);
     const nodeData = computed(
       () => nodeStore.nodes.filter((elem) => elem.node_id === nodeID.value)[0]
@@ -238,18 +255,11 @@ export default defineComponent({
     const macaroonHex = computed(
       () =>
         macaroonStore.macaroonState({
-          nodeId: nodeData.value.node_id,
+          nodeId: route.value.params.id,
           type: MacaroonType.admin,
         }).macaroonHex
     );
-    // apply watchers to macaroon state if podcast code is present
-    usePodcastReferral({
-      macaroonHex,
-      nodeId: ctx.root.$route.params.id,
-      podcastCode: createStore.referralCode,
-    });
 
-    
     async function initialize() {
       lndStore.CURRENT_NODE(nodeData.value);
       initializing.value = true;
@@ -291,33 +301,32 @@ export default defineComponent({
             res.data.admin_macaroon,
             initPassword.value
           ).toString();
-          // write the macaroon to macaroon store
-          macaroonStore.MACAROON({
-            nodeId: nodeData.value.node_id,
-            type: MacaroonType.admin,
-            macaroon: encryptedMacaroon,
-          });
           const encryptedSeed = crypto.AES.encrypt(
             btoa(seed.data.cipher_seed_mnemonic.join(",")),
             initPassword.value
           ).toString();
-          await voltageFetch('/node/macaroon', {
-            method: 'POST',
+          await voltageFetch("/node/macaroon", {
+            method: "POST",
             body: JSON.stringify({
-              node_id: nodeData.value.node_id,
-              name: 'admin',
-              macaroon: encryptedMacaroon
-            })
-          })
-          await voltageFetch('/node/seed', {
-            method: 'POST',
+              node_id: route.value.params.id,
+              name: "admin",
+              macaroon: encryptedMacaroon,
+            }),
+          });
+          await voltageFetch("/node/seed", {
+            method: "POST",
             body: JSON.stringify({
-              node_id: nodeData.value.node_id,
-              seed: encryptedSeed
-            })
-          })
+              node_id: route.value.params.id,
+              seed: encryptedSeed,
+            }),
+          });
+          // write the macaroon to macaroon store
+          await macaroonStore.FETCH_MACAROON({
+            nodeId: route.value.params.id,
+            macaroonType: "admin",
+            password: initPassword.value,
+          });
         }
-        createStore.WIPE_PASSWORD();
         res.data = {};
         seed.data = {};
         await sleep(4000);
@@ -369,11 +378,11 @@ export default defineComponent({
         });
         // node has been unlocked so password is correct write to state
         macaroonStore.NODE_PASSWORD({
-          nodeId: nodeData.value.node_id,
+          nodeId: route.value.params.id,
           password,
         });
         // update the status of the node in the api
-        await updateStatus(nodeData.value.node_id, "unlocking");
+        await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
           const api = nodeData.value.api_endpoint.replace(
@@ -396,10 +405,76 @@ export default defineComponent({
     }
 
     async function update() {
-      await updateNode(nodeData.value.node_id);
+      await updateNode(route.value.params.id);
       // @ts-ignore
       ctx.root.$nuxt.$router.go();
     }
+
+    async function verifyPodcastReferral() {
+      createStore.DESERIALIZE();
+      if (
+        createStore.planState.nodeType === Product.podcast &&
+        createStore.nodeId === route.value.params.id
+      ) {
+        // get pubkey from getinfo call
+        const pubkey = await checkChainSyncStatus()
+        const res = await voltageFetch("/_custom/podcast", {
+          method: "POST",
+          body: JSON.stringify({
+            pubkey,
+            podcast_id: createStore.referralCode,
+            URI: nodeData.value.api_endpoint,
+          }),
+        });
+        // we are now done with create store data and it should be cleared
+        if (res.ok) {
+          createStore.COMPLETE();
+          localStorage.removeItem("podcast_id");
+        }
+      } else if (createStore.nodeId === route.value.params.id){
+        // this node was just created but is not a podcast node
+        // clear its store state
+        createStore.COMPLETE()
+      }
+    }
+
+    // recursively check chain sync status and return pubkey when synced
+    async function checkChainSyncStatus(): Promise<string> {
+      await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
+      const info = await fetch(
+        `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: new Headers({
+            "Grpc-Metadata-macaroon": macaroonHex.value,
+            "Content-Type": "application/json",
+            "pragma": "no-cache",
+            "cache-control": "no-store"
+          }),
+        }
+      );
+      if (!info.ok) {
+        return await checkChainSyncStatus()
+      }
+      const { synced_to_chain, identity_pubkey } = await info.json()
+      if (synced_to_chain) {
+        return identity_pubkey as string
+      } else {
+        // sleep for 5 secs
+        return await checkChainSyncStatus()
+      }
+    }
+
+    watch([nodeData, macaroonHex], async () => {
+      if (
+        nodeData.value &&
+        nodeData.value.status === "running" &&
+        macaroonHex.value
+      ) {
+        await verifyPodcastReferral()
+      }
+    });
 
     // clear errors on typing in password field
     watch(nodePassword, () => {
@@ -408,22 +483,26 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
-    watch(status, (newStatus: string) => {
-      if (newStatus === "initializing" || newStatus === "provisioning") {
-        nodeCreating.value = true;
-        createText.value = newStatus;
-      } else {
-        nodeCreating.value = false;
+    watch(
+      status,
+      (newStatus: string | NodeStatus, prev: string | NodeStatus) => {
+        if (
+          newStatus === NodeStatus.initializing ||
+          newStatus === NodeStatus.provisioning
+        ) {
+          nodeCreating.value = true;
+          createText.value = newStatus;
+        }
+        if (newStatus === NodeStatus.waiting_init) {
+          nodeCreating.value = true;
+          createText.value = "waiting_init";
+          initialize();
+        }
+        if (newStatus === NodeStatus.running) {
+          createText.value = "complete";
+        }
       }
-      if (newStatus === "waiting_init") {
-        nodeCreating.value = true;
-        createText.value = "waiting_init";
-        initialize();
-      }
-      if (newStatus === "running") {
-        createText.value = "complete";
-      }
-    });
+    );
 
     const confirmUpdate = ref(false);
     async function closeAndUpdate() {
@@ -432,19 +511,32 @@ export default defineComponent({
     }
 
     // data for tab state
-    const tabs = ref([
-      "Info",
-      "Network",
-      "Connect",
-      "Dashboards",
-      "Settings",
-      "Logs",
-    ]);
+    const tabs = computed(() => {
+      const tabs = [
+        "Info",
+        "Network",
+        "Connect",
+        "Dashboards",
+        "Settings",
+        "Logs",
+      ];
+      const roles = nodeData.value?.custom_roles || [];
+      if (roles && roles.includes("podcast")) {
+        tabs.push("Podcast");
+      }
+      return tabs;
+    });
 
     const curTab = ref(0);
 
     // only load logs on tab click
     const logsRef = ref<null | typeof LogsComponent>(null);
+
+    // confirm ready feature
+    function confirmReady() {
+      nodeCreating.value = false;
+      curTab.value = 2;
+    }
 
     return {
       nodeData,
@@ -486,6 +578,7 @@ export default defineComponent({
       tabs,
       curTab,
       logsRef,
+      confirmReady,
     };
   },
 });

@@ -2,79 +2,91 @@
 v-card(color='info')
   slot(name='prepend-content')
   v-progress-linear(indeterminate absolute top v-if='loading' color='accent')
-  template(v-if='nodeData && nodeData.node_name')
-    v-card-title
-      v-row(align='center' justify='space-between' no-gutters)
-        v-col(@click='navigate' cols='7' style='cursor: pointer;')
-          v-row(no-gutters)
-            v-col(cols='16').font-weight-light.warning--text.text--darken-1.v-card__title
-              span {{ nodeData.node_name }}
-              span.caption.warning--text.ml-2 {{ nodeData.status }}
-            v-col(cols='12').overline
-              | {{ nodeData.network }} - {{ nodeData.purchased_type=='trial' ? 'Trial' : nodeData.type }}
-        v-col(cols='auto')
-          v-row(justify='end')
-            v-dialog(max-width='800')
-              template(v-slot:activator='{ on }')
-            v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
-              v-icon mdi-play
-            v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
-              v-icon mdi-stop
-            v-btn(:disabled='!canDelete' icon @click='deleteModal = true').ml-1.mr-3
-              v-icon mdi-delete
-            v-dialog(v-model='deleteModal' max-width='800')
-              v-card
-                v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
-                  | Are you sure you wish to delete this node?
-                v-card-actions
-                  v-btn(color='info' @click='closeAndDelete') Yes
-                  v-btn(@click='deleteModal = false') No
+  v-card-title
+    v-row(align='center' justify='space-between' no-gutters)
+      v-col(@click='navigate' cols='7' style='cursor: pointer;')
+        v-row(no-gutters)
+          v-col(cols='16').font-weight-light.warning--text.text--darken-1.v-card__title
+            span {{ nodeData && nodeData.node_name || 'Loading' }}
+            span.caption.warning--text.ml-2 {{ nodeData && nodeData.status || '...' }}
+          v-col(cols='12').overline
+            | {{networkText}}
+      v-col(cols='auto')
+        v-row(justify='end')
+          v-dialog(max-width='800')
+            template(v-slot:activator='{ on }')
+          v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
+            v-icon mdi-play
+          v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
+            v-icon mdi-stop
+          v-btn(:disabled='!canDelete' icon @click='deleteModal = true').ml-1.mr-3
+            v-icon mdi-delete
+          v-dialog(v-model='deleteModal' max-width='800')
+            v-card
+              v-card-text.pt-3.font-weight-light.warning--text.text--darken-1
+                | Are you sure you wish to delete this node?
+              v-card-actions
+                v-btn(color='info' @click='closeAndDelete') Yes
+                v-btn(@click='deleteModal = false') No
 
-    slot(name='append-content')
+  slot(name='append-content')
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api'
-import useNodeControls from '~/compositions/useNodeControls'
-import useNodeStatus from '~/compositions/useNodeStatus'
-import useNodeApi from '~/compositions/useNodeApi'
-import { nodeStore } from '~/store'
+import { defineComponent, computed, ref } from "@vue/composition-api";
+import useNodeControls from "~/compositions/useNodeControls";
+import useNodeStatus from "~/compositions/useNodeStatus";
+import { nodeStore } from "~/store";
+import type { Node } from "~/types/apiResponse";
 
 export default defineComponent({
   props: {
     nodeID: {
       type: String,
-      required: true
-    }
-  },
-  async fetch () {
-    // @ts-ignore
-    const ctx = this.$nuxt.context
-    const { postNode } = useNodeApi(ctx)
-    // @ts-ignore
-    await postNode(this.nodeID)
+      required: true,
+    },
   },
   components: {
-    ChooseMacaroon: () => import('~/components/ChoooseMacaroon.vue')
+    ChooseMacaroon: () => import("~/components/ChoooseMacaroon.vue"),
   },
-  setup (props, { root }) {
-    const nodeData = computed(() => nodeStore.nodes.filter(nodeObj => nodeObj.node_id === props.nodeID)[0])
+  setup(props, { root }) {
+    const nodeData = computed<Readonly<Node>>(
+      () =>
+        nodeStore.nodes.find(
+          (nodeObj) => nodeObj.node_id === props.nodeID
+        ) as Node
+    );
 
-    function navigate () {
-      if (root.$route.name !== 'node-id') {
-        root.$router.push(`/node/${nodeData.value.node_id}`)
+    function navigate() {
+      if (root.$route.name !== "node-id") {
+        root.$router.push(`/node/${nodeData.value.node_id}`);
       }
     }
 
-    const deleteModal = ref(false)
+    const deleteModal = ref(false);
 
-    const { canStart, canStop, canDelete, canConnect } = useNodeStatus(nodeData)
+    const { canStart, canStop, canDelete, canConnect } = useNodeStatus(
+      nodeData
+    );
 
-    const { deleteNode, startNode, stopNode, connect, loading } = useNodeControls(nodeData, root.$nuxt.context)
+    const {
+      deleteNode,
+      startNode,
+      stopNode,
+      connect,
+      loading,
+    } = useNodeControls(nodeData, root.$nuxt.context);
 
-    async function closeAndDelete () {
-      deleteModal.value = false
-      await deleteNode()
+    async function closeAndDelete() {
+      deleteModal.value = false;
+      await deleteNode();
     }
+
+    const networkText = computed(() => {
+      if (!nodeData.value) return "...";
+      return `${nodeData.value.network} - ${
+        nodeData.value.purchased_type == "trial" ? "Trial" : nodeData.value.type
+      }`;
+    });
 
     return {
       canStart,
@@ -88,8 +100,9 @@ export default defineComponent({
       startNode,
       stopNode,
       connect,
-      loading
-    }
-  }
-})
+      loading,
+      networkText,
+    };
+  },
+});
 </script>

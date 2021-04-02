@@ -1,4 +1,4 @@
-import { defineComponent, createElement, computed, reactive, ref } from '@vue/composition-api'
+import { defineComponent, computed, reactive  } from '@vue/composition-api'
 import { nodeStore, authStore } from '~/store'
 import { VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions,  VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog } from 'vuetify/lib'
 import SetupBtcPay from '~/components/SetupBtcPay'
@@ -8,7 +8,6 @@ import { voltageFetch } from '~/utils/fetchClient'
 import CopyPill from '~/components/core/CopyPill.vue'
 import useFetch from '~/compositions/useFetch'
 
-const h = createElement
 
 interface WalletPayload {
   xPub: string;
@@ -20,7 +19,6 @@ export default defineComponent({
   components: {
     VContainer, VRow, VCol, VCard, VCardTitle, VCardText, VCardActions, VForm, VTextField, VAutocomplete, VBtn, VIcon, VDialog, CopyPill
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   // @ts-ignore
   setup: (_, { refs, root }) => {
     const mainnetNodes = computed(() => nodeStore.user?.mainnet_nodes || [])
@@ -64,7 +62,8 @@ export default defineComponent({
 
     async function validateForm () {
       // return if form is not valid
-      const formValid = refs.form.validate()
+      const form = refs.form as HTMLFormElement
+      const formValid = form.validate()
       if (!formValid ) return
       const keysValid = (state.createKeys === 'generate' && state.walletPayload) || state.createKeys === 'useown'
 

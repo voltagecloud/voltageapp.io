@@ -23,6 +23,7 @@ export default {
     // [] --> disables maintenance mode
     middleware: [
       // capture podcast referal code to store on every route
+      'loadCognito',
       'captureReferral'
     ]
   },

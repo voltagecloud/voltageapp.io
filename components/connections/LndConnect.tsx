@@ -1,39 +1,31 @@
-import {
-  defineComponent,
-  createElement,
-  PropType,
-  ref,
-  computed
-} from "@vue/composition-api";
+import { defineComponent, PropType, ref, computed } from "@vue/composition-api";
 import { Node } from "~/types/apiResponse";
 import useBuildUri, { selectedApi } from "~/compositions/useBuildUri";
 import { macaroonStore } from "~/store";
-
-const h = createElement;
 
 export default defineComponent({
   components: {
     BaseConnect: () => import("./BaseConnect"),
     ApiToggle: () => import("./ApiToggle"),
     CertToggle: () => import("./CertToggle"),
-    VContainer: () => import("vuetify/lib").then(m => m.VContainer),
-    VRow: () => import("vuetify/lib").then(m => m.VRow),
-    VCol: () => import("vuetify/lib").then(m => m.VCol),
-    VSpacer: () => import("vuetify/lib").then(m => m.VSpacer),
-    VRadioGroup: () => import("vuetify/lib").then(m => m.VRadioGroup),
-    VCheckbox: () => import("vuetify/lib").then(m => m.VCheckbox)
+    VContainer: () => import("vuetify/lib").then((m) => m.VContainer),
+    VRow: () => import("vuetify/lib").then((m) => m.VRow),
+    VCol: () => import("vuetify/lib").then((m) => m.VCol),
+    VSpacer: () => import("vuetify/lib").then((m) => m.VSpacer),
+    VRadioGroup: () => import("vuetify/lib").then((m) => m.VRadioGroup),
+    VCheckbox: () => import("vuetify/lib").then((m) => m.VCheckbox),
   },
   props: {
     node: {
       type: Object as PropType<Node>,
-      required: true
-    }
+      required: true,
+    },
   },
-  setup: props => {
+  setup: (props) => {
     const macaroon = computed(() => {
       const data = macaroonStore.macaroonState({
         nodeId: props.node.node_id,
-        type: "admin"
+        type: "admin",
       });
       return data.macaroon;
     });
@@ -46,8 +38,8 @@ export default defineComponent({
     const { uri } = useBuildUri({
       endpoint,
       macaroon,
-      cert: ref(false),
-      api: selectedApi
+      cert: ref(''),
+      api: selectedApi,
     });
 
     return () => {
@@ -69,5 +61,5 @@ export default defineComponent({
         </div>
       );
     };
-  }
+  },
 });

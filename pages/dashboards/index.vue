@@ -26,7 +26,6 @@ export default defineComponent({
   components: {
     NodeDashboard: () => import('~/components/NodeDashboard.vue')
   },
-  middleware: ['loadCognito', 'assertAuthed', 'loadUser'],
   async fetch () {
     // @ts-ignore
     this.loading = true

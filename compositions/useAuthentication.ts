@@ -1,6 +1,6 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth'
 import { ref } from '@vue/composition-api'
-import { authStore } from '~/store'
+import { authStore, nodeStore } from '~/store'
 
 export default function useAuthentication () {
   const loading = ref(false)
@@ -76,6 +76,7 @@ export default function useAuthentication () {
     loading.value = true
     await Auth.signOut()
     authStore.SET_USER(null)
+    nodeStore.RESET()
     loading.value = false
     return true
   }
