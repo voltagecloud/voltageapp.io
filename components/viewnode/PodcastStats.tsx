@@ -37,9 +37,11 @@ export default defineComponent({
   setup: (props) => {
     const htlcs = ref<Array<Record<string, any>> | null>(null);
     const loading = ref(false);
+    const error = ref('')
 
     async function loadData() {
       if (!props.meta) return;
+      error.value = ''
       loading.value = true;
       const res = await fetch(
         `https://${props.meta?.endpoint}:8080/v1/invoices?num_max_invoices=10000`,
@@ -51,8 +53,12 @@ export default defineComponent({
           }),
         }
       );
-      const js = await res.json();
       loading.value = false;
+      if (!res.ok) {
+        error.value = 'An error occured communicating with your node. Please try again later'
+        return
+      }
+      const js = await res.json();
       // see response data shape at https://api.lightning.community/?javascript#v1-invoices
       htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
     }
@@ -146,6 +152,10 @@ export default defineComponent({
             )}
           </div>
         );
+      } else if (error.value) {
+        return <div class="ma-3 text-h6"> 
+          {error.value}
+        </div>
       } else {
         return (
           <div class="ma-3 text-h6">
