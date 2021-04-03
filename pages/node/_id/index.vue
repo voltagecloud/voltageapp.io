@@ -66,6 +66,11 @@ v-container
             v-container(v-if='status === "waiting_init"')
               v-btn(color='highlight' block @click='nodeCreating = true').info--text Initialize
             v-container(v-if='nodeCreating' color='primary')
+              v-dialog(max-width='800' color='secondary' :value='showPodcastCompletion')
+                v-container(class="text-center d-flex flex-column")
+                  div Your Breez Channel has been opened. You are free to close this page
+                  v-btn(class="mt-3" block @click="() => showPodcastCompletion = false" color="highlight" dark) Continue
+
               v-dialog(max-width='800' color='secondary' :value='nodeCreating')
                 v-card.text-center(style='padding: 20px;' :loading='nodeCreating && status !== "running"')
                   v-card-title Node is being created
@@ -80,6 +85,9 @@ v-container
                         div(class="d-flex flex-column align-center")
                           div(class="font-weight-bold") Your node is ready to use!
                           div You can start using your node by connecting your favorite Lightning app.
+                          div(v-if='tabs.includes("Podcast")')
+                            | Your node must sync to the blockchain before creating a channel with Breez.
+                            | Please leave your browser open until the chain is synced.
                           v-btn(class="mt-3" block @click="confirmReady" color="highlight" dark) Continue
                     v-container(v-if='passwordInit && status === "waiting_init"')
                       div(v-if='passwordInit')
@@ -360,6 +368,18 @@ export default defineComponent({
     const unlocking = ref(false);
     const error = ref("");
 
+    async function unlockSphinx(password: string) {
+      const api = nodeData.value.api_endpoint.replace(
+        "voltageapp.io",
+        "relay.voltageapp.io"
+      );
+      // call to unlock sphinx
+      await fetch(`https://${api}:3001/unlock`, {
+        method: "POST",
+        body: JSON.stringify({ password }),
+      });
+    }
+
     async function unlockNode(password: string) {
       error.value = "";
       lndStore.CURRENT_NODE(nodeData.value);
@@ -385,16 +405,7 @@ export default defineComponent({
         await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
-          const api = nodeData.value.api_endpoint.replace(
-            "voltageapp.io",
-            "relay.voltageapp.io"
-          );
-          // call to unlock sphinx
-          await axios({
-            url: `https://${api}:3001/unlock`,
-            method: "POST",
-            data: { password },
-          });
+          await unlockSphinx(password);
         }
         await postNode(nodeID.value);
       } catch (err) {
@@ -410,6 +421,7 @@ export default defineComponent({
       ctx.root.$nuxt.$router.go();
     }
 
+    const showPodcastCompletion = ref(false);
     async function verifyPodcastReferral() {
       createStore.DESERIALIZE();
       if (
@@ -417,7 +429,17 @@ export default defineComponent({
         createStore.nodeId === route.value.params.id
       ) {
         // get pubkey from getinfo call
-        const pubkey = await checkChainSyncStatus()
+        const pubkey = await checkChainSyncStatus();
+
+        // unlock sphinx
+        const nodePwObj = macaroonStore.password({
+          nodeId: route.value.params.id,
+        });
+        if (nodePwObj) {
+          await unlockSphinx(nodePwObj.password);
+        }
+
+        // send custom podcast request
         const res = await voltageFetch("/_custom/podcast", {
           method: "POST",
           body: JSON.stringify({
@@ -428,19 +450,20 @@ export default defineComponent({
         });
         // we are now done with create store data and it should be cleared
         if (res.ok) {
+          showPodcastCompletion.value = true;
           createStore.COMPLETE();
           localStorage.removeItem("podcast_id");
         }
-      } else if (createStore.nodeId === route.value.params.id){
+      } else if (createStore.nodeId === route.value.params.id) {
         // this node was just created but is not a podcast node
         // clear its store state
-        createStore.COMPLETE()
+        createStore.COMPLETE();
       }
     }
 
     // recursively check chain sync status and return pubkey when synced
     async function checkChainSyncStatus(): Promise<string> {
-      await (() => new Promise(resolve => setTimeout(resolve, 5000)))()
+      await (() => new Promise((resolve) => setTimeout(resolve, 5000)))();
       const info = await fetch(
         `https://${nodeData.value.api_endpoint}:8080/v1/getinfo`,
         {
@@ -449,20 +472,20 @@ export default defineComponent({
           headers: new Headers({
             "Grpc-Metadata-macaroon": macaroonHex.value,
             "Content-Type": "application/json",
-            "pragma": "no-cache",
-            "cache-control": "no-store"
+            pragma: "no-cache",
+            "cache-control": "no-store",
           }),
         }
       );
       if (!info.ok) {
-        return await checkChainSyncStatus()
+        return await checkChainSyncStatus();
       }
-      const { synced_to_chain, identity_pubkey } = await info.json()
+      const { synced_to_chain, identity_pubkey } = await info.json();
       if (synced_to_chain) {
-        return identity_pubkey as string
+        return identity_pubkey as string;
       } else {
         // sleep for 5 secs
-        return await checkChainSyncStatus()
+        return await checkChainSyncStatus();
       }
     }
 
@@ -472,7 +495,7 @@ export default defineComponent({
         nodeData.value.status === "running" &&
         macaroonHex.value
       ) {
-        await verifyPodcastReferral()
+        await verifyPodcastReferral();
       }
     });
 
