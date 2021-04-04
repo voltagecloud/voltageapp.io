@@ -602,6 +602,7 @@ export default defineComponent({
       curTab,
       logsRef,
       confirmReady,
+      showPodcastCompletion
     };
   },
 });
