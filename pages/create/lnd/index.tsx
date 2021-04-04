@@ -11,9 +11,7 @@ export default defineComponent({
     const creating = ref("");
     async function moveToPopulate() {
       creating.value = "Creating Node";
-      if (!createStore.nodeId) {
-        await createStore.dispatchCreate();
-      }
+      await createStore.dispatchCreate();
       creating.value = "";
 
       if (createStore.createError) return;
