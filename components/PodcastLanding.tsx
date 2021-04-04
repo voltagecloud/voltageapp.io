@@ -4,7 +4,6 @@ import {
   VContainer,
   VCol,
   VCheckbox,
-  VProgressCircular,
   VBtn,
 } from "vuetify/lib";
 import useStripeCheckout from "~/compositions/useStripeCheckout";
@@ -68,7 +67,7 @@ export default defineComponent({
                 class="d-flex flex-row justify-space-around flex-wrap"
                 style="width: 100%"
               >
-                <VCol cols="12" md="6" lg="4">
+                <VCol cols="8" md="6" lg="5">
                   <VCard class="pa-6" color="secondary">
                     <div class="d-flex flex-column align-center">
                       <div class="text-h5">Podcast Node</div>

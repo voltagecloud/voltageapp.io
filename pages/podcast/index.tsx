@@ -7,7 +7,7 @@ export default defineComponent({
     return () => (
       <VContainer>
         <VRow justify="center" align="center" no-gutters="no-gutters">
-          <VCol cols="12" md="10" lg="8">
+          <VCol cols="12" md="11" lg="9">
             <PodcastLanding />
           </VCol>
         </VRow>
