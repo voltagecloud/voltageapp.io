@@ -68,6 +68,10 @@ export default class CreateModule extends VuexModule {
   // should the subscription bundle with btc pay
   includeBtcPay: boolean = false;
 
+
+  // whether the current node has been populated already
+  populated = false
+
   @Mutation
   NODE_NAME(name: string) {
     this.nodeName = name;
@@ -181,6 +185,7 @@ export default class CreateModule extends VuexModule {
       planState: this.planState,
       planQty: this.planQty,
       includeBtcPay: this.includeBtcPay,
+      populated: this.populated
     };
     window.localStorage.setItem("createStore", JSON.stringify(data));
   }
@@ -213,6 +218,7 @@ export default class CreateModule extends VuexModule {
     this.planState = js.planState;
     this.planQty = js.planQty;
     this.includeBtcPay = js.includeBtcPay;
+    this.populated = js.populated
   }
 
   populateError: resError = null;
@@ -220,6 +226,11 @@ export default class CreateModule extends VuexModule {
   @Mutation
   POPULATE_ERROR({ error }: { error?: resError }) {
     this.populateError = error || null;
+  }
+
+  @Mutation
+  POPULATED(v: boolean) {
+    this.populated = v
   }
 
   // action to populate a newly created node with settings
@@ -254,6 +265,8 @@ export default class CreateModule extends VuexModule {
       return;
     } else {
       this.POPULATE_ERROR({});
+      this.POPULATED(true)
+      this.SERIALIZE()
     }
   }
 
@@ -299,6 +312,8 @@ export default class CreateModule extends VuexModule {
       this.CREATE_ERROR({ error: Error(js.message) });
       return;
     } else {
+      // node was just created, make sure its not marked populated
+      this.POPULATED(false)
       // set the node id in this store from response
       this.NODE_ID(js.node_id);
       // autofill the users ip from response
