@@ -32,7 +32,8 @@ export default class NodeModule extends VuexModule {
     nodeInfo: Record<string, Record<string, any>> = {} 
 
     @Mutation
-    NODE_INFO({id, payload}: {id: string; payload: Record<string,any>}) {
+    NODE_INFO({id, payload}: {id: string; payload: Record<string,any>|null}) {
+      if (!payload) return
       this.nodeInfo = Object.assign({}, this.nodeInfo, { [id]: payload })
     }
 
