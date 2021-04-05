@@ -4,12 +4,8 @@ import { VProgressCircular } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import PodcastChart from "~/components/PodcastChart";
 
-// TODO swap to the correct tlv ids
-//const BreezTlvId = "7629169";
-//const SphinxTlvId = "133773310";
-//
-const BreezTlvId = "34349334";
-const SphinxTlvId = "5482373484";
+const BreezTlvId = "7629169";
+const SphinxTlvId = "133773310";
 
 export default defineComponent({
   props: {
