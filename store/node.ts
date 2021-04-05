@@ -28,6 +28,14 @@ export default class NodeModule extends VuexModule {
 
     nodes: Node[] = []
 
+    // cache of node /getinfo with node id key
+    nodeInfo: Record<string, Record<string, any>> = {} 
+
+    @Mutation
+    NODE_INFO({id, payload}: {id: string; payload: Record<string,any>}) {
+      this.nodeInfo = Object.assign({}, this.nodeInfo, { [id]: payload })
+    }
+
     @Mutation
     RESET () {
       this.nodes = []
