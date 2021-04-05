@@ -4,8 +4,6 @@ import { VProgressCircular } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import PodcastChart from "~/components/PodcastChart";
 
-type DataPayload = Map<string, { x: string; boostY: number; streamY: number }>;
-
 // TODO swap to the correct tlv ids
 //const BreezTlvId = "7629169";
 //const SphinxTlvId = "133773310";
@@ -37,25 +35,25 @@ export default defineComponent({
       if (!props.meta) return;
       error.value = "";
       loading.value = true;
-      const res = await fetch(
-        `https://${props.meta?.endpoint}:8080/v1/invoices?num_max_invoices=10000&reversed=true`,
-        {
-          method: "GET",
-          headers: new Headers({
-            "Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
-            "Content-Type": "application/json",
-          }),
-        }
-      );
-      loading.value = false;
-      if (!res.ok) {
-        error.value =
-          "An error occured communicating with your node. Please try again later";
-        return;
+      try {
+        const res = await fetch(
+          `https://${props.meta?.endpoint}:8080/v1/invoices?num_max_invoices=10000&reversed=true`,
+          {
+            method: "GET",
+            headers: new Headers({
+              //"Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
+              "Content-Type": "application/json",
+            }),
+          })
+        const js = await res.json();
+        // see response data shape at https://api.lightning.community/?javascript#v1-invoices
+        htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
+      } catch (e) {
+        console.error(e)
+        error.value = "An error occured communicating with your node. Please try again later"
+      } finally {
+        loading.value = false
       }
-      const js = await res.json();
-      // see response data shape at https://api.lightning.community/?javascript#v1-invoices
-      htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
     }
     loadData();
 
