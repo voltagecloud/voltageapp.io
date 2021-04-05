@@ -33,7 +33,7 @@ export default defineComponent({
       loading.value = true;
       try {
         const res = await fetch(
-          `https://${props.meta?.endpoint}:8080/v1/invoices?num_max_invoices=10000&reversed=true`,
+          `https://${props.meta?.endpoint}:8080/v1/invoices?num_max_invoices=100000&reversed=true`,
           {
             method: "GET",
             headers: new Headers({
