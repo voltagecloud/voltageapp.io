@@ -2,11 +2,12 @@ import {
   defineComponent,
   PropType,
   ref,
-  watchEffect,
+  watch,
+  computed
 } from "@vue/composition-api";
 import { VContainer, VBtn } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
-import { macaroonStore } from "~/store";
+import { macaroonStore, nodeStore } from "~/store";
 
 export default defineComponent({
   components: {
@@ -30,8 +31,34 @@ export default defineComponent({
     },
   },
   setup: (props) => {
-    const payload = ref<Record<string, any>>({});
-    const responseError = ref("");
+    const nodeInfo = computed({
+      get: () => {
+        const id = props.node.node_id
+        const payload = nodeStore.nodeInfo[id] || null
+        return {
+          id,
+          payload
+        }
+      },
+      set: ({ id, payload }: {id: string; payload: Record<string, any>|null}) => {
+        nodeStore.NODE_INFO({ id, payload })
+      }
+    })
+
+    const payload = computed<Record<string, any>>(() => ({
+        "Identity Pubkey": nodeInfo.value.payload?.identity_pubkey,
+        Alias: nodeInfo.value.payload?.alias,
+        Color: nodeInfo.value.payload?.color,
+        "Pending Channels": nodeInfo.value.payload?.num_pending_channels,
+        "Active Channels": nodeInfo.value.payload?.num_active_channels,
+        "Inactive Channels": nodeInfo.value.payload?.num_inactive_channels,
+        Peers: nodeInfo.value.payload?.num_peers,
+        "Block Height": nodeInfo.value.payload?.block_height,
+        "Synced to Chain": nodeInfo.value.payload?.synced_to_chain,
+        "Synced to Graph": nodeInfo.value.payload?.synced_to_graph,
+        URIs: nodeInfo.value.payload?.uris,
+      })
+    );
 
     function canFetch() {
       return (
@@ -41,6 +68,7 @@ export default defineComponent({
       );
     }
 
+    const responseError = ref("");
     async function getNetworkInfo() {
       if (!canFetch()) return;
 
@@ -57,31 +85,23 @@ export default defineComponent({
           }
         );
         const json = await res.json();
-        payload.value = {
-          "Identity Pubkey": json.identity_pubkey,
-          Alias: json.alias,
-          Color: json.color,
-          "Pending Channels": json.num_pending_channels,
-          "Active Channels": json.num_active_channels,
-          "Inactive Channels": json.num_inactive_channels,
-          Peers: json.num_peers,
-          "Block Height": json.block_height,
-          "Synced to Chain": json.synced_to_chain,
-          "Synced to Graph": json.synced_to_graph,
-          URIs: json.uris,
-        };
+        nodeInfo.value = {
+          id: props.node.node_id,
+          payload: json
+        }
       } catch (e) {
         responseError.value = e.message;
       }
     }
 
-    watchEffect(async () => {
+    watch(() => props.macaroon, async () => {
+      console.log('watch trigger')
       if (!props.macaroon.macaroonHex) return;
       await getNetworkInfo();
     });
 
     return () => {
-      if (Object.keys(payload.value).length > 0) {
+      if (nodeInfo.value.payload) {
         return (
           <v-container>
             <json-table data={() => payload.value} />
