@@ -11,7 +11,9 @@ export default defineComponent({
     const creating = ref("");
     async function moveToPopulate() {
       creating.value = "Creating Node";
-      if (!createStore.nodeId) {
+      // if node id doesnt exist create new node, if node exists and it already populated
+      // overwrite old node with new /create
+      if (!createStore.nodeId || createStore.populated) {
         await createStore.dispatchCreate();
       }
       creating.value = "";
@@ -21,19 +23,17 @@ export default defineComponent({
     }
 
     const isCallbackSession = computed(() => {
-      const q = route.value.query
-      return !!q.session_id || !! q.paid_with
-    })
+      const q = route.value.query;
+      return !!q.session_id || !!q.paid_with;
+    });
 
     // if this is a callback session we should deserialize the store and send the /create request
     if (isCallbackSession.value) {
-      createStore.DESERIALIZE()
-      moveToPopulate()
+      createStore.DESERIALIZE();
+      moveToPopulate();
     }
 
-    const currentStep = ref(
-      isCallbackSession.value ? 1 : 0
-    );
+    const currentStep = ref(isCallbackSession.value ? 1 : 0);
 
     return () => (
       <div>
