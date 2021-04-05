@@ -481,6 +481,11 @@ export default defineComponent({
         return await checkChainSyncStatus();
       }
       const data = await info.json();
+      // write /getinfo to cache
+      nodeStore.NODE_INFO({
+        id: route.value.params.id,
+        payload: data
+      })
       if (data.synced_to_chain) {
         return data.identity_pubkey as string;
       } else {
