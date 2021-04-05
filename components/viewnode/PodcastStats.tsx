@@ -40,15 +40,17 @@ export default defineComponent({
               "Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
               "Content-Type": "application/json",
             }),
-          })
+          }
+        );
         const js = await res.json();
         // see response data shape at https://api.lightning.community/?javascript#v1-invoices
         htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
       } catch (e) {
-        console.error(e)
-        error.value = "An error occured communicating with your node. Please try again later"
+        console.error(e);
+        error.value =
+          "An error occured communicating with your node. Please try again later";
       } finally {
-        loading.value = false
+        loading.value = false;
       }
     }
     loadData();
@@ -137,8 +139,8 @@ export default defineComponent({
         start: now,
       });
       for (const bin of bins) {
-        const key = binToStr(bin)
-        data.set(key, { x: key, y: 0 })
+        const key = binToStr(bin);
+        data.set(key, { x: key, y: 0 });
       }
       for (const htlc of reducedHTLC.value) {
         const acceptTime = htlc?.accept_time;
@@ -152,13 +154,25 @@ export default defineComponent({
         // if the current htlc falls outside time range, skip
         if (!bin) continue;
 
-        const dateKey = binToStr(bin)
+        const dateKey = binToStr(bin);
         const prevAmt = data.get(dateKey)?.y;
 
         const newAmt = +htlc.amt_msat / 1000 + (prevAmt || 0);
         data.set(dateKey, { x: dateKey, y: newAmt });
       }
-      const output = Array.from(data.values()).reverse();
+      // chop off initial zeros
+      let firstNonZeroEncountered = false;
+      const output = Array.from(data.values())
+        .reverse()
+        .filter((elem) => {
+          if (firstNonZeroEncountered) return true;
+          if (elem.y > 0) {
+            firstNonZeroEncountered = true;
+            return true;
+          }
+          return false;
+        });
+
       return output.length > 0 ? output : null;
     });
 
