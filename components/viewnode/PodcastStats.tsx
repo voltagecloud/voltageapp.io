@@ -41,7 +41,7 @@ export default defineComponent({
           {
             method: "GET",
             headers: new Headers({
-              //"Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
+              "Grpc-Metadata-macaroon": props.macaroon.macaroonHex,
               "Content-Type": "application/json",
             }),
           })
@@ -66,9 +66,7 @@ export default defineComponent({
         for (const [tlvId, value] of Object.entries(
           htlc?.custom_records || {}
         )) {
-          console.log({ tlvId });
           if (tlvId !== BreezTlvId && tlvId !== SphinxTlvId) continue;
-          console.log("decoding");
           try {
             const decode = atob(value as string);
             const payload = JSON.parse(decode);
