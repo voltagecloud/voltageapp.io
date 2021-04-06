@@ -4,9 +4,6 @@ import { VProgressCircular } from "vuetify/lib";
 import type { Node } from "~/types/apiResponse";
 import PodcastChart from "~/components/PodcastChart";
 
-const BreezTlvId = "7629169";
-const SphinxTlvId = "133773310";
-
 export default defineComponent({
   props: {
     node: {
@@ -23,7 +20,7 @@ export default defineComponent({
     },
   },
   setup: (props) => {
-    const htlcs = ref<Array<Record<string, any>> | null>(null);
+    const invoices = ref<Array<Record<string, any>> | null>(null);
     const loading = ref(false);
     const error = ref("");
 
@@ -44,9 +41,11 @@ export default defineComponent({
         );
         const js = await res.json();
         // see response data shape at https://api.lightning.community/?javascript#v1-invoices
-        htlcs.value = js.invoices.flatMap((invoice: any) => invoice.htlcs);
+        invoices.value = js.invoices.filter((invoice: any) => {
+          const isValid = invoice?.settled && invoice?.is_keysend
+          return isValid
+        })
       } catch (e) {
-        console.error(e);
         error.value =
           "An error occured communicating with your node. Please try again later";
       } finally {
@@ -55,31 +54,6 @@ export default defineComponent({
     }
     loadData();
 
-    const reducedHTLC = computed(() => {
-      if (!htlcs.value) return null;
-      // see https://api.lightning.community/?javascript#lnrpcinvoicehtlc
-      let htlcOutput: any[] = [];
-      for (const htlc of htlcs.value) {
-        // determine if this htlc has podcast relevant custom record
-        for (const [tlvId, value] of Object.entries(
-          htlc?.custom_records || {}
-        )) {
-          if (tlvId !== BreezTlvId && tlvId !== SphinxTlvId) continue;
-          try {
-            const decode = atob(value as string);
-            const payload = JSON.parse(decode);
-            if (!payload) continue;
-            // check if payload conforms to breez or sphinx structure
-            htlcOutput.push(
-              Object.assign({}, htlc, { custom_records: payload })
-            );
-          } catch (e) {
-            continue;
-          }
-        }
-      }
-      return htlcOutput;
-    });
 
     // returns the epoch time bin that 'time' falls into given a start time, a count backwards interval and number of bins to create
     // returns null if the given time is before the span of the interval
@@ -131,7 +105,7 @@ export default defineComponent({
     const now = new Date().getTime() / 1000;
     const secondsPerDay = 86400;
     const podcastData = computed(() => {
-      if (!reducedHTLC.value) return null;
+      if (!invoices.value) return null;
       const data = new Map<string, { x: string; y: number }>();
       const bins = makeBins({
         interval: secondsPerDay,
@@ -142,8 +116,8 @@ export default defineComponent({
         const key = binToStr(bin);
         data.set(key, { x: key, y: 0 });
       }
-      for (const htlc of reducedHTLC.value) {
-        const acceptTime = htlc?.accept_time;
+      for (const invoice of invoices.value) {
+        const acceptTime = invoice?.settle_date;
         if (!acceptTime) continue;
         const bin = getBin({
           time: +acceptTime,
@@ -151,13 +125,15 @@ export default defineComponent({
           bins: 14,
           start: now,
         });
+
         // if the current htlc falls outside time range, skip
         if (!bin) continue;
 
         const dateKey = binToStr(bin);
         const prevAmt = data.get(dateKey)?.y;
 
-        const newAmt = +htlc.amt_msat / 1000 + (prevAmt || 0);
+        const newAmt = +invoice.amt_paid_sat + (prevAmt || 0);
+
         data.set(dateKey, { x: dateKey, y: newAmt });
       }
       // chop off initial zeros
@@ -175,6 +151,7 @@ export default defineComponent({
 
       return output.length > 0 ? output : null;
     });
+
 
     return () => {
       if (loading.value) {
