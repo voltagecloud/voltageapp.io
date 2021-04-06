@@ -480,9 +480,14 @@ export default defineComponent({
       if (!info.ok) {
         return await checkChainSyncStatus();
       }
-      const { synced_to_chain, identity_pubkey } = await info.json();
-      if (synced_to_chain) {
-        return identity_pubkey as string;
+      const data = await info.json();
+      // write /getinfo to cache
+      nodeStore.NODE_INFO({
+        id: route.value.params.id,
+        payload: data
+      })
+      if (data.synced_to_chain) {
+        return data.identity_pubkey as string;
       } else {
         // sleep for 5 secs
         return await checkChainSyncStatus();
