@@ -3,13 +3,14 @@ import { VCard, VContainer, VCol, VCheckbox, VBtn } from "vuetify/lib";
 import useStripeCheckout from "~/compositions/useStripeCheckout";
 import useBitcoinCheckout from "~/compositions/useBitcoinCheckout";
 import { createStore, authStore } from "~/store";
-import { Subscription, Plan, Product } from "~/utils/voltageProducts";
+import { Subscription, Plan, Product, podcastPlans } from "~/utils/voltageProducts";
 import useNodePricing from "~/compositions/useNodePricing";
 import { Network } from "~/types/api";
 import { useRouter } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   setup: () => {
+
     const router = useRouter();
 
     const cart = computed(() => createStore.cart);
@@ -20,10 +21,13 @@ export default defineComponent({
         createStore.PLAN_STATE(v),
     });
 
+    planState.value = podcastPlans.find(e => e.plan === Plan.monthly) as Subscription<Plan.monthly, Product.podcast>
+
     const { stripeCheckout, loading } = useStripeCheckout(cart);
     const { bitcoinCheckout, loading: loadingBitcoin } = useBitcoinCheckout(
       cart
     );
+
     const { yearlyBilling, podcastPlan } = useNodePricing();
 
     async function checkout(method: "stripe" | "bitcoin") {
