@@ -9,7 +9,8 @@ const assertAuthed: Middleware = ({ redirect, route }: Context) => {
 
 
   // bypass auth check for /podcast route
-  if (route.path === '/podcast') {
+  console.log(route.path)
+  if (route.path.includes('/podcast')) {
     console.log('skipping redirect for podcast route')
     return
   }
