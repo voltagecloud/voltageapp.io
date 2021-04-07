@@ -3,10 +3,12 @@ import {
   standardPlans,
   litePlans,
   podcastPlans,
+  subscriptions,
   Plan,
   Subscription,
   Product,
 } from "~/utils/voltageProducts";
+import { createStore } from "~/store";
 
 export type planName =
   | "Pay per Month"
@@ -22,11 +24,23 @@ export const namedPlans: { name: planName; plan: Plan }[] = [
 ];
 
 export default function useNodePricing() {
-  const billingCycle = ref<Plan>(Plan.monthly);
+  const billingCycle = computed({
+    get: () => createStore.planState.plan,
+    set: (p: Plan) => {
+      const { nodeType } = createStore.planState
+      const newPlan = subscriptions.find(e => e.nodeType === nodeType && e.plan === p)
+      if (newPlan) {
+        createStore.PLAN_STATE(newPlan)
+      }
+    }
+  });
 
   const yearlyBilling = computed({
     get: () => billingCycle.value === Plan.yearly,
-    set: (v: boolean) => (billingCycle.value = v ? Plan.yearly : Plan.monthly),
+    set: (v: boolean) => {
+      const newBill = v ? Plan.yearly : Plan.monthly
+      billingCycle.value = newBill
+    }
   });
 
   const mappedBillingName = computed({
