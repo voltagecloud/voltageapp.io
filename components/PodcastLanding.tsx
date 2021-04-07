@@ -1,20 +1,18 @@
 import { defineComponent, computed } from "@vue/composition-api";
-import {
-  VCard,
-  VContainer,
-  VCol,
-  VCheckbox,
-  VBtn,
-} from "vuetify/lib";
+import { VCard, VContainer, VCol, VCheckbox, VBtn } from "vuetify/lib";
 import useStripeCheckout from "~/compositions/useStripeCheckout";
 import useBitcoinCheckout from "~/compositions/useBitcoinCheckout";
-import { createStore } from "~/store";
-import { Subscription, Plan, Product } from "~/utils/voltageProducts";
+import { createStore, authStore } from "~/store";
+import { Subscription, Plan, Product, podcastPlans } from "~/utils/voltageProducts";
 import useNodePricing from "~/compositions/useNodePricing";
 import { Network } from "~/types/api";
+import { useRouter } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   setup: () => {
+
+    const router = useRouter();
+
     const cart = computed(() => createStore.cart);
 
     const planState = computed({
@@ -23,10 +21,13 @@ export default defineComponent({
         createStore.PLAN_STATE(v),
     });
 
+    planState.value = podcastPlans.find(e => e.plan === Plan.monthly) as Subscription<Plan.monthly, Product.podcast>
+
     const { stripeCheckout, loading } = useStripeCheckout(cart);
     const { bitcoinCheckout, loading: loadingBitcoin } = useBitcoinCheckout(
       cart
     );
+
     const { yearlyBilling, podcastPlan } = useNodePricing();
 
     async function checkout(method: "stripe" | "bitcoin") {
@@ -81,24 +82,37 @@ export default defineComponent({
                 onChange={(v: boolean) => (yearlyBilling.value = v)}
                 label="Pay for the year, save 16%"
               />
-              <VBtn
-                class="ma-2"
-                color="highlight"
-                dark
-                loading={loading.value}
-                onClick={() => checkout("stripe")}
-              >
-                Checkout with Card
-              </VBtn>
-              <VBtn
-                class="ma-2"
-                color="highlight"
-                dark
-                loading={loadingBitcoin.value}
-                onClick={() => checkout("bitcoin")}
-              >
-                Checkout with Bitcoin
-              </VBtn>
+              {!!authStore.user ? (
+                <span>
+                  <VBtn
+                    class="ma-2"
+                    color="highlight"
+                    dark
+                    loading={loading.value}
+                    onClick={() => checkout("stripe")}
+                  >
+                    Checkout with Card
+                  </VBtn>
+                  <VBtn
+                    class="ma-2"
+                    color="highlight"
+                    dark
+                    loading={loadingBitcoin.value}
+                    onClick={() => checkout("bitcoin")}
+                  >
+                    Checkout with Bitcoin
+                  </VBtn>
+                </span>
+              ) : (
+                <VBtn
+                  class="ma-2"
+                  color="highlight"
+                  dark
+                  onClick={() => router.push("/login")}
+                >
+                  Sign Up
+                </VBtn>
+              )}
             </VCol>
           </div>
         </VContainer>

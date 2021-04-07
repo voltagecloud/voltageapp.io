@@ -110,6 +110,7 @@ export default class CreateModule extends VuexModule {
   @Mutation
   PLAN_STATE(state: Subscription<Plan, Product>) {
     this.planState = state;
+    this.trial = state.plan === Plan.trial
   }
 
   @Mutation

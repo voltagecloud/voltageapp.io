@@ -2,6 +2,7 @@ import { defineComponent, reactive, computed } from "@vue/composition-api";
 import useAuthentication from "~/compositions/useAuthentication";
 import { authStore } from "~/store";
 import { VBtn, VIcon } from "vuetify/lib";
+import { useRouter, useRoute } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   components: {
@@ -28,6 +29,9 @@ export default defineComponent({
   },
   middleware: ["assertAuthed", "loadUser"],
   setup: (_, ctx) => {
+    const router = useRouter();
+    const route = useRoute();
+
     const state = reactive({
       showDrawer: false,
     });
@@ -37,14 +41,14 @@ export default defineComponent({
     >(() => [
       {
         text: "Nodes",
-        onClick: () => ctx.root.$router.push("/"),
+        onClick: () => router.push("/"),
         active: () =>
-          ctx.root.$route.path === "/" || ctx.root.$route.path.includes("node"),
+          route.value.path === "/" || route.value.path.includes("node"),
       },
       {
         text: "BTCPay Server",
-        onClick: () => ctx.root.$router.push("/btcpay"),
-        active: () => ctx.root.$route.path.includes("btcpay"),
+        onClick: () => router.push("/btcpay"),
+        active: () => route.value.path.includes("btcpay"),
       },
       {
         text: "Documentation",
@@ -69,36 +73,51 @@ export default defineComponent({
     const isBig = computed(() => ctx.root.$vuetify.breakpoint.mdAndUp);
 
     const { logout } = useAuthentication();
-    const bottomItems = [
-      {
-        title: "Dashboards",
-        icon: "mdi-laptop",
-        fct: () => ctx.root.$router.push("/dashboards"),
-      },
-      {
-        title: "Exports",
-        icon: "mdi-file-export-outline",
-        fct: () => ctx.root.$router.push("/exports"),
-      },
-      {
-        title: "Billing",
-        icon: "mdi-currency-usd",
-        fct: () => ctx.root.$router.push("/billing"),
-      },
-      {
-        title: "Settings",
-        icon: "mdi-cog-outline",
-        fct: () => ctx.root.$router.push("/settings"),
-      },
-      {
-        title: "Logout",
-        icon: "mdi-logout",
-        fct: async () => {
-          await logout();
-          ctx.root.$router.push("/login");
+    const bottomItems = computed(() => {
+      const output: {
+        title: string;
+        icon: string;
+        fct: () => any;
+      }[] = [
+        {
+          title: "Dashboards",
+          icon: "mdi-laptop",
+          fct: () => router.push("/dashboards"),
         },
-      },
-    ];
+        {
+          title: "Exports",
+          icon: "mdi-file-export-outline",
+          fct: () => router.push("/exports"),
+        },
+        {
+          title: "Billing",
+          icon: "mdi-currency-usd",
+          fct: () => router.push("/billing"),
+        },
+        {
+          title: "Settings",
+          icon: "mdi-cog-outline",
+          fct: () => router.push("/settings"),
+        },
+      ];
+      if (!!authStore.user) {
+        output.push({
+          title: "Logout",
+          icon: "mdi-logout",
+          fct: async () => {
+            await logout();
+            router.push("/login");
+          },
+        });
+      } else {
+        output.push({
+          title: "Login",
+          icon: "mdi-login",
+          fct: () => router.push("/login"),
+        });
+      }
+      return output;
+    });
 
     return () => {
       const btnContent = () => (
@@ -113,7 +132,7 @@ export default defineComponent({
       const list = () => (
         <div>
           <v-list>
-            {bottomItems.map((e) => (
+            {bottomItems.value.map((e) => (
               <v-list-item key={e.title} onClick={e.fct}>
                 <v-list-item-action>
                   {/*
@@ -206,7 +225,7 @@ export default defineComponent({
               </VBtn>
             )}
           </v-app-bar>
-          <v-main class={{ background: ctx.root.$route.path !== "settings" }}>
+          <v-main class={{ background: route.value.path !== "settings" }}>
             <nuxt />
           </v-main>
           <error-snackbar />
