@@ -17,7 +17,7 @@ const assertAuthed: Middleware = ({ redirect, route }: Context) => {
     return redirect(to)
   }
 
-  return redirect('/login')
+  if (!authStore.user) return redirect('/login')
 }
 
 export default assertAuthed
