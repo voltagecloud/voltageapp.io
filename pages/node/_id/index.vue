@@ -53,7 +53,7 @@ v-container
               v-tab-item
                 dashboard-data(:nodeID='nodeID')
               v-tab-item
-                node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
+                node-settings(v-if='nodeData.settings' :node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
               v-tab-item(class="text-center")
