@@ -101,7 +101,7 @@ v-form(
             v-col(cols='12' ref='colWidth')
               v-btn(block @click='showPalette = !showPalette' :color='settings.color' :style='{color: oppositeColor}') Color: {{settings.color}}
             v-expand-transition
-              v-col(cols='12' v-if='showPalette').justify-center.align-center.text-center
+              v-col(cols='12' v-if='showPalette && settings').justify-center.align-center.text-center
                 v-color-picker(
                   v-model='settings.color'
                   mode='hexa'
@@ -181,7 +181,7 @@ export default defineComponent({
   setup (props, { root, emit }) {
     const { valid, form, invertColor, validIP, showPalette, remove, showPassword } = useFormValidation()
 
-    const settings = ref(Object.assign({}, props.node.settings || {}))
+    const settings = ref(Object.assign({}, props.node.settings))
     const backupMacaroon = ref(!!props.node.macaroon_backup)
 
     const { updateSettings, updateTls, loading } = useNodeApi(root.$nuxt.context)
@@ -268,7 +268,7 @@ export default defineComponent({
       }
     })
 
-    const oppositeColor = computed(() => invertColor(props.node.settings.color))
+    const oppositeColor = computed(() => invertColor(props.node?.settings?.color))
 
     const canUpdateTls = computed(() => {
       if (props.node.status !== 'stopped') {
