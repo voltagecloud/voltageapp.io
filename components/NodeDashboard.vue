@@ -27,7 +27,7 @@
                 | Open Dashboard
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-btn(icon v-bind="$attrs" v-on="on" @click='deleteDashboard').ml-1.mr-3
+                v-btn(icon v-bind="$attrs" v-on="on" @click='delDash').ml-1.mr-3
                   v-icon mdi-delete
               span
                 | Delete Dashboard
@@ -58,7 +58,7 @@ export default defineComponent({
     CopyPill: () => import('~/components/core/CopyPill.vue'),
     JsonTable: () => import('~/components/core/JsonTable')
   },
-  setup ({ dashboardID, includeNodeButton }, { root }) {
+  setup ({ dashboardID, includeNodeButton }, { root, emit }) {
     const dashboardData = computed(() => dashboardsStore.dashboards.filter(elem => elem.dashboard_id === dashboardID)[0])
     const isPending = computed(() => dashboardData.value.status === NodeDashboardStatus.provisioning)
     const nodeButton = ref(includeNodeButton)
@@ -73,12 +73,18 @@ export default defineComponent({
 
     const { deleteDashboard } = useDashboardControls(dashboardData, root.$nuxt.context)
 
+    async function delDash () {
+      emit('delete')
+      await deleteDashboard()
+    }
+
     return {
       isPending,
       dashboardInfo,
       dashboardData,
       deleteDashboard,
-      nodeButton
+      nodeButton,
+      delDash
     }
   }
 })

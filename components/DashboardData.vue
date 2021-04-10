@@ -4,7 +4,7 @@
       v-container
         p(style='font-size: 13px; padding-bottom: 0px; word-wrap: break-word;' no-gutters).font-weight-light
           | Dashboards expire after 30 minutes of inactivity or a max-life of 3 hours. You can provision as many as you want, but can only have 1 dashboard running per node at a time.
-      v-container(v-if='newDashboard')
+      v-container(v-if='!runningDashboard')
         v-card-actions
           v-container
             v-row(justify='center' no-gutters)
@@ -23,10 +23,10 @@
                           | Not Yet Available
               v-col(cols='12')
                 v-btn(color='info' @click='provisionDashboard' :loading='loading' block).warning--text Create Dashboard
-      v-container(v-else-if='runningDashboard' fluid)
+      v-container(v-else='runningDashboard' fluid)
         v-row(justify='center' no-gutters)
           v-col(v-if='filteredDashboards.length > 0' cols='12' v-for='(dashboardData, i) in filteredDashboards' :key='dashboardData.dashboard_id')
-            node-dashboard(:dashboardID='dashboardData.dashboard_id' :includeNodeButton='false')
+            node-dashboard(:dashboardID='dashboardData.dashboard_id' :includeNodeButton='false' @delete='() => runningDashboard = false')
             br
           v-col(cols='12' v-else)
             | You don't have any running Dashboards
@@ -51,7 +51,6 @@ export default defineComponent({
   setup (props, { root }) {
     const errorMessage = ref('')
     const runningDashboard = ref(false)
-    const newDashboard = ref(false)
     const { createDashboard, loading } = useNodeApi(root.$nuxt.context)
     const filteredDashboards = computed(() => {
       return dashboardsStore.dashboards.filter((exp) => {
@@ -65,16 +64,17 @@ export default defineComponent({
     onBeforeUnmount(() => { unMounting.value = true })
 
     function checkRunningDashboard () {
+      console.log('check')
       const runningList = dashboardsStore.dashboards.filter(elem => elem.node_id === props.nodeID && elem.status !== 'deleted')
+      console.log({ runningList })
       if (runningList.length > 0) {
         intervalCheck()
         runningDashboard.value = true
-        newDashboard.value = false
       } else {
         runningDashboard.value = false
-        newDashboard.value = true
       }
     }
+
 
     async function intervalCheck () {
       if (!dashboardsStore.shouldRefresh || unMounting.value) { return }
@@ -91,13 +91,11 @@ export default defineComponent({
       loading.value = true
       await createDashboard(props.nodeID, 'thunderhub')
       runningDashboard.value = true
-      newDashboard.value = false
       await intervalCheck()
     }
 
     function createNew () {
       runningDashboard.value = false
-      newDashboard.value = true
     }
 
     checkRunningDashboard()
@@ -106,10 +104,10 @@ export default defineComponent({
       errorMessage,
       loading,
       runningDashboard,
-      newDashboard,
       provisionDashboard,
       filteredDashboards,
-      createNew
+      createNew,
+      checkRunningDashboard
     }
   }
 })
