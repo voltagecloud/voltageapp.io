@@ -13,6 +13,8 @@ export default function useHeightAware () {
     onMounted(() => {
       onResize()
       window.addEventListener("resize", onResize);
+      // check again after small delay
+      setTimeout(onResize, 100)
     })
     onUnmounted(() => window.removeEventListener("resize", onResize))
 
