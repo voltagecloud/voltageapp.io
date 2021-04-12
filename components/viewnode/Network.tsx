@@ -93,6 +93,7 @@ export default defineComponent({
         responseError.value = e.message;
       }
     }
+    getNetworkInfo()
 
     watch(() => props.macaroon, async () => {
       console.log('watch trigger')
