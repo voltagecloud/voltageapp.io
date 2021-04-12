@@ -2,7 +2,8 @@ import { Network, Settings, NodeStatus, IDName, ExportData, DashboardData } from
 
 export enum PurchasedType {
     paid = 'paid',
-    trial = 'trial'
+    trial = 'trial',
+    ondemand = 'ondemand'
 }
 
 export interface NodeSeed {
