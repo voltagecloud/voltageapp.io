@@ -380,27 +380,35 @@ export default defineComponent({
       });
     }
 
+    // unlocks the current node via fetch request
     async function unlockNode(password: string) {
-      error.value = "";
-      lndStore.CURRENT_NODE(nodeData.value);
-      unlocking.value = true;
+      error.value = ''
+      unlocking.value = true
+      const endpoint = nodeData.value?.api_endpoint
+      if (!endpoint) {
+        errror.value = 'Error getting node data. please try again later'
+        return
+      }
+
       try {
-        const node = lndStore.currentNode as Node;
-        // call to unlock lnd
-        await axios({
-          url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
-          method: "POST",
-          data: {
+        const res = await fetch(`https://${endpoint}:8080/v1/unlockwallet`, {
+          method: 'POST',
+          cache: 'no-store',
+          body: JSON.stringify({
             wallet_password: btoa(password),
-            stateless_init: true,
-          },
-          timeout: 45000,
-        });
-        // node has been unlocked so password is correct write to state
+            stateless_init: true
+          }),
+        })
+        if (!res.ok) {
+          error.value = "An error occurred unlocking node. Try again later."
+          return
+        }
+        // password is correct, safe to write to store
         macaroonStore.NODE_PASSWORD({
           nodeId: route.value.params.id,
-          password,
-        });
+          password
+        })
+
         // update the status of the node in the api
         await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
@@ -408,12 +416,14 @@ export default defineComponent({
           await unlockSphinx(password);
         }
         await postNode(nodeID.value);
-      } catch (err) {
-        error.value = `${err.response.data.message}`;
+      } catch (e) {
+        error.value = `${err.response.data.message}`
+        return
       } finally {
-        unlocking.value = false;
+        unlocking.value = false
       }
     }
+
 
     async function update() {
       await updateNode(route.value.params.id);
