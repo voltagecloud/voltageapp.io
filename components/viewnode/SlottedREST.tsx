@@ -4,12 +4,13 @@ import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import type { Node } from "~/types/apiResponse";
 import useFetch from "~/compositions/useFetch";
-import { VContainer } from "vuetify/lib";
+import { VContainer, VBtn } from "vuetify/lib";
 
 export default defineComponent({
   components: {
     NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
     VContainer,
+    VBtn
   },
   props: {
     node: {
