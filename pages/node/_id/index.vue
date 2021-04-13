@@ -15,7 +15,7 @@ v-container
             v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
-            p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
+            p(v-if="helperText").font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
               | {{ helperText }}
             //- Unlock button
             v-container(v-if='canUnlock')
@@ -51,7 +51,7 @@ v-container
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
-                dashboard-data(:nodeID='nodeID')
+                WrappedDashboard(:node='nodeData')
               v-tab-item
                 node-settings(v-if='nodeData.settings' :node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
@@ -147,6 +147,7 @@ import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
 import WrappedNetwork from "~/components/viewnode/WrappedNetwork";
 import WrappedPodcast from "~/components/viewnode/WrappedPodcast";
+import WrappedDashboard from "~/components/WrappedDashboard";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import { voltageFetch } from "~/utils/fetchClient";
@@ -159,7 +160,7 @@ export default defineComponent({
     DataTable: () => import("~/components/viewnode/DataTable.vue"),
     NodeSettings: () => import("~/components/viewnode/NodeSettings.vue"),
     ExportData: () => import("~/components/ExportData.vue"),
-    DashboardData: () => import("~/components/DashboardData.vue"),
+    WrappedDashboard,
     WrappedNetwork,
     WrappedPodcast,
     ConnectTab: () => import("~/components/viewnode/Connect"),
