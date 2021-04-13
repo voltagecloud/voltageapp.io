@@ -382,32 +382,32 @@ export default defineComponent({
 
     // unlocks the current node via fetch request
     async function unlockNode(password: string) {
-      error.value = ''
-      unlocking.value = true
-      const endpoint = nodeData.value?.api_endpoint
+      error.value = "";
+      unlocking.value = true;
+      const endpoint = nodeData.value?.api_endpoint;
       if (!endpoint) {
-        errror.value = 'Error getting node data. please try again later'
-        return
+        error.value = "Error getting node data. please try again later";
+        return;
       }
 
       try {
         const res = await fetch(`https://${endpoint}:8080/v1/unlockwallet`, {
-          method: 'POST',
-          cache: 'no-store',
+          method: "POST",
+          cache: "no-store",
           body: JSON.stringify({
             wallet_password: btoa(password),
-            stateless_init: true
+            stateless_init: true,
           }),
-        })
+        });
         if (!res.ok) {
-          error.value = "An error occurred unlocking node. Try again later."
-          return
+          error.value = "An error occurred unlocking node. Try again later.";
+          return;
         }
         // password is correct, safe to write to store
         macaroonStore.NODE_PASSWORD({
           nodeId: route.value.params.id,
-          password
-        })
+          password,
+        });
 
         // update the status of the node in the api
         await updateStatus(route.value.params.id, "unlocking");
@@ -417,13 +417,13 @@ export default defineComponent({
         }
         await postNode(nodeID.value);
       } catch (e) {
-        error.value = `${err.response.data.message}`
-        return
+        error.value =
+          "There was a problem communicating with the node please try again later";
+        return;
       } finally {
-        unlocking.value = false
+        unlocking.value = false;
       }
     }
-
 
     async function update() {
       await updateNode(route.value.params.id);
@@ -494,8 +494,8 @@ export default defineComponent({
       // write /getinfo to cache
       nodeStore.NODE_INFO({
         id: route.value.params.id,
-        payload: data
-      })
+        payload: data,
+      });
       if (data.synced_to_chain) {
         return data.identity_pubkey as string;
       } else {
@@ -617,7 +617,7 @@ export default defineComponent({
       curTab,
       logsRef,
       confirmReady,
-      showPodcastCompletion
+      showPodcastCompletion,
     };
   },
 });
