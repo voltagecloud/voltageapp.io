@@ -2,7 +2,7 @@
 
 ![](logo.png)
 
-Static Dashboard site for [Voltage](https://getvoltage.io).
+Static Dashboard site for [Voltage](https://app.voltage.cloud).
 
 [Dashboard Link](https://voltageapp.io)
 
