@@ -5,11 +5,11 @@
 // this middleware should be the first middleware on every route
 
 import type { Middleware } from '@nuxt/types'
-const btcpayOverride: Middleware = ({ redirect }) => {
+const btcpayOverride: Middleware = ({ redirect, route }) => {
   const key = 'btcpayRedir'
   const redir = localStorage.getItem(key)
   localStorage.removeItem(key)
-  if (redir) return redirect(redir)
+  if (redir && redir !== route.path) return redirect(redir)
   return
 }
 
