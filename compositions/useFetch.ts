@@ -35,6 +35,11 @@ export default function useFetch<T>(
     }
   }
 
+  // if the composition is invoked with the options then dispatch immediately
+  if (initOpts) {
+    dispatch()
+  }
+
   // apply watcher for init opts
   if (isRef(initOpts)) {
     watch(initOpts, async (curOpts) => await dispatch(curOpts))
