@@ -87,11 +87,11 @@ export default defineComponent({
         <p>
           Helpful FAQ Links
         </p>
-        <a href="https://getvoltage.io/faq.html#connect" target="_blank">
+        <a href="https://docs.voltage.cloud/lightning-nodes/faq#how-do-i-connect-to-my-node" target="_blank">
           How to connect to your node
         </a>
         <br />
-        <a href="https://getvoltage.io/faq.html#applications" target="_blank">
+        <a href="https://docs.voltage.cloud/lightning-nodes/faq#what-applications-should-i-use-to-connect-to-my-node" target="_blank">
           Popular apps to connect to your node.
         </a>
       </v-container>
