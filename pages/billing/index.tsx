@@ -1,4 +1,4 @@
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent, ref } from "@vue/composition-api";
 import {
   VContainer,
   VRow,
@@ -9,12 +9,25 @@ import {
   VBtn,
   VProgressCircular,
 } from "vuetify/lib";
+import JsonTable from "~/components/core/JsonTable";
+import type { JsonData } from "~/components/core/JsonTable";
 import { nodeStore } from "~/store";
+import { voltageFetch } from "~/utils/fetchClient";
 import useFetch from "~/compositions/useFetch";
 
 interface PurchasedItem {
   item: string;
   quantity: number;
+}
+
+interface Invoice {
+  invoice_id: string;
+  creation_date: string;
+  due_date: string;
+  status: string; // i think it can only be "due" but im not sure
+  lite_node_hours: number;
+  standard_node_hours: number;
+  amount_due: number;
 }
 
 export default defineComponent({
@@ -29,9 +42,9 @@ export default defineComponent({
     VProgressCircular,
   },
   setup: (_, ctx) => {
-    const { data, dispatch, loading, error } = useFetch<any>("/billing");
-
-    dispatch({ method: "GET" });
+    const { data, loading, error } = useFetch<any>("/billing", {
+      method: "GET",
+    });
 
     const renderLinkedNodes = (ids: string[]) => {
       const linkedNodes = ids.reduce((acc: any, cur: any) => {
@@ -79,6 +92,55 @@ export default defineComponent({
       }
     };
 
+    function transformInvoiceData(invoice: Invoice) {
+      return () =>
+        ({
+          Created: new Intl.DateTimeFormat().format(
+            new Date(invoice.creation_date)
+          ),
+          "Due Date": new Intl.DateTimeFormat().format(
+            new Date(invoice.due_date)
+          ),
+          Status: invoice.status,
+          "Lite Node Hours": invoice.lite_node_hours,
+          "Standard Node Hours": invoice.standard_node_hours,
+          "Amount Due": `$${invoice.amount_due}`,
+        } as JsonData);
+    }
+
+    const loadingInvoice = ref("");
+    const invoiceErr = ref("");
+    async function payInvoice({
+      invoice,
+      method,
+    }: {
+      invoice: Invoice;
+      method: "bitcoin" | "card";
+    }) {
+      const { invoice_id } = invoice;
+      loadingInvoice.value = method;
+      try {
+        const res = await voltageFetch("/billing/pay", {
+          method: "POST",
+          body: JSON.stringify({
+            invoice_id,
+            type: method,
+          }),
+        });
+        if (!res.ok) {
+          throw new Error("Invalid status code");
+        }
+        const { redirect_url } = await res.json();
+        console.log({ redirect_url })
+        window.location = redirect_url;
+      } catch (e) {
+        invoiceErr.value =
+          "An error occured paying the invoice. Please try again later";
+      } finally {
+        loadingInvoice.value = "";
+      }
+    }
+
     return () => {
       if (loading.value) {
         return (
@@ -121,6 +183,36 @@ export default defineComponent({
                     Warning, your account status is: {data.value.status}
                   </v-card>
                 )}
+                {data.value?.invoices?.length > 0 && (
+                  <div class="text-h6">Bills Due</div>
+                )}
+                {data.value?.invoices?.length > 0 &&
+                  data.value.invoices.map((invoice: Invoice) => (
+                    <v-card color="info" class="pa-3 my-3">
+                      <JsonTable data={transformInvoiceData(invoice)} />
+                      <v-btn
+                        loading={loadingInvoice.value === "card"}
+                        dark
+                        color="highlight"
+                        class="mt-3 mx-1"
+                        onClick={() => payInvoice({ invoice, method: "card" })}
+                      >
+                        Pay with Card
+                      </v-btn>
+                      <v-btn
+                        loading={loadingInvoice.value === "bitcoin"}
+                        dark
+                        color="highlight"
+                        class="mt-3 mx-1"
+                        onClick={() =>
+                          payInvoice({ invoice, method: "bitcoin" })
+                        }
+                      >
+                        Pay with Bitcoin
+                      </v-btn>
+                    </v-card>
+                  ))}
+                <div class="text-h6">Subscriptions</div>
                 {data.value &&
                   data.value.subscriptions.map((sub: any) => (
                     <v-card color="info" class="pa-3 my-3">
