@@ -132,6 +132,10 @@ export default defineComponent({
         }
         const { redirect_url } = await res.json();
         console.log({ redirect_url })
+        // write to btcpayRedir to redirect back to this page after payment
+        if (method === 'bitcoin') {
+          localStorage.setItem('btcpayRedir', '/billing')
+        }
         window.location = redirect_url;
       } catch (e) {
         invoiceErr.value =
