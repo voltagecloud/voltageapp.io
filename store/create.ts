@@ -68,9 +68,8 @@ export default class CreateModule extends VuexModule {
   // should the subscription bundle with btc pay
   includeBtcPay: boolean = false;
 
-
   // whether the current node has been populated already
-  populated = false
+  populated = false;
 
   @Mutation
   NODE_NAME(name: string) {
@@ -110,7 +109,7 @@ export default class CreateModule extends VuexModule {
   @Mutation
   PLAN_STATE(state: Subscription<Plan, Product>) {
     this.planState = state;
-    this.trial = state.plan === Plan.trial
+    this.trial = state.plan === Plan.trial;
   }
 
   @Mutation
@@ -186,7 +185,7 @@ export default class CreateModule extends VuexModule {
       planState: this.planState,
       planQty: this.planQty,
       includeBtcPay: this.includeBtcPay,
-      populated: this.populated
+      populated: this.populated,
     };
     window.localStorage.setItem("createStore", JSON.stringify(data));
   }
@@ -219,7 +218,7 @@ export default class CreateModule extends VuexModule {
     this.planState = js.planState;
     this.planQty = js.planQty;
     this.includeBtcPay = js.includeBtcPay;
-    this.populated = js.populated
+    this.populated = js.populated;
   }
 
   populateError: resError = null;
@@ -231,7 +230,7 @@ export default class CreateModule extends VuexModule {
 
   @Mutation
   POPULATED(v: boolean) {
-    this.populated = v
+    this.populated = v;
   }
 
   // action to populate a newly created node with settings
@@ -256,7 +255,7 @@ export default class CreateModule extends VuexModule {
           // force sphinx creation as false for now
           sphinx: false,
           // alias should be node node on podcast nodes
-          alias: this.nodeName
+          alias: this.nodeName,
         }),
       }),
     });
@@ -266,8 +265,8 @@ export default class CreateModule extends VuexModule {
       return;
     } else {
       this.POPULATE_ERROR({});
-      this.POPULATED(true)
-      this.SERIALIZE()
+      this.POPULATED(true);
+      this.SERIALIZE();
     }
   }
 
@@ -295,11 +294,16 @@ export default class CreateModule extends VuexModule {
       this.CREATE_ERROR({ error: Error("The node type is not selected") });
       return;
     }
+    const purchased_type = this.trial
+      ? "trial"
+      : this.planState.plan === Plan.payAsYouGo
+      ? "ondemand"
+      : "paid";
     const res = await voltageFetch("/node/create", {
       method: "POST",
       body: JSON.stringify({
         network: this.network,
-        purchased_type: this.trial ? "trial" : "paid",
+        purchased_type,
         type: this.createType === Product.podcast ? "lite" : this.createType,
         // pass the custom podcast role if this is a podcast node
         custom_roles:
@@ -314,7 +318,7 @@ export default class CreateModule extends VuexModule {
       return;
     } else {
       // node was just created, make sure its not marked populated
-      this.POPULATED(false)
+      this.POPULATED(false);
       // set the node id in this store from response
       this.NODE_ID(js.node_id);
       // autofill the users ip from response
