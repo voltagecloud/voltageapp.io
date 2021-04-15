@@ -79,9 +79,6 @@ export default defineComponent({
     const billingOptions = computed(() =>
       Object.keys(Plan)
         .filter((plan) => {
-          // TEMP
-          // disable pay as you go for now
-          if (plan === Plan.payAsYouGo) return false;
           // only allow trial option if its available on this user
           return plan !== Plan.trial || nodeStore.user?.trial_available;
         })
@@ -153,13 +150,13 @@ export default defineComponent({
     );
     const availableNodes = computed(() => nodeStore.user?.available_nodes || 0);
 
+    // TODO refactor this function its ugly and hard to read
     async function handleCreation() {
       // reset store errors
       createStore.CREATE_ERROR({});
 
       if (planState.value.plan === Plan.payAsYouGo) {
-        // handle some pay as you go state
-        // TODO implement pay as you go
+        emit("next")
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
         emit("next");
