@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref } from "@vue/composition-api";
 import { useRouter } from "@nuxtjs/composition-api";
 import { VCard, VContainer, VCol, VTextField, VIcon, VBtn } from "vuetify/lib";
-import { createStore } from "~/store";
+import { createStore, macaroonStore } from "~/store";
 import { useConfirmPassword } from "~/compositions/useConfirmPassword";
 import useFetch from "~/compositions/useFetch";
 
@@ -48,6 +48,8 @@ export default defineComponent({
       message.value = "";
 
       if (!createStore.populateError) {
+        // creation was successful write password to macaroon store
+        macaroonStore.NODE_PASSWORD({ password: password.value, nodeId: createStore.nodeId })
         router.push(`/node/${createStore.nodeId}`);
       } else if (
         createStore.populateError?.message ===
