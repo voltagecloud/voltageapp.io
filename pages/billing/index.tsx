@@ -24,7 +24,7 @@ interface Invoice {
   invoice_id: string;
   creation_date: string;
   due_date: string;
-  status: string; // i think it can only be "due" but im not sure
+  status: "due"|"late";
   lite_node_hours: number;
   standard_node_hours: number;
   amount_due: number;
