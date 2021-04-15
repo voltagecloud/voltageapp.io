@@ -71,6 +71,7 @@ export default defineComponent({
         network: createStore.network,
         node_name: onBlurName.value,
       }),
+      pause: computed(() => !!onBlurName.value)
     }));
 
     const { loading, data } = useFetch<{
