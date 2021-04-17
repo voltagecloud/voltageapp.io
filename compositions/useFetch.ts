@@ -2,7 +2,7 @@ import { ref, ComputedRef, isRef, watch } from "@vue/composition-api";
 import { voltageFetch } from "~/utils/fetchClient";
 
 interface ComputedOpts extends RequestInit {
-  pause: boolean|ComputedRef<boolean>
+  pause?: boolean|ComputedRef<boolean>
 }
 
 export default function useFetch<T>(
