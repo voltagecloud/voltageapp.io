@@ -9,8 +9,9 @@ import {
   VBtn,
   VSpacer,
   VCard,
-  VDivider
-} from 'vuetify/lib'
+  VDivider,
+} from "vuetify/lib";
+import ApiKeys from "~/components/ApiKeys";
 
 export default defineComponent({
   components: {
@@ -21,8 +22,8 @@ export default defineComponent({
     VSpacer,
     VCard,
     VDivider,
-    EnableMfa: () => import('~/components/EnableMfa.vue'),
-    ChangePassword: () => import('~/components/ChangePassword.vue')
+    EnableMfa: () => import("~/components/EnableMfa.vue"),
+    ChangePassword: () => import("~/components/ChangePassword.vue"),
   },
   setup: () => {
     // amplify doesnt have correct typings
@@ -95,7 +96,9 @@ export default defineComponent({
         billingLoading.value = false;
       }
     }
-    console.log({ MFAEnabled })
+
+    // hold api keys dialog state
+    const apiKeys = ref(false)
 
     return () => (
       <v-container>
@@ -174,6 +177,21 @@ export default defineComponent({
                   >
                     Open Dashboard
                   </v-btn>
+                </div>
+                <v-divider />
+                <div class="d-flex flex-row align-center">
+                  <v-col cols="auto">API Keys</v-col>
+                  <v-spacer />
+                  <v-btn
+                    color="secondary"
+                    onClick={() => apiKeys.value = true}
+                    class="warning--text"
+                  >
+                    View
+                  </v-btn>
+                  <v-dialog value={apiKeys.value} onInput={(v: boolean) => apiKeys.value = v} max-width="800">
+                    <ApiKeys />
+                  </v-dialog>
                 </div>
                 <v-divider />
                 <div class="d-flex flex-row align-center">
