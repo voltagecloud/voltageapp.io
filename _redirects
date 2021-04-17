@@ -1,0 +1,4 @@
+http://voltageapp.io/* https://app.voltage.cloud/:splat 301!
+http://www.voltageapp.io/* https://app.voltage.cloud/:splat 301!
+https://voltageapp.io/* https://app.voltage.cloud/:splat 301!
+https://www.voltageapp.io/* https://app.voltage.cloud/:splat 301!
