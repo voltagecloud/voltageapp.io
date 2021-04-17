@@ -52,7 +52,7 @@ export default defineComponent({
       },
       {
         text: "Documentation",
-        onClick: () => window.open("https://docs.voltageapp.io", "_blank"),
+        onClick: () => window.open("https://docs.voltage.cloud", "_blank"),
         active: () => false,
       },
     ]);
