@@ -1,7 +1,7 @@
 import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
-const dev = process.env.NODE_ENV !== 'prod' || process.env.NETLIFY
+const dev = process.env.NODE_ENV !== 'prod'
 const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io'
 
 export default {
