@@ -29,6 +29,7 @@ export default defineComponent({
     VTextField,
     VContainer,
     VDivider,
+    CopyPill: () => import("~/components/core/CopyPill.vue"),
   },
   setup: () => {
     const { dispatch: reload, data, loading, error } = useFetch<{
@@ -79,8 +80,8 @@ export default defineComponent({
           alias: keyAlias.value,
         }),
       });
-      showCreateInput.value = false
-      keyAlias.value = ''
+      showCreateInput.value = false;
+      keyAlias.value = "";
     }
 
     function renderKey(k: ApiKey | FreshApiKey) {
@@ -95,7 +96,7 @@ export default defineComponent({
             </div>
             {"api_key" in k ? (
               <div>
-                Key: <span class="overline" style="word-break: break-all;">{k.api_key}</span>
+                Key: <copy-pill text={k.api_key} />
               </div>
             ) : (
               <v-btn
@@ -121,7 +122,10 @@ export default defineComponent({
     function renderKeyCreation() {
       if (showCreateInput.value) {
         return (
-          <div class="d-flex flex-row justify-center align-center" style="width: 100%">
+          <div
+            class="d-flex flex-row justify-center align-center"
+            style="width: 100%"
+          >
             <v-text-field
               full-width
               value={keyAlias.value}
@@ -131,7 +135,13 @@ export default defineComponent({
               class="ma-2"
               outlined
             />
-            <v-btn dark class="mb-6" color="highlight" onClick={createKey} loading={creating.value}>
+            <v-btn
+              dark
+              class="mb-6"
+              color="highlight"
+              onClick={createKey}
+              loading={creating.value}
+            >
               Create Key
             </v-btn>
           </div>
@@ -153,14 +163,18 @@ export default defineComponent({
       <v-card color="secondary">
         <v-container>
           <div class="d-flex flex-column align-start">
-            <div class="text-h6">Api Keys</div>
-            <div>
-              You can create up to 5 keys per account which allow you to
-              interact with voltage programatically via the Voltage API. API
-              keys can be revoked at any time and will only be displayed once
-              when they are created.
+            <div class="v-card__title">Api Keys</div>
+            <div class="mx-3 mb-3">
+              <div class="font-weight-light">
+                You can create up to 5 keys per account which allow you to
+                interact with voltage programmatically via the Voltage API.
+                keys will only be displayed once when they are created.
+              </div>
+              <a href="#">API Documentation</a>
             </div>
-            <v-divider />
+            <div style="width: 100%">
+              <v-divider />
+            </div>
             {data.value?.keys ? (
               data.value.keys
                 .filter((key) => key.apikey_id !== createData.value?.apikey_id)

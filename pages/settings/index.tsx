@@ -187,10 +187,10 @@ export default defineComponent({
                     onClick={() => apiKeys.value = true}
                     class="warning--text"
                   >
-                    View
+                    Manage
                   </v-btn>
                   <v-dialog value={apiKeys.value} onInput={(v: boolean) => apiKeys.value = v} max-width="800">
-                    <ApiKeys />
+                    {apiKeys.value && <ApiKeys />}
                   </v-dialog>
                 </div>
                 <v-divider />
