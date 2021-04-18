@@ -168,7 +168,7 @@ export default defineComponent({
               <div class="font-weight-light">
                 You can create up to 5 keys per account which allow you to
                 interact with voltage programmatically via the Voltage API.
-                keys will only be displayed once when they are created.
+                Keys will only be displayed once when they are created.
               </div>
               <a href="#">API Documentation</a>
             </div>
