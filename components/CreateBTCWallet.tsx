@@ -92,7 +92,7 @@ export default defineComponent({
           <div class="text-h5">Generated Bitcoin Wallet</div>
           <div>
             <a
-              href="https://docs.voltageapp.io/btcpay-server/btcpay-server-faq#is-generating-my-bitcoin-wallet-in-your-dashboard-safe"
+              href="https://docs.voltage.cloud/btcpay-server/btcpay-server-faq#is-generating-my-bitcoin-wallet-in-your-dashboard-safe"
               target="_blank"
             >
               Learn about the security model of creating the keys in our dashboard.
