@@ -376,6 +376,7 @@ export default defineComponent({
     const error = ref("");
 
     async function unlockSphinx(password: string) {
+      console.log({ password })
       const api = nodeData.value.api_endpoint.replace(
         "voltageapp.io",
         "relay.voltageapp.io"
@@ -420,6 +421,7 @@ export default defineComponent({
         await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
+          console.log({ NODE_PASSWORD: password })
           await unlockSphinx(password);
         }
         await postNode(nodeID.value);
