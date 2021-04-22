@@ -376,14 +376,18 @@ export default defineComponent({
     const error = ref("");
 
     async function unlockSphinx(password: string) {
-      console.log({ password })
       const api = nodeData.value.api_endpoint.replace(
         "voltageapp.io",
         "relay.voltageapp.io"
       );
+
       // call to unlock sphinx
       await fetch(`https://${api}:3001/unlock`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ password }),
       });
     }
@@ -421,7 +425,6 @@ export default defineComponent({
         await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
         if (nodeData.value.settings.sphinx) {
-          console.log({ NODE_PASSWORD: password })
           await unlockSphinx(password);
         }
         await postNode(nodeID.value);
@@ -454,7 +457,6 @@ export default defineComponent({
         const nodePwObj = macaroonStore.password({
           nodeId: route.value.params.id,
         });
-        console.log({ nodePwObj })
         if (nodePwObj) {
           await unlockSphinx(nodePwObj.password);
         }
