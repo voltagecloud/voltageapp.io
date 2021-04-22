@@ -373,9 +373,14 @@ export default defineComponent({
         "voltageapp.io",
         "relay.voltageapp.io"
       );
+
       // call to unlock sphinx
       await fetch(`https://${api}:3001/unlock`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ password }),
       });
     }
