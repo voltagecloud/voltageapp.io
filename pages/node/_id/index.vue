@@ -376,7 +376,6 @@ export default defineComponent({
     const error = ref("");
 
     async function unlockSphinx(password: string) {
-      assert password
       const api = nodeData.value.api_endpoint.replace(
         "voltageapp.io",
         "relay.voltageapp.io"
