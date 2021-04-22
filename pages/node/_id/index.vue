@@ -266,7 +266,13 @@ export default defineComponent({
         macaroonStore.macaroonState({
           nodeId: route.value.params.id,
           type: MacaroonType.admin,
-        }).macaroonHex
+        })?.macaroonHex
+    );
+    // get handle to node password for this node
+    const nodePw = computed(() =>
+      macaroonStore.password({
+        nodeId: route.value.params.id,
+      })?.password
     );
 
     async function initialize() {
@@ -370,6 +376,7 @@ export default defineComponent({
     const error = ref("");
 
     async function unlockSphinx(password: string) {
+      assert password
       const api = nodeData.value.api_endpoint.replace(
         "voltageapp.io",
         "relay.voltageapp.io"
@@ -446,6 +453,7 @@ export default defineComponent({
         const nodePwObj = macaroonStore.password({
           nodeId: route.value.params.id,
         });
+        console.log({ nodePwObj })
         if (nodePwObj) {
           await unlockSphinx(nodePwObj.password);
         }
