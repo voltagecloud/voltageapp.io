@@ -48,8 +48,8 @@ export default {
       { property: 'og:image:width', content: '600' },
       { property: 'og:image:height', content: '315' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:site', content: '@getvoltage' },
-      { name: 'twitter:creator', content: '@getvoltage' },
+      { name: 'twitter:site', content: '@voltage_cloud' },
+      { name: 'twitter:creator', content: '@voltage_cloud' },
       { name: 'twitter:title', content: 'Voltage Dashboard' },
       { name: 'twitter:description', content: 'Voltage offers enterprise-grade infrastructure services for Bitcoin. Build, Deploy, and Scale faster with Voltage.' },
       { name: 'twitter:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltage.cloud' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-twitter.png` }
