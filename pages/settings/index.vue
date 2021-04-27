@@ -40,7 +40,7 @@
               v-spacer
               v-dialog(max-width='800')
                 template(v-slot:activator='{ on }')
-                  v-btn(color='secondary' href="mailto:support@getvoltage.io").warning--text Email Support
+                  v-btn(color='secondary' href="mailto:support@voltage.cloud").warning--text Email Support
 </template>
 <script lang="ts">
 import {

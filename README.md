@@ -1,10 +1,10 @@
-# voltageapp.io
+# app.voltage.cloud
 
 ![](logo.png)
 
-Static Dashboard site for [Voltage](https://getvoltage.io).
+Static Dashboard site for [Voltage](https://voltage.cloud).
 
-[Dashboard Link](https://voltageapp.io)
+[Dashboard Link](https://app.voltage.cloud)
 
 ## Build Setup
 

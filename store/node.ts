@@ -103,4 +103,10 @@ export default class NodeModule extends VuexModule {
       return []
     }
 
+    get nodeData() {
+      return (id: string) => {
+        this.nodes.find(node => node.node_id === id)
+      }
+    }
+
 }

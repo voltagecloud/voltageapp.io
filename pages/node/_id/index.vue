@@ -15,7 +15,7 @@ v-container
             v-divider
           template(v-slot:append-content v-if='nodeData && nodeData.node_name')
             v-divider
-            p.font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
+            p(v-if="helperText").font-weight-light.warning--text.text--darken-1.v-card--title(justify='center' align='center' style='padding-top: 15px; margin: auto;')
               | {{ helperText }}
             //- Unlock button
             v-container(v-if='canUnlock')
@@ -51,9 +51,9 @@ v-container
               v-tab-item
                 connect-tab(:node='nodeData')
               v-tab-item
-                dashboard-data(:nodeID='nodeID')
+                WrappedDashboard(:node='nodeData')
               v-tab-item
-                node-settings(:node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
+                node-settings(v-if='nodeData.settings' :node='nodeData' @updated='() => { $fetch(); curTab = 0; }')
               v-tab-item
                 logs(ref='logsRef' :nodeId='$route.params.id')
               v-tab-item(class="text-center")
@@ -147,6 +147,7 @@ import type { Node } from "~/types/apiResponse";
 import type LogsComponent from "~/components/viewnode/Logs.vue";
 import WrappedNetwork from "~/components/viewnode/WrappedNetwork";
 import WrappedPodcast from "~/components/viewnode/WrappedPodcast";
+import WrappedDashboard from "~/components/WrappedDashboard";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import { voltageFetch } from "~/utils/fetchClient";
@@ -159,7 +160,7 @@ export default defineComponent({
     DataTable: () => import("~/components/viewnode/DataTable.vue"),
     NodeSettings: () => import("~/components/viewnode/NodeSettings.vue"),
     ExportData: () => import("~/components/ExportData.vue"),
-    DashboardData: () => import("~/components/DashboardData.vue"),
+    WrappedDashboard,
     WrappedNetwork,
     WrappedPodcast,
     ConnectTab: () => import("~/components/viewnode/Connect"),
@@ -265,7 +266,13 @@ export default defineComponent({
         macaroonStore.macaroonState({
           nodeId: route.value.params.id,
           type: MacaroonType.admin,
-        }).macaroonHex
+        })?.macaroonHex
+    );
+    // get handle to node password for this node
+    const nodePw = computed(() =>
+      macaroonStore.password({
+        nodeId: route.value.params.id,
+      })?.password
     );
 
     async function initialize() {
@@ -385,27 +392,35 @@ export default defineComponent({
       });
     }
 
+    // unlocks the current node via fetch request
     async function unlockNode(password: string) {
       error.value = "";
-      lndStore.CURRENT_NODE(nodeData.value);
       unlocking.value = true;
+      const endpoint = nodeData.value?.api_endpoint;
+      if (!endpoint) {
+        error.value = "Error getting node data. please try again later";
+        return;
+      }
+
       try {
-        const node = lndStore.currentNode as Node;
-        // call to unlock lnd
-        await axios({
-          url: `https://${node.api_endpoint}:8080/v1/unlockwallet`,
+        const res = await fetch(`https://${endpoint}:8080/v1/unlockwallet`, {
           method: "POST",
-          data: {
+          cache: "no-store",
+          body: JSON.stringify({
             wallet_password: btoa(password),
             stateless_init: true,
-          },
-          timeout: 45000,
+          }),
         });
-        // node has been unlocked so password is correct write to state
+        if (!res.ok) {
+          error.value = "An error occurred unlocking node. Try again later.";
+          return;
+        }
+        // password is correct, safe to write to store
         macaroonStore.NODE_PASSWORD({
           nodeId: route.value.params.id,
           password,
         });
+
         // update the status of the node in the api
         await updateStatus(route.value.params.id, "unlocking");
         // check if sphinx relay needs to be unlocked
@@ -413,8 +428,10 @@ export default defineComponent({
           await unlockSphinx(password);
         }
         await postNode(nodeID.value);
-      } catch (err) {
-        error.value = `${err.response.data.message}`;
+      } catch (e) {
+        error.value =
+          "There was a problem communicating with the node please try again later";
+        return;
       } finally {
         unlocking.value = false;
       }
@@ -489,8 +506,8 @@ export default defineComponent({
       // write /getinfo to cache
       nodeStore.NODE_INFO({
         id: route.value.params.id,
-        payload: data
-      })
+        payload: data,
+      });
       if (data.synced_to_chain) {
         return data.identity_pubkey as string;
       } else {
@@ -612,7 +629,7 @@ export default defineComponent({
       curTab,
       logsRef,
       confirmReady,
-      showPodcastCompletion
+      showPodcastCompletion,
     };
   },
 });

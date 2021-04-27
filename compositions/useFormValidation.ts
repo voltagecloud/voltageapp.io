@@ -37,7 +37,8 @@ export default function useFormValidation () {
 
   const showPalette = ref(false)
 
-  function invertColor (hex: string) {
+  function invertColor (hex?: string) {
+    if (!hex) return '#FFFFFF'
     if (hex.indexOf('#') === 0) {
       hex = hex.slice(1)
     }

@@ -8,9 +8,9 @@
     <v-container fluid>
       <v-row justify="start">
         <div class="px-4 font-weight-light warning--text text--darken-1" style="font-size: 14px;">
-          Copyright &copy; {{year}} Voltage | <a href="https://getvoltage.io/terms.html" target="_blank">Terms</a>
-          - <a href="https://getvoltage.io/privacy.html" target="_blank">Privacy</a>
-          - <a href="https://getvoltage.io/#about" target="_blank">About</a>
+          Copyright &copy; {{year}} Voltage | <a href="https://voltage.cloud/terms.html" target="_blank">Terms</a>
+          - <a href="https://voltage.cloud/privacy.html" target="_blank">Privacy</a>
+          - <a href="https://voltage.cloud/about" target="_blank">About</a>
         </div>
       </v-row>
     </v-container>

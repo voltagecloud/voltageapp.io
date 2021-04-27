@@ -1,8 +1,10 @@
 import { Configuration } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
-const dev = false
-const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltageapp.io'
+const dev = process.env.BRANCH !== 'master' 
+console.log({ env: process.env, dev })
+
+const endpoint = (dev) ? 'https://7cwrwu4xxi.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltage.cloud'
 
 export default {
   ssr: false,
@@ -39,18 +41,18 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
       { property: 'og:site_name', content: 'Voltage Dashboard' },
       { property: 'og:title', content: 'Voltage Dashboard' },
-      { property: 'og:description', content: 'Voltage offers Lightning Network node hosting with complete user control. Provision your own node in less than two minutes.' },
+      { property: 'og:description', content: 'Voltage offers enterprise-grade infrastructure services for Bitcoin. Build, Deploy, and Scale faster with Voltage.' },
       { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}` },
-      { property: 'og:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-og.png` },
+      { property: 'og:url', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltage.cloud' : 'competent-mclean-65ff0b.netlify.app'}` },
+      { property: 'og:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltage.cloud' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-og.png` },
       { property: 'og:image:width', content: '600' },
       { property: 'og:image:height', content: '315' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:site', content: '@getvoltage' },
-      { name: 'twitter:creator', content: '@getvoltage' },
+      { name: 'twitter:site', content: '@voltage_cloud' },
+      { name: 'twitter:creator', content: '@voltage_cloud' },
       { name: 'twitter:title', content: 'Voltage Dashboard' },
-      { name: 'twitter:description', content: 'Voltage offers Lightning Network node hosting with complete user control. Provision your own node in less than two minutes.' },
-      { name: 'twitter:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltageapp.io' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-twitter.png` }
+      { name: 'twitter:description', content: 'Voltage offers enterprise-grade infrastructure services for Bitcoin. Build, Deploy, and Scale faster with Voltage.' },
+      { name: 'twitter:image', content: `https://${process.env.NODE_ENV === 'prod' ? 'voltage.cloud' : 'competent-mclean-65ff0b.netlify.app'}/images/voltage-twitter.png` }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }

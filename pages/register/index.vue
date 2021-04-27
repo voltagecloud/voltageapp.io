@@ -18,7 +18,7 @@
                     | {{ error }}
                   p.font-weight-light(style='font-size: 12px;')
                     | By creating an account you agree to our
-                    a(href="https://getvoltage.io/terms.html" target="_blank") Terms of Service.
+                    a(href="https://voltage.cloud/terms.html" target="_blank") Terms of Service.
                   v-btn(type='submit' color='primary' :disabled='!valid' :loading='loading').mr-3
                     | Register
                   a(@click='currentStep += 1') Use Existing Code
