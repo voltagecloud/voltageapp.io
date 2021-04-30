@@ -231,7 +231,7 @@ export default defineComponent({
               </v-card-actions>
             </v-card>
             { /* acquire macaroon step */}
-            <v-dialog value={state.currentStep === 1} max-width="800">
+            <v-dialog value={state.currentStep === 1} onInput={() => {state.currentStep = 0}} max-width="800">
               <v-card>
                 <v-card-actions>
                   <v-btn onClick={() => { state.currentStep = 0}} icon>
