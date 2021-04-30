@@ -115,7 +115,7 @@ export default defineComponent({
           <v-card class="pa-4 text-center">
             {state.loading && <v-progress-circular indeterminate />}
             <div>Retrieving Macaroons</div>
-            {state.error && (
+            {state.error || error.value && (
               <div>
                 {state.error || error.value}
                 <v-btn block onClick={() => (state.retry = true)}>
