@@ -83,6 +83,6 @@ export default function useNodePricing() {
     standardPlan,
     podcastPlan,
     yearlyBilling,
-    mappedBillingName,
+    mappedBillingName
   };
 }

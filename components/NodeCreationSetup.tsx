@@ -88,18 +88,12 @@ export default defineComponent({
         )
     );
 
-    function pricingText(monthlyPrice?: number) {
-      if (typeof monthlyPrice !== "undefined") {
-        return `$${monthlyPrice}/mo`;
-      }
-      return "Not Available";
-    }
 
     const {
       litePlan,
       standardPlan,
       billingCycle,
-      mappedBillingName,
+      mappedBillingName
     } = useNodePricing();
 
     function handleSelectProduct(subscription: Subscription<Plan, Product>) {
@@ -194,6 +188,13 @@ export default defineComponent({
     }
     determineTrial();
 
+    function pricingText(sub?: Subscription<Plan, Product>) {
+      if (!sub) {
+        return 'Not Available'
+      }
+      return `${sub.cost}${sub.rate}`
+    }
+
     return () => (
       <VContainer>
         <div class="d-flex flex-row justify-center">
@@ -257,7 +258,7 @@ export default defineComponent({
                       <div class="d-flex flex-column">
                         <div class="text-h4">Lite</div>
                         <div>Backed by Neutrino</div>
-                        <div>{pricingText(litePlan.value?.cost)}</div>
+                        <div>{pricingText(litePlan.value)}</div>
                       </div>
                     </VCard>
                   </button>
@@ -277,7 +278,7 @@ export default defineComponent({
                       <div class="d-flex flex-column">
                         <div class="text-h4">Standard</div>
                         <div>Backed by Bitcoin Full Node</div>
-                        <div>{pricingText(standardPlan.value?.cost)}</div>
+                        <div>{pricingText(standardPlan.value)}</div>
                       </div>
                     </VCard>
                   </button>
