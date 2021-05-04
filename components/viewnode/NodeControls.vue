@@ -11,10 +11,8 @@ v-card(color='info')
             span.caption.warning--text.ml-2 {{ nodeData && nodeData.status || '...' }}
           v-col(cols='12').overline
             | {{networkText}}
-      v-col(cols='auto')
+      v-col(v-if='nodeType === "lnd"' cols='auto')
         v-row(justify='end')
-          v-dialog(max-width='800')
-            template(v-slot:activator='{ on }')
           v-btn(:disabled='!canStart' icon @click='() => { startNode(); $emit("event"); }').mx-1
             v-icon mdi-play
           v-btn(:disabled='!canStop' icon @click='() => { stopNode(); $emit("event"); }').mx-1
@@ -36,7 +34,7 @@ import { defineComponent, computed, ref } from "@vue/composition-api";
 import useNodeControls from "~/compositions/useNodeControls";
 import useNodeStatus from "~/compositions/useNodeStatus";
 import { nodeStore } from "~/store";
-import type { Node } from "~/types/apiResponse";
+import type { Node, BitcoindNode, BtcdNode } from "~/types/apiResponse";
 
 export default defineComponent({
   props: {
@@ -49,12 +47,11 @@ export default defineComponent({
     ChooseMacaroon: () => import("~/components/ChoooseMacaroon.vue"),
   },
   setup(props, { root }) {
-    const nodeData = computed<Readonly<Node>>(
-      () =>
-        nodeStore.nodes.find(
-          (nodeObj) => nodeObj.node_id === props.nodeID
-        ) as Node
+    const nodeData = computed<Readonly<Node|BitcoindNode|BtcdNode>>(() =>
+      nodeStore.nodeData(props.nodeID)
     );
+
+    const nodeType = computed(() => nodeData.value.node_type)
 
     function navigate() {
       if (root.$route.name !== "node-id") {
@@ -102,6 +99,7 @@ export default defineComponent({
       connect,
       loading,
       networkText,
+      nodeType,
     };
   },
 });
