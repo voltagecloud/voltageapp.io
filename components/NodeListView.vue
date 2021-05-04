@@ -47,7 +47,7 @@ export default defineComponent({
   setup: () => {
     return {
       nodes: computed(() =>
-        nodeStore.IDNames.filter((node) => node.status !== NodeStatus.deleted)
+        nodeStore.allNodes.filter((node) => node.status !== NodeStatus.deleted)
       ),
     };
   },
