@@ -47,7 +47,7 @@ export default defineComponent({
     ChooseMacaroon: () => import("~/components/ChoooseMacaroon.vue"),
   },
   setup(props, { root }) {
-    const nodeData = computed<Readonly<Node|BitcoindNode|BtcdNode>>(() =>
+    const nodeData = computed<Node|BitcoindNode|BtcdNode>(() =>
       nodeStore.nodeData(props.nodeID)
     );
 
