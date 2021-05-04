@@ -82,22 +82,15 @@ export default class NodeModule extends VuexModule {
 
     @Mutation
     ADD_NODE (node: Node) {
-      this.nodes = this.nodes.map(n => {
+      let updated = false
+      const newData = this.nodes.map(n => {
         if (n.node_id === node.node_id) {
+          updated = true
           return Object.assign(n, node)
         }
         return n
       })
-    }
-
-    @Mutation
-    UPDATE_NODE (payload: NodeStatusUpdate) {
-      this.nodes = this.nodes.map((nodeObj) => {
-        if (nodeObj.node_id === payload.node_id) {
-          return Object.assign({}, nodeObj, payload)
-        }
-        return nodeObj
-      })
+      this.nodes = updated ? newData : [...newData, Object.assign({}, node, {node_type: 'lnd'})]
     }
 
     @Mutation
