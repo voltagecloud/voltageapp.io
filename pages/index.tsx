@@ -9,7 +9,7 @@ import { NodeStatus } from "~/types/api";
 export default defineComponent({
   setup: () => {
     const nodes = computed(() =>
-      nodeStore.IDNames.filter((node) => node.status !== NodeStatus.deleted)
+      nodeStore.allNodes.filter((node) => node.status !== NodeStatus.deleted)
     );
 
     const displayContent = computed(() => {

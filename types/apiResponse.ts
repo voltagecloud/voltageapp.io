@@ -6,6 +6,12 @@ export enum PurchasedType {
     ondemand = 'ondemand'
 }
 
+export enum NodeSoftware {
+    lnd = 'lnd',
+    bitcoind = 'bitcoind',
+    btcd = 'btcd'
+}
+
 export interface NodeSeed {
     name: string
     network: Network
@@ -36,9 +42,37 @@ export interface PopulateNode extends CreateNode {
 }
 
 export interface Node extends PopulateNode {
+    node_type: NodeSoftware.lnd
     settings: Settings
     volt_version: String
     custom_roles?: String[]
+}
+
+interface BitcoinNode {
+    api_endpoint: string;
+    created: string;
+    expires: string;
+    network: Network;
+    node_id: string;
+    node_name: string;
+    owner_id: string;
+    password: string;
+    purchase_status: string;
+    purchased_type: string;
+    status: string;
+    type: string;
+    username: string;
+    volt_version: string;
+}
+
+export interface BitcoindNode extends BitcoinNode {
+    bitcoind_version: string;
+    node_type: NodeSoftware.bitcoind;
+}
+
+export interface BtcdNode extends BitcoinNode {
+    btcd_version: string;
+    node_type: NodeSoftware.btcd
 }
 
 export interface NodeExport {
