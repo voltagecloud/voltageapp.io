@@ -28,6 +28,10 @@ export default function useBackupMacaroon() {
     loading.value = true;
     try {
       const res = await bakeMacaroon({ endpoint, macaroonType, macaroonHex });
+      if (!res.ok) {
+        error.value = "An error occured baking the macaroon, try again later"
+        return
+      }
       let { macaroon } = (await res.json()) as { macaroon: string };
       macaroon = ensureBase64(macaroon)
       const { encrypted } = await backupMacaroon({
