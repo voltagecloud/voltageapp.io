@@ -5,6 +5,7 @@ import { nodeStore } from "~/store";
 import { VContainer } from "vuetify/lib";
 import NodeControls from "~/components/viewnode/NodeControls.vue";
 import type { BitcoindNode } from "~/types/apiResponse";
+import CopyPill from "~/components/core/CopyPill.vue";
 
 export default defineComponent({
   setup: () => {
@@ -22,7 +23,6 @@ export default defineComponent({
       "Expiry Date": data.value.expires,
       "Api Endpoint": data.value.api_endpoint,
       Username: data.value.username,
-      Password: data.value.password,
     }));
 
     return () => (
@@ -32,7 +32,22 @@ export default defineComponent({
           {...{
             scopedSlots: {
               "append-content": () => (
-                <JsonTable data={() => (payload.value as unknown) as JsonData} />
+                <JsonTable data={() => (payload.value as unknown) as JsonData}>
+                  <tr>
+                    <td>
+                      <div style="word-break: normal;">Password</div>
+                    </td>
+                    <td class="text-end">
+                      <CopyPill 
+                        color="accent"
+                        text-color="warning"
+                        class="mr-3"
+                        text={data.value.password}
+                        hide 
+                      />
+                    </td>
+                  </tr>
+                </JsonTable>
               ),
             },
           }}
