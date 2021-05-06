@@ -1,6 +1,7 @@
-import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
+import { Action, Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { IDName, Network } from '~/types/api'
 import { Node, User, NodeStatusUpdate, BitcoindNode, BtcdNode, NodeSoftware } from '~/types/apiResponse'
+import { voltageFetch } from '~/utils/fetchClient'
 
 interface AvailablePayload {
     network: Network
@@ -93,6 +94,18 @@ export default class NodeModule extends VuexModule {
         return n
       })
       this.nodes = updated ? newData : [...newData, Object.assign({}, node, {node_type: 'lnd'})]
+    }
+
+    @Action
+    async FETCH_NODE(node_id: string) {
+      const res = await voltageFetch('/node', {
+        method: 'POST',
+        body: JSON.stringify({
+          node_id
+        })
+      })
+      const js = await res.json()
+      this.ADD_NODE(js as Node)
     }
 
     @Mutation
