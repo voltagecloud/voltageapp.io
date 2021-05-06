@@ -89,7 +89,7 @@ export default class NodeModule extends VuexModule {
       const newData = this.nodes.map(n => {
         if (n.node_id === node.node_id) {
           updated = true
-          return Object.assign(n, node)
+          return Object.assign({}, n, node)
         }
         return n
       })
