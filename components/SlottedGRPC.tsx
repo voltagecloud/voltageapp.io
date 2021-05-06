@@ -14,6 +14,7 @@ export default defineComponent({
   },
   setup: (props) => {
     return () => {
+      console.log({ payload: props.node })
       if (props.node.status !== "running") {
         return (
           <div class="ma-3 text-center">
