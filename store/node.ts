@@ -53,8 +53,10 @@ export default class NodeModule extends VuexModule {
     }
 
     @Mutation
-    HYDRATE_USER ({ user, nodes }: { user: User; nodes: Array<Node|BtcdNode|BitcoindNode>; }) {
-      this.user = user
+    HYDRATE_USER ({ user, nodes }: { user?: User; nodes: Array<Node|BtcdNode|BitcoindNode>; }) {
+      if (user) {
+        this.user = user
+      }
       this.nodes = nodes.filter(n => n.node_type === NodeSoftware.lnd) as Node[]
       this.bitcoindNodes = nodes.filter(n => n.node_type === NodeSoftware.bitcoind) as BitcoindNode[]
       this.btcdNodes = nodes.filter(n => n.node_type === NodeSoftware.btcd) as BtcdNode []
