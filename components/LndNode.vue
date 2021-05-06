@@ -231,11 +231,11 @@ export default defineComponent({
   },
   setup(_, ctx) {
     const route = useRoute();
-    const nodeID = ref(ctx.root.$nuxt.context.params.id);
-    const nodeData = computed(
-      () => nodeStore.nodes.filter((elem) => elem.node_id === nodeID.value)[0]
-    );
-    const { canInit, canUnlock, canUpdate, status, helperText } = useNodeStatus(
+    const nodeID = ref(route.value.params.id);
+    nodeStore.FETCH_NODE(route.value.params.id);
+    const nodeData = computed(() => nodeStore.nodeData(route.value.params.id) as Node);
+
+    const { canInit, canUnlock, canUpdate, helperText, status } = useNodeStatus(
       nodeData
     );
     const { updateNode, updateStatus, postNode } = useNodeApi(
@@ -269,10 +269,11 @@ export default defineComponent({
         })?.macaroonHex
     );
     // get handle to node password for this node
-    const nodePw = computed(() =>
-      macaroonStore.password({
-        nodeId: route.value.params.id,
-      })?.password
+    const nodePw = computed(
+      () =>
+        macaroonStore.password({
+          nodeId: route.value.params.id,
+        })?.password
     );
 
     async function initialize() {
@@ -386,7 +387,7 @@ export default defineComponent({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
         body: JSON.stringify({ password }),
       });
@@ -533,24 +534,36 @@ export default defineComponent({
     watch(nodePassword, () => {
       passError.value = "";
     });
+
+    function handleStatusUpdate(
+      status: NodeStatus | string,
+      oldStatus: NodeStatus | string
+    ) {
+      if (
+        status === NodeStatus.initializing ||
+        status === NodeStatus.provisioning
+      ) {
+        nodeCreating.value = true;
+        createText.value = status;
+      }
+      if (
+        status === NodeStatus.waiting_init &&
+        oldStatus !== NodeStatus.waiting_init
+      ) {
+        nodeCreating.value = true;
+        createText.value = "waiting_init";
+        initialize();
+      }
+      if (status === NodeStatus.running) {
+        createText.value = "complete";
+      }
+    }
+    handleStatusUpdate(status.value, "");
+
     watch(
       status,
       (newStatus: string | NodeStatus, prev: string | NodeStatus) => {
-        if (
-          newStatus === NodeStatus.initializing ||
-          newStatus === NodeStatus.provisioning
-        ) {
-          nodeCreating.value = true;
-          createText.value = newStatus;
-        }
-        if (newStatus === NodeStatus.waiting_init) {
-          nodeCreating.value = true;
-          createText.value = "waiting_init";
-          initialize();
-        }
-        if (newStatus === NodeStatus.running) {
-          createText.value = "complete";
-        }
+        handleStatusUpdate(newStatus, prev);
       }
     );
 

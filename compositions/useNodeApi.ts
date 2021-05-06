@@ -77,7 +77,7 @@ export default function useNodeApi ({ $axios, error }: Context) {
         macaroon_backup: backup,
         settings
       })
-      nodeStore.UPDATE_NODE(res.data)
+      nodeStore.ADD_NODE(res.data)
       loading.value = false
       return res
     } catch (e) {

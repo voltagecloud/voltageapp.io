@@ -1,6 +1,7 @@
-import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
+import { Action, Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import { IDName, Network } from '~/types/api'
-import { Node, User, NodeStatusUpdate } from '~/types/apiResponse'
+import { Node, User, NodeStatusUpdate, BitcoindNode, BtcdNode, NodeSoftware } from '~/types/apiResponse'
+import { voltageFetch } from '~/utils/fetchClient'
 
 interface AvailablePayload {
     network: Network
@@ -27,6 +28,8 @@ export default class NodeModule extends VuexModule {
     testnetNodeIDName: IDName[] = []
 
     nodes: Node[] = []
+    bitcoindNodes: BitcoindNode[] = []
+    btcdNodes: BtcdNode[] = []
 
     // cache of node /getinfo with node id key
     nodeInfo: Record<string, Record<string, any>> = {} 
@@ -40,6 +43,8 @@ export default class NodeModule extends VuexModule {
     @Mutation
     RESET () {
       this.nodes = []
+      this.bitcoindNodes = []
+      this.btcdNodes = []
       this.purchased = 0
       this.mainnetAvailable = 0
       this.mainnetNodeIDName = []
@@ -49,9 +54,13 @@ export default class NodeModule extends VuexModule {
     }
 
     @Mutation
-    HYDRATE_USER ({ user, nodes }: { user: User; nodes: Node[]; }) {
-      this.user = user
-      this.nodes = nodes
+    HYDRATE_USER ({ user, nodes }: { user?: User; nodes: Array<Node|BtcdNode|BitcoindNode>; }) {
+      if (user) {
+        this.user = user
+      }
+      this.nodes = nodes.filter(n => n.node_type === NodeSoftware.lnd) as Node[]
+      this.bitcoindNodes = nodes.filter(n => n.node_type === NodeSoftware.bitcoind) as BitcoindNode[]
+      this.btcdNodes = nodes.filter(n => n.node_type === NodeSoftware.btcd) as BtcdNode []
     }
 
     @Mutation
@@ -76,18 +85,27 @@ export default class NodeModule extends VuexModule {
 
     @Mutation
     ADD_NODE (node: Node) {
-      const uniqueNodes = this.nodes.filter(nodeObj => nodeObj.node_id !== node.node_id)
-      this.nodes = [...uniqueNodes, node]
+      let updated = false
+      const newData = this.nodes.map(n => {
+        if (n.node_id === node.node_id) {
+          updated = true
+          return Object.assign({}, n, node)
+        }
+        return n
+      })
+      this.nodes = updated ? newData : [...newData, Object.assign({}, node, {node_type: 'lnd'})]
     }
 
-    @Mutation
-    UPDATE_NODE (payload: NodeStatusUpdate) {
-      this.nodes = this.nodes.map((nodeObj) => {
-        if (nodeObj.node_id === payload.node_id) {
-          return Object.assign({}, nodeObj, payload)
-        }
-        return nodeObj
+    @Action
+    async FETCH_NODE(node_id: string) {
+      const res = await voltageFetch('/node', {
+        method: 'POST',
+        body: JSON.stringify({
+          node_id
+        })
       })
+      const js = await res.json()
+      this.ADD_NODE(js as Node)
     }
 
     @Mutation
@@ -105,8 +123,12 @@ export default class NodeModule extends VuexModule {
 
     get nodeData() {
       return (id: string) => {
-        this.nodes.find(node => node.node_id === id)
+        return [...this.bitcoindNodes, ...this.btcdNodes, ...this.nodes].find(node => node.node_id === id)
       }
+    }
+
+    get allNodes() {
+      return [...this.bitcoindNodes, ...this.btcdNodes, ...this.nodes]
     }
 
 }

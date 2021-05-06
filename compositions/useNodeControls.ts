@@ -10,9 +10,9 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
   async function deleteNode () {
     loading.value = true
     try {
-      const res = await $axios.post<NodeStatusUpdate>('/node/delete', { node_id: node.value.node_id })
+      const res = await $axios.post<Node>('/node/delete', { node_id: node.value.node_id })
       loading.value = false
-      nodeStore.UPDATE_NODE(res.data)
+      nodeStore.ADD_NODE(res.data)
       return res
     } catch (e) {
       loading.value = false
@@ -25,9 +25,9 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
   async function startNode () {
     loading.value = true
     try {
-      const res = await $axios.post<NodeStatusUpdate>('/node/start', { node_id: node.value.node_id })
+      const res = await $axios.post<Node>('/node/start', { node_id: node.value.node_id })
       loading.value = false
-      nodeStore.UPDATE_NODE(res.data)
+      nodeStore.ADD_NODE(res.data)
       return res
     } catch (e) {
       loading.value = false
@@ -40,9 +40,9 @@ export default function useNodeControls (node: Ref<Node>, { $axios, error }: Con
   async function stopNode () {
     loading.value = true
     try {
-      const res = await $axios.post<NodeStatusUpdate>('/node/stop', { node_id: node.value.node_id })
+      const res = await $axios.post<Node>('/node/stop', { node_id: node.value.node_id })
       loading.value = false
-      nodeStore.UPDATE_NODE(res.data)
+      nodeStore.ADD_NODE(res.data)
       return res
     } catch (e) {
       loading.value = false
