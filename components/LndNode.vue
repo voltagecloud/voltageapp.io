@@ -233,7 +233,7 @@ export default defineComponent({
     const route = useRoute();
     const nodeID = ref(route.value.params.id);
     nodeStore.FETCH_NODE(route.value.params.id);
-    const nodeData = computed(() => nodeStore.nodeData(route.value.params.id));
+    const nodeData = computed(() => nodeStore.nodeData(route.value.params.id) as Node);
 
     const { canInit, canUnlock, canUpdate, helperText, status } = useNodeStatus(
       nodeData
