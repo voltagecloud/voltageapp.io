@@ -136,7 +136,7 @@ export default defineComponent({
         if (method === 'bitcoin') {
           localStorage.setItem('btcpayRedir', '/billing')
         }
-        window.location = redirect_url;
+        window.open(redirect_url);
       } catch (e) {
         invoiceErr.value =
           "An error occured paying the invoice. Please try again later";
