@@ -184,7 +184,7 @@ export default defineComponent({
                 )}
                 {data.value && data.value.status !== "active" && (
                   <v-card class="pa-3 text-center">
-                    Warning, your account status is: {data.value.status}
+                    Your account status is: <b>{data.value.status}</b>
                   </v-card>
                 )}
                 {data.value?.invoices?.length > 0 && (
