@@ -24,8 +24,10 @@ export default {
     // ['maintenance'] --> Enables maintenance mode, redirects all traffic to /maintenance
     // [] --> disables maintenance mode
     middleware: [
-      // capture podcast referal code to store on every route
+      // override the btcpay redirect
+      'btcpayOverride',
       'loadCognito',
+      // capture podcast referal code to store on every route
       'captureReferral'
     ]
   },
