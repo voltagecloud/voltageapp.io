@@ -52,7 +52,7 @@ export const litePlans: [
     desc:
       "Pay as you pricing for a Lightning node backed by Neutrino. Ideal for personal wallets or testing purposes",
     name: "Lite Node/Pay as you go",
-    cost: 0.021,
+    cost: 0.027,
     rate: '/hr',
     plan: Plan.payAsYouGo,
     nodeType: Product.lite,
@@ -87,7 +87,7 @@ export const standardPlans: [
     desc:
       "Pay as you pricing for a Lightning node backed by a Bitcoin Full Node. Recommended optin for anything outside of a personal wallet",
     name: "Standard Node/Pay as you go",
-    cost: 0.049,
+    cost: 0.053,
     rate: '/hr',
     plan: Plan.payAsYouGo,
     nodeType: Product.standard,
