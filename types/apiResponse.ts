@@ -135,10 +135,6 @@ export interface User {
     available_lite_nodes: number
     purchased_nodes: number
     purchased_lite_nodes: number
-    mainnet_nodes: IDName[]
-    testnet_nodes: IDName[]
-    deleted_mainnet_nodes: IDName[]
-    deleted_testnet_nodes: IDName[]
 }
 
 export interface Connect {

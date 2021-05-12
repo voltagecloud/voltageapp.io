@@ -21,10 +21,8 @@ interface NodeIDPayload {
 export default class NodeModule extends VuexModule {
     user: User | null = null
     purchased = 0
-    mainnetAvailable = 0
     mainnetNodeIDName: IDName[] = []
 
-    testnetAvailable = 0
     testnetNodeIDName: IDName[] = []
 
     nodes: Node[] = []
@@ -46,9 +44,7 @@ export default class NodeModule extends VuexModule {
       this.bitcoindNodes = []
       this.btcdNodes = []
       this.purchased = 0
-      this.mainnetAvailable = 0
       this.mainnetNodeIDName = []
-      this.testnetAvailable = 0
       this.testnetNodeIDName = []
       this.user = null
     }
@@ -61,15 +57,6 @@ export default class NodeModule extends VuexModule {
       this.nodes = nodes.filter(n => n.node_type === NodeSoftware.lnd) as Node[]
       this.bitcoindNodes = nodes.filter(n => n.node_type === NodeSoftware.bitcoind) as BitcoindNode[]
       this.btcdNodes = nodes.filter(n => n.node_type === NodeSoftware.btcd) as BtcdNode []
-    }
-
-    @Mutation
-    SET_AVAILABLE ({ network, available }: AvailablePayload) {
-      if (network === 'testnet') {
-        this.testnetAvailable = available
-      } else if (network === 'mainnet') {
-        this.mainnetAvailable = available
-      }
     }
 
     @Mutation
@@ -124,6 +111,12 @@ export default class NodeModule extends VuexModule {
     get nodeData() {
       return (id: string) => {
         return [...this.bitcoindNodes, ...this.btcdNodes, ...this.nodes].find(node => node.node_id === id)
+      }
+    }
+
+    get nodeNetwork() {
+      return (network: Network) => {
+        return this.nodes.filter(n => n.network === network)
       }
     }
 

@@ -79,9 +79,6 @@ export default defineComponent({
     const billingOptions = computed(() =>
       Object.keys(Plan)
         .filter((plan) => {
-          // TEMP
-          // disable pay as you go for now
-          if (plan === Plan.payAsYouGo) return false;
           // only allow trial option if its available on this user
           return plan !== Plan.trial || nodeStore.user?.trial_available;
         })
@@ -91,18 +88,12 @@ export default defineComponent({
         )
     );
 
-    function pricingText(monthlyPrice?: number) {
-      if (typeof monthlyPrice !== "undefined") {
-        return `$${monthlyPrice}/mo`;
-      }
-      return "Not Available";
-    }
 
     const {
       litePlan,
       standardPlan,
       billingCycle,
-      mappedBillingName,
+      mappedBillingName
     } = useNodePricing();
 
     function handleSelectProduct(subscription: Subscription<Plan, Product>) {
@@ -153,13 +144,13 @@ export default defineComponent({
     );
     const availableNodes = computed(() => nodeStore.user?.available_nodes || 0);
 
+    // TODO refactor this function its ugly and hard to read
     async function handleCreation() {
       // reset store errors
       createStore.CREATE_ERROR({});
 
       if (planState.value.plan === Plan.payAsYouGo) {
-        // handle some pay as you go state
-        // TODO implement pay as you go
+        emit("next")
       } else if (planState.value.plan === Plan.trial) {
         // trial does not require store serialization since there is no redirect
         emit("next");
@@ -196,6 +187,13 @@ export default defineComponent({
       }
     }
     determineTrial();
+
+    function pricingText(sub?: Subscription<Plan, Product>) {
+      if (!sub) {
+        return 'Not Available'
+      }
+      return `${sub.cost}${sub.rate}`
+    }
 
     return () => (
       <VContainer>
@@ -260,7 +258,7 @@ export default defineComponent({
                       <div class="d-flex flex-column">
                         <div class="text-h4">Lite</div>
                         <div>Backed by Neutrino</div>
-                        <div>{pricingText(litePlan.value?.cost)}</div>
+                        <div>{pricingText(litePlan.value)}</div>
                       </div>
                     </VCard>
                   </button>
@@ -280,7 +278,7 @@ export default defineComponent({
                       <div class="d-flex flex-column">
                         <div class="text-h4">Standard</div>
                         <div>Backed by Bitcoin Full Node</div>
-                        <div>{pricingText(standardPlan.value?.cost)}</div>
+                        <div>{pricingText(standardPlan.value)}</div>
                       </div>
                     </VCard>
                   </button>

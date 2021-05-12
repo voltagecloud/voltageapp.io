@@ -126,7 +126,8 @@ export default defineComponent({
       Seed: ['provisioning', 'waiting_init', 'initializing'].includes(props.node.status) ? 'pending' : 'View',
       'Creation Date': props.node.created,
       'Expiry Date': props.node.expires,
-      'API Endpoint': props.node.api_endpoint
+      'API Endpoint': props.node.api_endpoint,
+      'Purchased Type': props.node.purchased_type
     }))
 
     async function downloadMacaroon () {

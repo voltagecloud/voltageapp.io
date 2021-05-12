@@ -1,9 +1,13 @@
 import { ref, ComputedRef, isRef, watch } from "@vue/composition-api";
 import { voltageFetch } from "~/utils/fetchClient";
 
+interface ComputedOpts extends RequestInit {
+  pause: boolean|ComputedRef<boolean>
+}
+
 export default function useFetch<T>(
   endpoint: string,
-  initOpts?: RequestInit | ComputedRef<RequestInit>
+  initOpts?: RequestInit | ComputedRef<ComputedOpts>
 ) {
   const data = ref<T|null>(null);
   const error = ref<Error | null>(null);
@@ -12,7 +16,12 @@ export default function useFetch<T>(
 
 
   async function dispatch(opts?: RequestInit) {
-    const opt = opts || (isRef(initOpts) ? initOpts.value : initOpts);
+    if (isRef(initOpts) && initOpts.value?.pause) {
+      const pause = initOpts.value.pause
+      if (isRef(pause) && pause.value) return
+      if (pause) return
+    }
+    const opt = opts || (isRef(initOpts) ? initOpts.value : initOpts)
     if (!opt) {
       error.value = Error("No request parameters supplied");
       return;
@@ -33,6 +42,11 @@ export default function useFetch<T>(
       statusCode.value = res.status;
       loading.value = false;
     }
+  }
+
+  // if the composition is invoked with the options then dispatch immediately
+  if (initOpts) {
+    dispatch()
   }
 
   // apply watcher for init opts
