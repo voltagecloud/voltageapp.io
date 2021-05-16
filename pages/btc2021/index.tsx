@@ -1,5 +1,6 @@
-import { defineComponent } from "@vue/composition-api";
-import { VContainer, VSheet, VProgressCircular, VCol, VImg } from "vuetify/lib";
+import { defineComponent, computed } from "@vue/composition-api";
+import { VContainer, VSheet, VProgressCircular, VCol, VImg, VBtn } from "vuetify/lib";
+import { authStore } from "~/store";
 
 import useFetch from "~/compositions/useFetch";
 
@@ -10,7 +11,10 @@ export default defineComponent({
   },
   setup: () => {
     const { data, loading, error } = useFetch<{ lnurl: string }>(
-      "/promo/bitcoin2021"
+      "/promo/bitcoin2021",
+      computed(() => ({
+        pause: !authStore.user
+      }))
     );
 
     return () => (
@@ -19,7 +23,13 @@ export default defineComponent({
           <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3">
             <VImg src={require("~/assets/btcconf2021.png")} class="pa-3" />
             <div class="text-h6">Voltage Sats Giveaway</div>
-            {loading.value ? (
+            {!authStore.user ? (
+              <span>
+                <div>Register or Login to your Voltage account to claim your free sats!</div>
+                <VBtn block dark color="highlight" to="/register" class="my-2">Register</VBtn>
+              </span>
+            )
+            : loading.value ? (
               <VProgressCircular indeterminate class="justify-self-center" />
             ) : data.value ? (
               <span>
