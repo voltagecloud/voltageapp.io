@@ -10,7 +10,7 @@ export default defineComponent({
   },
   setup: () => {
     const { data, loading, error } = useFetch<{ lnurl: string }>(
-      "/promo?event=btc2021"
+      "/promo/bitcoin2021"
     );
 
     return () => (
