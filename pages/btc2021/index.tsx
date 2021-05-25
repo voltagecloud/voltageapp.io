@@ -22,7 +22,7 @@ export default defineComponent({
         <VCol cols="12" sm="10" md="8" lg="6" xl="4" class="mx-auto">
           <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3">
             <VImg src={require("~/assets/btcconf2021.png")} class="pa-3" />
-            <div class="text-h6">Voltage Sats Giveaway</div>
+            <div class="text-h6">Claim your 3,000 Satoshis now</div>
             {!authStore.user ? (
               <span>
                 <div>Register or Login to your Voltage account to claim your free sats!</div>
@@ -32,17 +32,19 @@ export default defineComponent({
             : loading.value ? (
               <VProgressCircular indeterminate class="justify-self-center" />
             ) : data.value ? (
-              <span>
-                <Qrcode-Vue value={data.value.lnurl} size={300} />
-                <copy-pill value={data.value.lnurl} />
-                <div>
-                  Scan or paste the LNURL into your favourite lightning wallet
-                  to receive your sats. Enjoy BTC Conf 2021!
+              <div class="d-flex flex-column align-center">
+                <Qrcode-Vue value={data.value.lnurl} size={200} class="mt-3" />
+                <div class="mb-3">
+                  <copy-pill text={data.value.lnurl} color="accent" text-color="warning" />
                 </div>
-              </span>
+                <div>
+                  Scan or paste the LNURL into your favorite lightning wallet
+                  to receive your sats. Enjoy Bitcoin 2021!
+                </div>
+              </div>
             ) : (
               <div>
-                {error.value?.message ||
+                {error.value ||
                   "An error occured please try again later"}
               </div>
             )}
