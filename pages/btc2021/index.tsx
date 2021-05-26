@@ -22,6 +22,7 @@ export default defineComponent({
         <VCol cols="12" sm="10" md="8" lg="6" xl="4" class="mx-auto">
           <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3">
             <VImg src={require("~/assets/btcconf2021.png")} class="pa-3" />
+            <div class="text-h5">Voltage Sats Giveaway</div>
             <div class="text-h6">Claim your 3,000 Satoshis now</div>
             {!authStore.user ? (
               <span>
