@@ -7,11 +7,11 @@ import {
 import useBuildUri from "~/compositions/useBuildUri";
 import { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
+import NamedCopyPill from "~/components/core/NamedCopyPill.tsx";
 
 
 export default defineComponent({
   components: {
-    CopyPill: () => import("~/components/core/CopyPill.vue"),
     QrcodeVue: () => import("qrcode.vue"),
     VContainer: () => import("vuetify/lib").then(m => m.VContainer)
   },
@@ -49,41 +49,28 @@ export default defineComponent({
             Zap
           </a>
         </p>
-        {!!props.node.settings.grpc ? (
-          <div>
-            <p>Connection String</p>
-            <copy-pill
-              class="text-break"
-              text={uri.value}
-              color="accent"
-              text-color="warning"
-            />
-            <p class="font-weight-light">click to copy</p>
-            <qrcode-vue value={uri.value} size="300" />
+        {!props.node.settings.grpc ? (
+          <div
+            class="font-weight-light text--darken-1 justify-center align-center"
+            max-width="800"
+            style="color: #ff0000; padding: 20px;"
+          >
+            Zap uses gRPC to communicate with your node. You have this API
+            disabled in your node settings. Please enable it to connect with
+            Zap.
           </div>
+
         ) : (
-          <div>
-            <div
-              class="font-weight-light text--darken-1 justify-center align-center"
-              max-width="800"
-              style="color: #ff0000; padding: 20px;"
-            >
-              Zap uses gRPC to communicate with your node. You have this API
-              disabled in your node settings. Please enable it to connect with
-              Zap.
+            <div>
+              <p>Open the Zap app and create a new wallet. Select "Connect."</p>
+              <p>You can connect by either scanning the QR code below or copy/pasting the LNDConnect string into the 'Connection String' box.
+              </p>
+              <qrcode-vue value={uri.value} size="300" />
+              <p></p>
+              <NamedCopyPill title="Connection String" value={uri.value} />
             </div>
-            <ul>
-              <li>
-                • Open the Zap app and create a new wallet. Select 'Connect'.{" "}
-              </li>
-              <li>
-                • You can connect by either scanning the QR code below or
-                copy/pasting the LNDConnect string into the 'Connection String'
-                box.
-              </li>
-            </ul>
-          </div>
-        )}
+          )}
+        <p></p>
         <a
           href="https://docs.zaphq.io/docs-desktop-lnd-connect"
           target="_blank"

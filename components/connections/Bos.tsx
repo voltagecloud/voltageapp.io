@@ -42,23 +42,33 @@ export default defineComponent({
             Balance of Satoshis
           </a>
         </p>
-
-        <div>
-          <p>To connect with Balance of Satoshis you'll need a credentials.json file with the following content:</p>
-          <CodeSnippet>{snippetText.value}</CodeSnippet>
-          <p>Place that file in its own folder inside the <code>.bos</code> folder in your home directory. You can substitute "voltage" with another name, this is how you'll reference the credentials.</p>
-          <CodeSnippet>$HOME/.bos/voltage/credentials.json</CodeSnippet>
-          <p>To make sure it's working, try a command like <code>balance</code></p>
-          <p>If you are using docker:</p>
-          <CodeSnippet>
-            docker run -it --rm -v $HOME/.bos:/home/node/.bos alexbosworth/balanceofsatoshis balance --node=voltage
+        {!props.node.settings.grpc ? (
+          <div
+            class="font-weight-light text--darken-1 justify-center align-center"
+            max-width="800"
+            style="color: #ff0000; padding: 20px;"
+          >
+            Balance of Satoshis uses gRPC to communicate with your node. You have this API disabled in your node settings. Please enable it to connect with
+            BoS.
+          </div>
+        ) : (
+            <div>
+              <p>To connect with Balance of Satoshis you'll need a credentials.json file with the following content:</p>
+              <CodeSnippet>{snippetText.value}</CodeSnippet>
+              <p>Place that file in its own folder inside the <code>.bos</code> folder in your home directory. You can substitute "voltage" with another name, this is how you'll reference the credentials.</p>
+              <CodeSnippet>$HOME/.bos/voltage/credentials.json</CodeSnippet>
+              <p>To make sure it's working, try a command like <code>balance</code></p>
+              <p>If you are using docker:</p>
+              <CodeSnippet>
+                docker run -it --rm -v $HOME/.bos:/home/node/.bos alexbosworth/balanceofsatoshis balance --node=voltage
           </CodeSnippet>
-          <p></p>
-          <p>If you installed via npm:</p>
-          <CodeSnippet>
-            bos balance --node=voltage
+              <p></p>
+              <p>If you installed via npm:</p>
+              <CodeSnippet>
+                bos balance --node=voltage
           </CodeSnippet>
-        </div>
+            </div>
+          )}
         <a
           href="https://github.com/alexbosworth/balanceofsatoshis/blob/master/README.md"
           target="_blank"

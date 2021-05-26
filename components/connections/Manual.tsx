@@ -5,13 +5,11 @@ import {
 } from "@vue/composition-api";
 import { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
+import NamedCopyPill from "~/components/core/NamedCopyPill.tsx";
+import Base64Download from "~/components/core/Base64Download.tsx";
 
 
 export default defineComponent({
-  components: {
-    VBtn: () => import("vuetify/lib").then(m => m.VBtn),
-    CopyPill: () => import("~/components/core/CopyPill.vue")
-  },
   props: {
     node: {
       type: Object as PropType<Node>,
@@ -45,46 +43,15 @@ export default defineComponent({
           Need to connect to an app not listed here? Get everything you need to
           connect below.
         </p>
-        <p>API Endpoint</p>
-        <copy-pill
-          class="text-break"
-          text={meta.value?.endpoint}
-          color="accent"
-          text-color="warning"
-        ></copy-pill>
-        <p class="font-weight-light">click to copy</p>
-        <p></p>Macaroon<p></p>
-        <v-btn
-          class="info--text"
-          color="warning"
-          text-color="highlight"
-          href={`data:application/text-plain;base64,${macaroon.value.macaroon}`}
-          download="admin.macaroon"
-          title="admin.macaroon"
-        >
-          Download Macaroon
-        </v-btn>
-        <p></p>
-        <p>
-          Macaroon Hex:
-          <copy-pill
-            class="text-break"
-            text={macaroon.value.macaroonHex}
-            color="accent"
-            text-color="warning"
-          ></copy-pill>
-          <p class="font-weight-light">click to copy</p>
-        </p>
-        <p></p>TLS Certificate<p></p>
-        <v-btn
-          class="info--text"
-          color="warning"
-          href={`data:application/text-plain;base64,${meta.value?.tlsCert}`}
-          download="tls.cert"
-          title="tls.cert"
-        >
-          {certButtonText.value}
-        </v-btn>
+
+        <NamedCopyPill title="API Endpoint" value={meta.value?.endpoint!} />
+
+        <Base64Download title="Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={macaroon.value.macaroon} />
+
+        <NamedCopyPill title="Macaroon Hex" value={macaroon.value.macaroonHex} />
+
+        <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={meta.value?.tlsCert!} />
+
       </div>
     );
   }
