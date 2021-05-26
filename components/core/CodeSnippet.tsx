@@ -16,6 +16,7 @@ export default defineComponent({
       padding: "10px",
       whiteSpace: "pre-wrap" /* css-3 */,
       wordWrap: "break-word" /* Internet Explorer 5.5+ */,
+      marginBottom: "16px",
     };
 
     const { isCopied, copy } = useClipboard(2000);
