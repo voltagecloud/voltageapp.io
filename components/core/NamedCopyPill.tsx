@@ -11,13 +11,13 @@ export default defineComponent({
       required: true,
     },
     value: {
-      type: Object as PropType<string>,
+      type: Object as PropType<string | undefined>,
       required: true,
     },
   },
   setup: (props) => {
     const styles = {
-     marginBottom: "8px",
+      marginBottom: "8px",
     };
 
     return () => (

@@ -18,10 +18,14 @@ export default defineComponent({
       required: true,
     },
     base64: {
-      type: Object as PropType<string>,
+      type: Object as PropType<string | undefined>,
       required: true,
     },
     disabled: {
+      type: Object as PropType<boolean>,
+      required: false,
+    },
+    loading: {
       type: Object as PropType<boolean>,
       required: false,
     },
@@ -45,7 +49,8 @@ export default defineComponent({
           href={`data:application/text-plain;base64,${props.base64}`}
           download={props.filename}
           title={props.filename}
-          disabled={props.disabled ? props.disabled : false}
+          disabled={props.disabled || !props.base64 ? true : false}
+          loading={props.loading ? props.loading : false}
         >
           {props.buttonText}
         </v-btn>

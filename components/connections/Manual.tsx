@@ -44,13 +44,13 @@ export default defineComponent({
           connect below.
         </p>
 
-        <NamedCopyPill title="API Endpoint" value={meta.value?.endpoint!} />
+        <NamedCopyPill title="API Endpoint" value={meta.value?.endpoint} />
 
         <Base64Download title="Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={macaroon.value.macaroon} />
 
         <NamedCopyPill title="Macaroon Hex" value={macaroon.value.macaroonHex} />
 
-        <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={meta.value?.tlsCert!} />
+        <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={meta.value?.tlsCert} />
 
       </div>
     );
