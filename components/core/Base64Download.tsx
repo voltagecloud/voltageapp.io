@@ -1,5 +1,4 @@
 import { defineComponent, PropType } from "@vue/composition-api";
-import useClipboard from "~/compositions/useClipboard";
 
 export default defineComponent({
   components: {
@@ -22,18 +21,18 @@ export default defineComponent({
       type: Object as PropType<string>,
       required: true,
     },
-    base64: {
+    disabled: {
       type: Object as PropType<boolean>,
       required: false,
     },
   },
   setup: (props) => {
     const titleStyle = {
-     marginBottom: "8px",
+      marginBottom: "8px",
     };
 
     const wrapperStyle = {
-     marginBottom: "16px",
+      marginBottom: "16px",
     };
 
     return () => (
