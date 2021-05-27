@@ -33,10 +33,11 @@ export default defineComponent({
             : loading.value ? (
               <VProgressCircular indeterminate class="justify-self-center" />
             ) : data.value ? (
-              <div class="d-flex flex-column align-center">
+              <div class="d-flex flex-column align-center" style={{width: "100%"}}>
                 <Qrcode-Vue value={data.value.lnurl} size={200} class="mt-3" />
-                <div class="mb-3">
+                <div class="mb-3 text-center" style={{width: "100%"}}>
                   <copy-pill text={data.value.lnurl} color="accent" text-color="warning" />
+                  <div class="text-caption">Click to Copy</div>
                 </div>
                 <div>
                   Scan or paste the LNURL into your favorite lightning wallet
