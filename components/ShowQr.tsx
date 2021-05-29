@@ -15,6 +15,7 @@ export default defineComponent({
     Btcpay: () => import('~/components/connections/Btcpay.tsx'),
     Sphinx: () => import('~/components/connections/Sphinx'),
     Bos: () => import('~/components/connections/Bos.tsx'),
+    LightningTerminal: () => import('~/components/connections/LightningTerminal.tsx'),
     VTabs,
     VTab,
     VTabsItems,
@@ -29,7 +30,7 @@ export default defineComponent({
     }
   },
   setup: (props) => {
-    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server', "Balance of Satoshis"]
+    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server', 'Balance of Satoshis', 'Lightning Terminal']
     // determine if sphinx tab should display
     const hasSphinx = computed(() => props.node.settings.sphinx)
     const tabs = computed(() => hasSphinx.value ? [...standardTabs, 'Sphinx'] : [...standardTabs])
@@ -76,6 +77,9 @@ export default defineComponent({
         </v-tab-item>
         <v-tab-item>
           <bos node={props.node} />
+        </v-tab-item>
+        <v-tab-item>
+          <lightning-terminal node={props.node} />
         </v-tab-item>
         {!hasSphinx.value || <v-tab-item>
           <sphinx node={props.node} />

@@ -3,6 +3,8 @@ import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
 import useBackupMacaroon from "~/compositions/useBackupMacaroon";
+import NamedCopyPill from "~/components/core/NamedCopyPill.tsx";
+import Base64Download from "~/components/core/Base64Download.tsx";
 
 export default defineComponent({
   components: {
@@ -76,90 +78,49 @@ export default defineComponent({
               this API disabled in your node settings. Please enable it to
               connect with Joule.
             </div>
-            <ul class="text-left">
-              <li>
-                Click the 'Get Started' button in Joule. Then select 'Remote
-                Node'.
-              </li>
-              <li>
-                Copy the Node URL below and paste it into the 'Node URL' field
-                in Joule.
-              </li>
-              <li>
-                Upload or paste both the Admin macaroon and a Readonly macaroon.
-                Click 'Continue'.
-              </li>
-              <li>Create a password for Joule when prompted.</li>
-            </ul>
           </div>
         ) : (
-          <div>
-            <div>Node URL</div>
-            <copy-pill
-              class="text-break"
-              text={`https://${meta.value?.endpoint || ""}:8080`}
-              color="accent"
-              text-color="warning"
-            />
-            <p class="font-weight-light">click to copy</p>
-            <p class="text--darken-1 v-card__title justify-center align-center">
-              Admin Macaroon
-            </p>
-            <v-btn
-              class="info--text"
-              color="warning"
-              text-color="highlight"
-              href={`data:application/text-plain;base64,${adminMacaroon.value.macaroon}`}
-              download="admin.macaroon"
-              title="admin.macaroon"
-            >
-              Download Macaroon
-            </v-btn>
-            <div>Hex:</div>
-            <copy-pill
-              class="text-break"
-              text={adminMacaroon.value.macaroonHex}
-              color="accent"
-              text-color="warning"
-            />
-            <p class="font-weight-light">click to copy</p>
-            <p class="text--darken-1 v-card__title justify-center align-center">
-              Readonly Macaroon
-            </p>
-            {!!readOnlyMacaroon.value.macaroon ? (
-              <div>
-                <v-btn
-                  class="info--text"
-                  color="warning"
-                  href={`data:application/octet-stream;base64,${readOnlyMacaroon.value.macaroon}`}
-                  download="readonly.macaroon"
-                  title="readonly.macaroon"
-                  loading={loading.value}
-                >
-                  Download Macaroon
-                </v-btn>
-                <p>Hex:</p>
-                <copy-pill
-                  class="text-break"
-                  text={readOnlyMacaroon.value.macaroonHex}
-                  color="accent"
-                  text-color="warning"
-                />
-                <p class="font-weight-light">click to copy</p>
-              </div>
-            ) : (
-              <v-btn
-                class="info--text"
-                color="warning"
-                onClick={handleCreation}
-                loading={loading.value}
-              >
-                Create Macaroon
-              </v-btn>
-            )}
-            <div>{error.value}</div>
-          </div>
-        )}
+            <div>
+              <p>
+                Click the 'Get Started' button in Joule. Then select 'Remote
+                Node'.
+              </p>
+              <p>
+                Copy the Node URL below and paste it into the 'Node URL' field
+                in Joule.
+              </p>
+              <NamedCopyPill title="Node URL" value={`https://${meta.value?.endpoint || ""}:8080`} />
+              <p>
+                Upload or paste both the Admin macaroon and a Readonly macaroon.
+                Click 'Continue'.
+              </p>
+
+
+              <Base64Download title="Admin Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={adminMacaroon.value.macaroon} />
+              <NamedCopyPill title="Hex" value={adminMacaroon.value.macaroonHex} />
+
+              {!!readOnlyMacaroon.value.macaroon ? (
+                <div>
+                  <Base64Download title="Readonly Macaroon" buttonText="Download Macaroon" filename="readonly.macaroon" base64={readOnlyMacaroon.value.macaroon} loading={loading.value} />
+                  <NamedCopyPill title="Hex" value={readOnlyMacaroon.value.macaroonHex} />
+                </div>
+              ) : (
+                  <div style="margin-bottom: 16px;">
+                    <div style="margin-bottom: 8px;">Readonly Macaroon</div>
+                    <v-btn
+                      class="info--text"
+                      color="warning"
+                      onClick={handleCreation}
+                      loading={loading.value}
+                    >
+                      Create Macaroon
+                    </v-btn>
+                  </div>
+                )}
+              <p>Create a password for Joule when prompted.</p>
+              <div>{error.value}</div>
+            </div>
+          )}
         <a href="https://lightningjoule.com/faq" target="_blank">
           Joule Documentation.
         </a>

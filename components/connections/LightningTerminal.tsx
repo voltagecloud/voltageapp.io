@@ -1,23 +1,15 @@
 import {
   defineComponent,
   PropType,
-  ref,
   computed,
 } from "@vue/composition-api";
 import type { Node } from "~/types/apiResponse";
-import useBuildUri from "~/compositions/useBuildUri";
 import { macaroonStore } from "~/store";
-import NamedCopyPill from "~/components/core/NamedCopyPill.tsx";
+import { VContainer } from "vuetify/lib";
+import CodeSnippet from "~/components/core/CodeSnippet";
 import Base64Download from "~/components/core/Base64Download.tsx";
 
 export default defineComponent({
-  components: {
-    CopyPill: () => import("~/components/core/CopyPill.vue"),
-    CodeSnippet: () => import("~/components/core/CodeSnippet"),
-    QrcodeVue: () => import("qrcode.vue"),
-    VContainer: () => import("vuetify/lib").then((m) => m.VContainer),
-    VBtn: () => import("vuetify/lib").then((m) => m.VBtn),
-  },
   props: {
     node: {
       type: Object as PropType<Node>,
@@ -43,20 +35,17 @@ export default defineComponent({
     );
 
     const snippetText = computed(
-      () => `
-  lncli
-  --rpcserver=${endpoint.value}:10009 \\
-  --macaroonpath=/path/to/admin.macaroon \\
-  --tlscertpath=/path/to/tls.cert \\
-  getinfo
-    `
+      () => `remote.lnd.rpcserver=${endpoint.value}:10009
+remote.lnd.macaroonpath=/path/to/admin.macaroon
+remote.lnd.tlscertpath=/path/to/tls.cert
+`
     );
 
     return () => (
-      <v-container class="text-center">
+      <VContainer class="text-center">
         <p class="font-weight-light text--darken-1 v-card__title justify-center align-center">
-          <a href="https://github.com/lightningnetwork/lnd" target="_blank">
-            lncli
+          <a href="https://github.com/lightninglabs/lightning-terminal" target="_blank">
+            Lightning Terminal (LiT)
           </a>
         </p>
         {!props.node.settings.grpc ? (
@@ -65,35 +54,40 @@ export default defineComponent({
             max-width="800"
             style="color: #ff0000; padding: 20px;"
           >
-            lncli uses gRPC to communicate with your node. You have this API
+            LiT uses gRPC to communicate with your node. You have this API
             disabled in your node settings. Please enable it to connect with
-            lncli.
+            LiT.
           </div>
         ) : (
             <div>
-              <p>
-                To connect using lncli, you must download your macaroon and TLS
-                certificate below. After you have downloaded the necessary files,
-                simply point your CLI to their location.
-            </p>
-              <div>Command Line:</div>
-              <code-snippet>{snippetText.value}</code-snippet>
-
-              <NamedCopyPill title="RPC Server" value={`${endpoint.value}:10009`} />
-
+              <p>To connect with Lightning Terminal you'll need a <code>lit.conf</code> file placed where LiT can find it. The default location depends on your platform:</p>
+              <p>MacOS: <code>~/Library/Application Support/Lit/lit.conf</code></p>
+              <p>Linux: <code>~/.lit/lit.conf</code></p>
+              <p>Windows: <code>~/AppData/Roaming/Lit/lit.conf</code></p>
+              <p>Create that file (and directories, if needed), then add the following contents:</p>
+              <CodeSnippet>{snippetText.value}</CodeSnippet>
+              <p>Adjust the relevant paths to point to your node's TLS Cert and Macaroon files.</p>
               <Base64Download title="Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={macaroon.value} />
 
               <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={cert.value} disabled={!certValid.value} />
 
+              <p>Now you can run litd like this:</p>
+              <CodeSnippet>
+                litd --uipassword=somethingsecure
+              </CodeSnippet>
+              <p>
+                You should be given a URL to go to, <code>https://localhost:8443</code> is the default. You'll be warned about an insecure connection, but that's just referring to the local server, not LiT's remote connection with your lightning node.
+            </p>
+              <p>If your node is running in testnet mode, add the <code>--network=testnet</code> flag.</p>
             </div>
           )}
         <a
-          href="https://github.com/lightningnetwork/lnd/tree/master/docs"
+          href="https://docs.lightning.engineering/lightning-network-tools/lightning-terminal/get-lit"
           target="_blank"
         >
-          lncli Documentation
+          Lightning Terminal Documentation
         </a>
-      </v-container>
+      </VContainer>
     );
   },
 });
