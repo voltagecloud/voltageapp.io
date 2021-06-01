@@ -14,6 +14,8 @@ export default defineComponent({
     Joule: () => import('~/components/connections/Joule.tsx'),
     Btcpay: () => import('~/components/connections/Btcpay.tsx'),
     Sphinx: () => import('~/components/connections/Sphinx'),
+    Bos: () => import('~/components/connections/Bos.tsx'),
+    LightningTerminal: () => import('~/components/connections/LightningTerminal.tsx'),
     VTabs,
     VTab,
     VTabsItems,
@@ -28,7 +30,7 @@ export default defineComponent({
     }
   },
   setup: (props) => {
-    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server']
+    const standardTabs = ['LNDConnect', 'Manual', 'Zap', 'Zeus', 'LNCLI', 'Thunderhub', 'Joule', 'BTCPay Server', 'Balance of Satoshis', 'Lightning Terminal']
     // determine if sphinx tab should display
     const hasSphinx = computed(() => props.node.settings.sphinx)
     const tabs = computed(() => hasSphinx.value ? [...standardTabs, 'Sphinx'] : [...standardTabs])
@@ -38,7 +40,7 @@ export default defineComponent({
     return () => <v-sheet>
       <v-tabs
         value={curTab.value}
-        onChange={(val: number) => curTab.value = val} 
+        onChange={(val: number) => curTab.value = val}
         background-color="highlight"
         color="primary"
         centered
@@ -50,7 +52,7 @@ export default defineComponent({
       </v-tabs>
       <v-tabs-items v-model={curTab.value}>
         <v-tab-item>
-          <lnd-connect node={props.node}/>
+          <lnd-connect node={props.node} />
         </v-tab-item>
         <v-tab-item>
           <manual node={props.node} />
@@ -73,9 +75,15 @@ export default defineComponent({
         <v-tab-item>
           <btcpay node={props.node} />
         </v-tab-item>
-        { !hasSphinx.value || <v-tab-item>
+        <v-tab-item>
+          <bos node={props.node} />
+        </v-tab-item>
+        <v-tab-item>
+          <lightning-terminal node={props.node} />
+        </v-tab-item>
+        {!hasSphinx.value || <v-tab-item>
           <sphinx node={props.node} />
-        </v-tab-item> }
+        </v-tab-item>}
       </v-tabs-items>
       <v-container class="font-weight-light text--darken-1 text-center align-center">
         <p>

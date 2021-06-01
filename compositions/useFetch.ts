@@ -11,7 +11,6 @@ export default function useFetch<T>(
 ) {
   const data = ref<T|null>(null);
   const error = ref<Error | null>(null);
-  const statusCode = ref<number>(0);
   const loading = ref(false);
 
 
@@ -27,8 +26,8 @@ export default function useFetch<T>(
       return;
     }
     loading.value = true;
-    const res = await voltageFetch(endpoint, opt);
     try {
+      const res = await voltageFetch(endpoint, opt);
       const json = await res.json();
       if (!res.ok) {
         error.value = json.message;
@@ -37,9 +36,9 @@ export default function useFetch<T>(
         data.value = json;
       }
     } catch (e) {
+      console.error({ e })
       error.value = e;
     } finally {
-      statusCode.value = res.status;
       loading.value = false;
     }
   }
@@ -57,7 +56,6 @@ export default function useFetch<T>(
   return {
     data,
     error,
-    statusCode,
     loading,
     dispatch,
   };
