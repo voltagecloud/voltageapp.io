@@ -3,7 +3,7 @@
     v-card-title Dashboards
       v-container
         p(style='font-size: 13px; padding-bottom: 0px; word-wrap: break-word;' no-gutters).font-weight-light
-          | Dashboards expire after 30 minutes of inactivity or a max-life of 3 hours. You can provision as many as you want, but can only have 1 dashboard running per node at a time.
+          | Dashboards expire after 60 minutes of inactivity or a max-life of 6 hours. You can provision as many as you want, but can only have 1 dashboard running per node at a time.
       v-container(v-if='!runningDashboard')
         v-card-actions
           v-container
@@ -64,7 +64,6 @@ export default defineComponent({
     onBeforeUnmount(() => { unMounting.value = true })
 
     function checkRunningDashboard () {
-      console.log('check')
       const runningList = dashboardsStore.dashboards.filter(elem => elem.node_id === props.nodeID && elem.status !== 'deleted')
       console.log({ runningList })
       if (runningList.length > 0) {
