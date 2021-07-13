@@ -83,8 +83,6 @@ export default defineComponent({
 
               <Base64Download title="Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={macaroon.value} />
 
-              <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={cert.value} disabled={!certValid.value} />
-
             </div>
           )}
         <a
