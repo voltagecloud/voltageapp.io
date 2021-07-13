@@ -44,10 +44,10 @@ export default defineComponent({
 
     const snippetText = computed(
       () => `
-  lncli
+  lncli \\
   --rpcserver=${endpoint.value}:10009 \\
   --macaroonpath=/path/to/admin.macaroon \\
-  --tlscertpath=/path/to/tls.cert \\
+  --tlscertpath="" \\
   getinfo
     `
     );
