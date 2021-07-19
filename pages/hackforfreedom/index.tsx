@@ -50,9 +50,9 @@ export default defineComponent({
               <div class="my-3 text-h5">
                 How to Redeem
               </div>
-              <p>Enter the code recevied from Impervious below. Click "Redeem Code."</p>
+              <p>Enter the code received from Impervious below. Click "Redeem Code."</p>
               <p>Click on "Nodes" in the top left and provision a new node.</p>
-              <p>When creating your new node, be sure to select "Pay per Hour" and "Standard."</p>
+              <p>When creating your new node be sure to select "Pay per Hour" and "Standard."</p>
               <p>That’s it! Start hacking on your projects.</p>
 
               <p />
