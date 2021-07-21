@@ -43,7 +43,7 @@ export default defineComponent({
       <VContainer>
         <VRow justify="center" align="center" no-gutters="no-gutters">
           <VCol cols="12" md="11" lg="9">
-            <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3">
+            <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3 text-center">
               <div class="text-h4 my-6">FREE VOLTAGE NODES</div>
               <VImg src={require("~/assets/hackforfreedom.png")} />
               <div class="overline my-3">Every contestant gets enough credits to run 2 Standard nodes for 30 days.</div>
@@ -85,7 +85,12 @@ export default defineComponent({
                 {state.errorMessage || state.successMessage}
               </div>
               <p />
-
+              <p>
+                <em>
+                  Be sure to delete your nodes when you're done with the hackathon to prevent unexpected charges.
+                </em>
+              </p>
+              <p />
             </VSheet>
           </VCol>
         </VRow>
