@@ -33,7 +33,7 @@
                 | Delete Dashboard
         
     p(v-if='isPending' style="padding-left: 30px").font-weight-light.warning--text.text--darken-1
-      | Provisioning takes approximately 45 seconds
+      | Provisioning takes approximately 30 seconds
     v-container
       JsonTable(:data='dashboardInfo')
 </template>

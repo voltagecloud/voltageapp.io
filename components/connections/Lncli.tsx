@@ -44,10 +44,10 @@ export default defineComponent({
 
     const snippetText = computed(
       () => `
-  lncli
+  lncli \\
   --rpcserver=${endpoint.value}:10009 \\
   --macaroonpath=/path/to/admin.macaroon \\
-  --tlscertpath=/path/to/tls.cert \\
+  --tlscertpath="" \\
   getinfo
     `
     );
@@ -82,8 +82,6 @@ export default defineComponent({
               <NamedCopyPill title="RPC Server" value={`${endpoint.value}:10009`} />
 
               <Base64Download title="Macaroon" buttonText="Download Macaroon" filename="admin.macaroon" base64={macaroon.value} />
-
-              <Base64Download title="TLS Certificate" buttonText={certButtonText.value} filename="tls.cert" base64={cert.value} disabled={!certValid.value} />
 
             </div>
           )}
