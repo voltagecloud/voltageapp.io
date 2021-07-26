@@ -9,12 +9,6 @@ import type { Node } from "~/types/apiResponse";
 
 export default defineComponent({
   setup: () => {
-    voltageFetch("/node", { method: "GET" }).then((res: any) =>
-      res.json().then(({ nodes }: { nodes: Node[] }) => {
-        nodeStore.HYDRATE_USER({ nodes });
-      })
-    );
-
     const route = useRoute();
 
     const nodeSoftware = computed(
@@ -22,7 +16,6 @@ export default defineComponent({
     );
 
     return () => {
-      console.log({ nodeSoftware });
       if (nodeSoftware.value === NodeSoftware.lnd) {
         return <LndNode />;
       } else if (
