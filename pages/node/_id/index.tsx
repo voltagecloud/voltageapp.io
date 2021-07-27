@@ -9,20 +9,18 @@ import type { Node } from "~/types/apiResponse";
 
 export default defineComponent({
   setup: () => {
-    voltageFetch("/node", { method: "GET" }).then((res: any) =>
-      res.json().then(({ nodes }: { nodes: Node[] }) => {
-        nodeStore.HYDRATE_USER({ nodes });
-      })
-    );
-
     const route = useRoute();
+
+    const nodeId = route.value.params.id
+    if (!nodeStore.nodeData(nodeId)) {
+      nodeStore.FETCH_NODE(nodeId)
+    }
 
     const nodeSoftware = computed(
       () => nodeStore.nodeData(route.value.params.id)?.node_type
     );
 
     return () => {
-      console.log({ nodeSoftware });
       if (nodeSoftware.value === NodeSoftware.lnd) {
         return <LndNode />;
       } else if (
