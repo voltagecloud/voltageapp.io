@@ -11,6 +11,11 @@ export default defineComponent({
   setup: () => {
     const route = useRoute();
 
+    const nodeId = route.value.params.id
+    if (!nodeStore.nodeData(nodeId)) {
+      nodeStore.FETCH_NODE(nodeId)
+    }
+
     const nodeSoftware = computed(
       () => nodeStore.nodeData(route.value.params.id)?.node_type
     );
