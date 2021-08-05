@@ -9,8 +9,11 @@ import {
   VBtn,
 } from "vuetify/lib";
 
-import useFetch from "~/compositions/useFetch";
 import { authStore } from "~/store";
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 export default defineComponent({
   setup: (_, ctx) => {
@@ -22,14 +25,17 @@ export default defineComponent({
         const res = await ctx.root.$axios.post("/billing/redeem", {
           code,
         });
-        console.log(res);
         if (res.status === 200) {
           state.errorMessage = "";
           state.successMessage = "Code accepted. Enjoy your credits!";
         }
       } catch (e) {
         console.error(e);
-        state.errorMessage = "Invalid code";
+        if (e.response?.data?.message) {
+          state.errorMessage = capitalize(e.response.data.message);
+        } else {
+          state.errorMessage = "There was a problem redeeming your code";
+        }
       } finally {
         state.loading = false;
       }
