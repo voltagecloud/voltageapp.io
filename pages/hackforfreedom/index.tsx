@@ -9,7 +9,6 @@ import {
   VBtn,
 } from "vuetify/lib";
 
-import useFetch from "~/compositions/useFetch";
 import { authStore } from "~/store";
 
 export default defineComponent({
@@ -22,14 +21,17 @@ export default defineComponent({
         const res = await ctx.root.$axios.post("/billing/redeem", {
           code,
         });
-        console.log(res);
         if (res.status === 200) {
           state.errorMessage = "";
           state.successMessage = "Code accepted. Enjoy your credits!";
         }
       } catch (e) {
         console.error(e);
-        state.errorMessage = "Invalid code";
+        if (e.response?.data?.message === "already redeemed code") {
+          state.errorMessage = "Already redeemed code";
+        } else {
+          state.errorMessage = "Invalid code";
+        }
       } finally {
         state.loading = false;
       }
