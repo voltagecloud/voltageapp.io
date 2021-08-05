@@ -11,6 +11,10 @@ import {
 
 import { authStore } from "~/store";
 
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default defineComponent({
   setup: (_, ctx) => {
     async function submitRedeemCode() {
@@ -27,8 +31,8 @@ export default defineComponent({
         }
       } catch (e) {
         console.error(e);
-        if (e.response?.data?.message === "already redeemed code") {
-          state.errorMessage = "Already redeemed code";
+        if (e.response?.data?.message) {
+          state.errorMessage = capitalize(e.response.data.message);
         } else {
           state.errorMessage = "Invalid code";
         }
