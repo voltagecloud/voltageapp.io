@@ -34,7 +34,7 @@ export default defineComponent({
         if (e.response?.data?.message) {
           state.errorMessage = capitalize(e.response.data.message);
         } else {
-          state.errorMessage = "Invalid code";
+          state.errorMessage = "There was a problem redeeming your code";
         }
       } finally {
         state.loading = false;
