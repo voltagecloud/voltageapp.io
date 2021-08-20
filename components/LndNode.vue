@@ -297,20 +297,43 @@ export default defineComponent({
       createText.value = "initializing";
       const node = lndStore.currentNode as Node;
       updateStatus(node.node_id, "initializing");
+
+      let res;
+      let seed;
       try {
-        const seed = await axios({
-          url: `https://${node.api_endpoint}:8080/v1/genseed`,
-          method: "GET",
-        });
-        const res = await axios({
+        // The rare case of a SCB restore
+        if (createStore.isRestore) {
+          console.log("attempting restore...");
+
+          seed = { data: { cipher_seed_mnemonic: createStore.seedPhrase }};
+          res = await axios({
           method: "POST",
           url: `https://${node.api_endpoint}:8080/v1/initwallet`,
           data: {
             wallet_password: btoa(initPassword.value), // b64 encode password string
-            cipher_seed_mnemonic: seed.data.cipher_seed_mnemonic,
+            cipher_seed_mnemonic: createStore.seedPhrase,
             stateless_init: true,
+            recovery_window: createStore.recoveryWindow,
+            channel_backups: { multi_chan_backup: { multi_chan_backup: createStore.scb }}
           },
         });
+        // The happy path we take 99.999% of the time
+        } else {
+          seed = await axios({
+            url: `https://${node.api_endpoint}:8080/v1/genseed`,
+            method: "GET",
+          });
+          res = await axios({
+            method: "POST",
+            url: `https://${node.api_endpoint}:8080/v1/initwallet`,
+            data: {
+              wallet_password: btoa(initPassword.value), // b64 encode password string
+              cipher_seed_mnemonic: seed.data.cipher_seed_mnemonic,
+              stateless_init: true,
+            },
+          });
+        }
+
         createText.value = "encrypting data";
         if (node.macaroon_backup) {
           const encryptedMacaroon = crypto.AES.encrypt(

@@ -1,6 +1,15 @@
 import { defineComponent, computed, ref } from "@vue/composition-api";
 import { useRouter } from "@nuxtjs/composition-api";
-import { VCard, VContainer, VCol, VTextField, VIcon, VBtn } from "vuetify/lib";
+import {
+  VCard,
+  VContainer,
+  VCol,
+  VTextField,
+  VIcon,
+  VBtn,
+  VCheckbox,
+  VFileInput,
+} from "vuetify/lib";
 import { createStore, macaroonStore } from "~/store";
 import { useConfirmPassword } from "~/compositions/useConfirmPassword";
 import useFetch from "~/compositions/useFetch";
@@ -33,10 +42,14 @@ export default defineComponent({
     // hold state of if /create has been called
     // used to prevent recurring /create requests
     const hasRetried = ref(false);
+
     async function createNode() {
       // reset store errors
       createStore.CREATE_ERROR({});
       createStore.POPULATE_ERROR({});
+
+      const restoreValid = handleRestore();
+      if (!restoreValid) return;
 
       const passwordValid = validate();
       if (!passwordValid) return;
@@ -49,7 +62,10 @@ export default defineComponent({
 
       if (!createStore.populateError) {
         // creation was successful write password to macaroon store
-        macaroonStore.NODE_PASSWORD({ password: password.value, nodeId: createStore.nodeId })
+        macaroonStore.NODE_PASSWORD({
+          password: password.value,
+          nodeId: createStore.nodeId,
+        });
         router.push(`/node/${createStore.nodeId}`);
       } else if (
         createStore.populateError?.message ===
@@ -71,8 +87,69 @@ export default defineComponent({
         network: createStore.network,
         node_name: onBlurName.value,
       }),
-      pause: computed(() => !!onBlurName.value)
+      pause: computed(() => !!onBlurName.value),
     }));
+
+    // are we doing a restore from SCB?
+    const isSCBRestore = ref(false);
+    const recoveryWindow = ref(2500);
+    const seedPhrase = ref("");
+    const scbFile = ref<File | null>(null);
+
+    function getBase64(file: File) {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        // This should be a string because readAsDataURL returns strings
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+
+    function handleRestore(): boolean {
+      const seed = seedPhrase.value.trim().split(" ");
+
+      if (seed.length !== 24) {
+        // TODO: is this the right error to use?
+        createStore.CREATE_ERROR({
+          error: Error("Invalid seed phrase. Expected 24 words."),
+        });
+        console.log(seed);
+        return false;
+      }
+
+      if (!scbFile.value) {
+        createStore.CREATE_ERROR({
+          error: Error("channel.backup file is required"),
+        });
+        return false;
+      }
+
+      // TODO: do we want to do any checking of the recovery window value?
+
+      getBase64(scbFile.value)
+        .then((b64: string) => {
+          // TODO is there a more robust way of stripping off that data uri junk?
+          let scb = b64.substr(b64.indexOf(",") + 1);
+
+          createStore.RESTORE({
+            recoveryWindow: recoveryWindow.value,
+            seedPhrase: seed,
+            scb,
+          });
+        })
+        .catch((e) => {
+          createStore.CREATE_ERROR(e);
+          return false;
+        });
+
+      return true;
+    }
+
+    function handleFile(file: File) {
+      scbFile.value = file;
+      console.log(scbFile.value);
+    }
 
     const { loading, data } = useFetch<{
       taken: boolean;
@@ -147,11 +224,53 @@ export default defineComponent({
                   node and backups. <b>Voltage can not reset it.</b>
                 </div>
               </div>
+
+              <div class="pt-3 px-3 text--darken-1">
+                <VCheckbox
+                  value={isSCBRestore.value}
+                  onChange={(v: boolean) => (isSCBRestore.value = v)}
+                  label="Restore from Static Channel Backup"
+                />
+              </div>
+
+              {isSCBRestore.value ? (
+                <div class="mx-12 d-flex flex-column mb-6">
+                  <div class="warning--text text--darken-1 pb-3">
+                    Some sort of explainer here of what's going on probably?
+                  </div>
+                  <VTextField
+                    outlined
+                    background-color="secondary"
+                    label="Recovery Window"
+                    value={recoveryWindow.value}
+                    onInput={(v: string) =>
+                      (recoveryWindow.value = parseInt(v))
+                    }
+                    type="text"
+                  />
+
+                  <VTextField
+                    outlined
+                    background-color="secondary"
+                    label="Seed Phrase"
+                    value={seedPhrase.value}
+                    onInput={(v: string) => (seedPhrase.value = v)}
+                    type="text"
+                  />
+
+                  <VFileInput
+                    show-size
+                    label="Static Channel Backup"
+                    onChange={handleFile}
+                  />
+                </div>
+              ) : null}
+
               <div class="mx-12 pb-3">
                 <VBtn block onClick={createNode} loading={!!message.value}>
                   Create Node
                 </VBtn>
-                <div class="error--text">
+                <div class="error--text pt-1 pb-1">
                   {createStore.populateError?.message ||
                     createStore.createError?.message ||
                     ""}
