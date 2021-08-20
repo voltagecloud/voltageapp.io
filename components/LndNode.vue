@@ -233,7 +233,9 @@ export default defineComponent({
     const route = useRoute();
     const nodeID = ref(route.value.params.id);
     nodeStore.FETCH_NODE(route.value.params.id);
-    const nodeData = computed(() => nodeStore.nodeData(route.value.params.id) as Node);
+    const nodeData = computed(
+      () => nodeStore.nodeData(route.value.params.id) as Node
+    );
 
     const { canInit, canUnlock, canUpdate, helperText, status } = useNodeStatus(
       nodeData
@@ -303,21 +305,33 @@ export default defineComponent({
       try {
         // The rare case of a SCB restore
         if (createStore.isRestore) {
-          console.log("attempting restore...");
+          const channel_backups = createStore.scb
+            ? {
+                multi_chan_backup: { multi_chan_backup: createStore.scb },
+              }
+            : null;
 
-          seed = { data: { cipher_seed_mnemonic: createStore.seedPhrase }};
-          res = await axios({
-          method: "POST",
-          url: `https://${node.api_endpoint}:8080/v1/initwallet`,
-          data: {
+          const initPayload = {
             wallet_password: btoa(initPassword.value), // b64 encode password string
             cipher_seed_mnemonic: createStore.seedPhrase,
             stateless_init: true,
             recovery_window: createStore.recoveryWindow,
-            channel_backups: { multi_chan_backup: { multi_chan_backup: createStore.scb }}
-          },
-        });
-        // The happy path we take 99.999% of the time
+          };
+
+          // here we mimic the shape of the seed response so the other logic is untouched
+          seed = { data: { cipher_seed_mnemonic: createStore.seedPhrase } };
+          res = await axios({
+            method: "POST",
+            url: `https://${node.api_endpoint}:8080/v1/initwallet`,
+            // if we have an SCB file include it, otherwise omit that field
+            data: channel_backups
+              ? {
+                  ...initPayload,
+                  channel_backups,
+                }
+              : initPayload,
+          });
+          // The happy path we take 99.999% of the time
         } else {
           seed = await axios({
             url: `https://${node.api_endpoint}:8080/v1/genseed`,

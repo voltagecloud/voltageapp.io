@@ -78,7 +78,7 @@ export default class CreateModule extends VuexModule {
   // our 24 words
   seedPhrase: string[] = [];
   // SCB file converted to base64
-  scb: string = "";
+  scb: string | null = null;
 
   @Mutation
   RESTORE({
@@ -88,7 +88,7 @@ export default class CreateModule extends VuexModule {
   }: {
     recoveryWindow: number;
     seedPhrase: string[];
-    scb: string;
+    scb: string | null;
   }) {
     this.isRestore = true;
     this.recoveryWindow = recoveryWindow;

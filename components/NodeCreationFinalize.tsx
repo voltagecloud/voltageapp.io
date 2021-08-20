@@ -48,13 +48,15 @@ export default defineComponent({
       createStore.CREATE_ERROR({});
       createStore.POPULATE_ERROR({});
 
-      const restoreValid = handleRestore();
-      if (!restoreValid) return;
-
       const passwordValid = validate();
       if (!passwordValid) return;
       // commit to store for use during node waiting_init
       createStore.PASSWORD(password.value);
+
+      if (isSCBRestore.value) {
+        const restoreValid = handleRestore();
+        if (!restoreValid) return;
+      }
 
       message.value = "Populating node settings";
       await createStore.dispatchPopulate();
@@ -110,7 +112,6 @@ export default defineComponent({
       const seed = seedPhrase.value.trim().split(" ");
 
       if (seed.length !== 24) {
-        // TODO: is this the right error to use?
         createStore.CREATE_ERROR({
           error: Error("Invalid seed phrase. Expected 24 words."),
         });
@@ -118,30 +119,31 @@ export default defineComponent({
         return false;
       }
 
-      if (!scbFile.value) {
-        createStore.CREATE_ERROR({
-          error: Error("channel.backup file is required"),
-        });
-        return false;
-      }
+      // if a SCB file is select convert it to base64 and save it to the store
+      if (scbFile.value) {
+        getBase64(scbFile.value)
+          .then((b64: string) => {
+            // TODO is there a more robust way of stripping off that data uri junk?
+            let scb = b64.substr(b64.indexOf(",") + 1);
 
-      // TODO: do we want to do any checking of the recovery window value?
-
-      getBase64(scbFile.value)
-        .then((b64: string) => {
-          // TODO is there a more robust way of stripping off that data uri junk?
-          let scb = b64.substr(b64.indexOf(",") + 1);
-
-          createStore.RESTORE({
-            recoveryWindow: recoveryWindow.value,
-            seedPhrase: seed,
-            scb,
+            createStore.RESTORE({
+              recoveryWindow: recoveryWindow.value,
+              seedPhrase: seed,
+              scb,
+            });
+          })
+          .catch((e) => {
+            createStore.CREATE_ERROR(e);
+            return false;
           });
-        })
-        .catch((e) => {
-          createStore.CREATE_ERROR(e);
-          return false;
+        // otherwise provide a null SCB
+      } else {
+        createStore.RESTORE({
+          recoveryWindow: recoveryWindow.value,
+          seedPhrase: seed,
+          scb: null,
         });
+      }
 
       return true;
     }
@@ -229,14 +231,23 @@ export default defineComponent({
                 <VCheckbox
                   value={isSCBRestore.value}
                   onChange={(v: boolean) => (isSCBRestore.value = v)}
-                  label="Restore from Static Channel Backup"
+                  label="Restore existing node from Seed and Static Channel Backup"
                 />
               </div>
 
               {isSCBRestore.value ? (
                 <div class="mx-12 d-flex flex-column mb-6">
                   <div class="warning--text text--darken-1 pb-3">
-                    Some sort of explainer here of what's going on probably?
+                    This should only be used if you want to{" "}
+                    <a
+                      style="color: black;"
+                      target="_blank"
+                      href="https://github.com/lightningnetwork/lnd/blob/master/docs/recovery.md"
+                    >
+                      restore a node due to data loss
+                    </a>
+                    . Using an SCB will force-close all of your channels. Use
+                    with caution!
                   </div>
                   <VTextField
                     outlined
@@ -260,7 +271,7 @@ export default defineComponent({
 
                   <VFileInput
                     show-size
-                    label="Static Channel Backup"
+                    label="Static Channel Backup File (Optional)"
                     onChange={handleFile}
                   />
                 </div>
