@@ -71,6 +71,31 @@ export default class CreateModule extends VuexModule {
   // whether the current node has been populated already
   populated = false;
 
+  // node recovery details
+  isRestore = false;
+  // 2500 is lnd's default
+  recoveryWindow: number = 2500;
+  // our 24 words
+  seedPhrase: string[] = [];
+  // SCB file converted to base64
+  scb: string | null = null;
+
+  @Mutation
+  RESTORE({
+    recoveryWindow,
+    seedPhrase,
+    scb,
+  }: {
+    recoveryWindow: number;
+    seedPhrase: string[];
+    scb: string | null;
+  }) {
+    this.isRestore = true;
+    this.recoveryWindow = recoveryWindow;
+    this.seedPhrase = seedPhrase;
+    this.scb = scb;
+  }
+
   @Mutation
   NODE_NAME(name: string) {
     this.nodeName = name;
