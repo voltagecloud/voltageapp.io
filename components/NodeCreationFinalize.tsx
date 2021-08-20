@@ -115,7 +115,13 @@ export default defineComponent({
         createStore.CREATE_ERROR({
           error: Error("Invalid seed phrase. Expected 24 words."),
         });
-        console.log(seed);
+        return false;
+      }
+
+      if (recoveryWindow.value < 0 || isNaN(recoveryWindow.value)) {
+        createStore.CREATE_ERROR({
+          error: Error("Invalid Recovery Window. The default is 2500."),
+        });
         return false;
       }
 
@@ -150,7 +156,6 @@ export default defineComponent({
 
     function handleFile(file: File) {
       scbFile.value = file;
-      console.log(scbFile.value);
     }
 
     const { loading, data } = useFetch<{
@@ -254,9 +259,14 @@ export default defineComponent({
                     background-color="secondary"
                     label="Recovery Window"
                     value={recoveryWindow.value}
-                    onInput={(v: string) =>
-                      (recoveryWindow.value = parseInt(v))
-                    }
+                    onInput={(v: string) => {
+                      let parsedValue = parseInt(v);
+                      if (isNaN(parsedValue)) {
+                        recoveryWindow.value = 0;
+                      } else {
+                        recoveryWindow.value = parsedValue;
+                      }
+                    }}
                     type="text"
                   />
 
