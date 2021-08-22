@@ -27,6 +27,7 @@ export default defineComponent({
     const state = reactive({
       mnemonic: '',
       xPubString: '',
+      fingerprint: '',
       loading: true,
       error: '',
       backupSeed: false,
@@ -35,16 +36,13 @@ export default defineComponent({
     })
 
     const accountKeyPath = computed(() => {
-      if (!state.xPubString) return ''
-      const shaHash = SHA256(state.xPubString)
-      const fingerprint = RIPEMD160(shaHash.toString())
-      const strFingerprint = fingerprint.toString()
-      return `${strFingerprint.substring(0, 8)}${keyPath}`
+      return `${state.fingerprint}${keyPath}`
     })
 
-    generateNewXPub().then(({ mnemonic, xPubString}) => {
+    generateNewXPub().then(({ mnemonic, xPubString, fingerprint }) => {
       state.mnemonic = mnemonic
       state.xPubString = xPubString
+      state.fingerprint = fingerprint
       state.loading = false
     }).catch(e => {
       state.loading = false
