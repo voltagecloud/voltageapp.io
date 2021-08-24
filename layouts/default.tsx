@@ -183,9 +183,9 @@ export default defineComponent({
           <v-app-bar app clipped-right color="warning" dark>
             <nuxt-link to="/">
               <v-img
-                src={require("~/assets/logo/name-white.svg")}
-                max-height="18"
-                max-width="100"
+                src={require("~/assets/logo/voltage-logo-white.png")}
+                max-height="23"
+                max-width="130"
                 contain
               />
             </nuxt-link>

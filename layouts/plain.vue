@@ -5,7 +5,7 @@
         v-row(justify='start' justify-lg='start' align='center' style='height: 100%;')
           v-container(fluid='')
             v-row(justify='center')
-              v-img.mb-12(:src="require('~/assets/logo/full-horizontal-orange.svg')" max-height='200' max-width='200')
+              v-img.mb-12(:src="require('~/assets/logo/voltage.png')" max-height='300' max-width='300')
               nuxt
     core-footer
 </template>
