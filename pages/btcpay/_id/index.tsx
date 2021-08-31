@@ -2,7 +2,7 @@ import { defineComponent, reactive, computed, ref } from '@vue/composition-api'
 import { voltageFetch } from '~/utils/fetchClient'
 import useFetch from '~/compositions/useFetch'
 import JsonTable, { JsonData } from '~/components/core/JsonTable'
-import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog } from 'vuetify/lib'
+import { VContainer, VRow, VCol, VCard, VTabs, VTab, VTabsItems, VTabItem, VBtn, VIcon, VProgressCircular, VDialog, VCardActions, VCardText } from 'vuetify/lib'
 import GetSeedBackup from '~/components/GetSeedBackup'
 import UpdateBTCPayNode from '~/components/UpdateBTCPayNode'
 import { authStore } from '~/store'
@@ -22,6 +22,8 @@ export default defineComponent({
     VIcon,
     VProgressCircular,
     VDialog,
+    VCardActions,
+    VCardText,
     CopyPill: () => import('~/components/core/CopyPill.vue')
   },
   setup: (_, { root }) => {
@@ -72,6 +74,12 @@ export default defineComponent({
       state.tab = 0
     }
 
+    const deleteModal = ref(false);
+
+    async function closeAndDelete() {
+      deleteModal.value = false;
+      await deleteStore();
+    }
 
     // @ts-ignore
     const username = computed(() => authStore?.user?.attributes?.email || '')
@@ -122,7 +130,7 @@ export default defineComponent({
                       mdi-currency-usd
                     </v-icon>
                   </v-btn>}
-                  <v-btn icon loading={deleting.value} onClick={deleteStore}>
+                  <v-btn icon loading={deleting.value} onClick={() => deleteModal.value = true}>
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-container>
@@ -147,6 +155,17 @@ export default defineComponent({
                 </v-tab-item>
               </v-tabs-items>
             }
+            <v-dialog value={deleteModal.value} onInput={(v: boolean) => deleteModal.value = v}  >
+              <v-card>
+                <v-container>
+                  <v-card-text>Are you sure you want to delete this store?</v-card-text>
+                  <v-card-actions>
+                    <v-btn color="highlight" onClick={closeAndDelete} dark>Yes</v-btn>
+                    <v-btn onClick={() => deleteModal.value = false}>No</v-btn>
+                  </v-card-actions>
+                </v-container>
+              </v-card>
+            </v-dialog>
           </v-card>
         </v-col>
       </v-row>
