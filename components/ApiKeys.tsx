@@ -189,7 +189,7 @@ export default defineComponent({
             {createData.value && renderKey(createData.value)}
             {canCreateKey.value && renderKeyCreation()}
             {error.value && <div class="error--text">There was an error retrieving your API Keys.</div>}
-            {creating.value || deleting.value && <div class="error--text">An error occured. Please try again later.</div>}
+            {creating.value || deleting.value && <div class="error--text">Processing...</div>}
           </div>
         </v-container>
       </v-card>
