@@ -6,11 +6,11 @@
         v-card(v-if='step === 0' key='0' color='secondary' flat).text-center
           qrcode-vue(v-model='encodedSecret' size='300').my-3
           // copy-pill(:text='encodedSecret' color='accent' text-color='warning').text-break.my-3
-          v-btn(block @click='step += 1' color='info').my-3 I have scanned the code in Google Authenticator
+          v-btn(block @click='step += 1' color='highlight' dark).my-3 I have scanned the code in Google Authenticator
         v-card(v-else ley='1' color='secondary' flat).text-center
           div Enter the code displayed in Authenticator
           v-text-field(v-model='newCode' label='Code' outlined).mt-3
-          v-btn(:disabled='newCode.length < 6' @click='confirmMFA' block color='highlight').mb-3.info--text Confirm MFA
+          v-btn(:disabled='newCode.length < 6' @click='confirmMFA' block color='highlight' dark).mb-3.info--text Confirm MFA
 
 </template>
 <script lang="ts">
