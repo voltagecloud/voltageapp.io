@@ -170,7 +170,7 @@ export default defineComponent({
                 interact with Voltage programmatically via the Voltage API.
                 Keys will only be displayed once when they are created.
               </div>
-              <a href="#">API Documentation</a>
+              <a href="https://docs.voltage.cloud/api">API Documentation</a>
             </div>
             <div style="width: 100%">
               <v-divider />
