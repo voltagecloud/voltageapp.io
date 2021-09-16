@@ -4,7 +4,7 @@ import colors from 'vuetify/es5/util/colors'
 const dev = process.env.BRANCH !== 'master' 
 console.log({ env: process.env, dev })
 
-const endpoint = (dev) ? 'https://ugak8gc6dk.execute-api.us-west-2.amazonaws.com' : 'https://internal-api.voltage.cloud'
+const endpoint = (dev) ? 'https://ugak8gc6dk.execute-api.us-west-2.amazonaws.com' : 'https://frontend-api.voltage.cloud'
 
 export default {
   ssr: false,
