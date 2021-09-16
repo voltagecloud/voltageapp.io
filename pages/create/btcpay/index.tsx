@@ -208,7 +208,7 @@ export default defineComponent({
                             items={mainnetNodes.value}
                             item-text="node_name"
                             item-value="node_id"
-                            label="Select a Node"
+                            label="Select a Node (optional)"
                             color="highlight"
                             background-color="secondary"
                             no-data-text="You don't have any mainnet nodes running."
