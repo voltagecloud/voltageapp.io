@@ -10,7 +10,8 @@ v-form(
       v-row(justify='center')
         //- v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
         v-col(cols='12' md='10').px-10.py-0
-          v-row(justify='space-between' style='padding-top: 20px;')
+          v-row(justify='space-between'
+                style='padding-top: 20px;')
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
@@ -31,6 +32,11 @@ v-form(
             //-     v-switch(v-model='settings.tor' label='Tor' inset color='highlight')
             //-   span
             //-     | Enable the Tor for LND APIs
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
+              span
+                | Automatically runs an automated compaction on the node's database at startup.
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
@@ -62,12 +68,12 @@ v-form(
                 v-switch(v-model='settings.gccanceledinvoicesonstartup' v-on="on" label='GC Canceled Invoices on Startup' style='padding-right: 5px;' inset color='highlight')
               span
                 | Delete newly canceled invoices on startup.
-          v-row(justify='space-between' style='padding-top: 20px;')
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.wtclient' v-on="on" label='Watchtower Client' style='padding-right: 5px;' inset color='highlight')
               span
                 | Turns on the watchtower client
+          v-row(justify='space-between' style='padding-top: 20px;')
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -84,7 +90,6 @@ v-form(
                 )
               span
                 | Minimum Channel Size in Satoshis that can be opened to you
-          v-row(justify='space-between' style='padding-top: 20px;')
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -101,6 +106,7 @@ v-form(
                 )
               span
                 | Maximum Channel Size in Satoshis that can be opened to you
+          v-row(justify='space-between' style='padding-top: 20px;')
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -117,7 +123,6 @@ v-form(
                 )
               span
                 | Default fee rate that's set on created channels. Default is 1
-          v-row(justify='space-between' style='padding-top: 20px;')
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -372,7 +377,9 @@ export default defineComponent({
       webhookErrorMessage,
       minchanErrorMessage,
       maxchanErrorMessage,
-      feerateErrorMessage
+      feerateErrorMessage,
+      maxpendingchannelsErrorMessage,
+      numgraphsyncpeersErrorMessage
     }
   }
 })
