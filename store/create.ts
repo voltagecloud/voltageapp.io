@@ -35,6 +35,13 @@ const defaultSettings = {
   autocompaction: false,
   defaultfeerate: "",
   sphinx: false,
+  numgraphsyncpeers: "",
+  maxpendingchannels: "",
+  allowcircularroute: false,
+  gccanceledinvoicesonthefly: false,
+  gccanceledinvoicesonstartup: false,
+  wtclient: false,
+  amp: true
 };
 
 @Module({

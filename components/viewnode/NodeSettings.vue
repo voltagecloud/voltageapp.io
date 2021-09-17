@@ -10,7 +10,7 @@ v-form(
       v-row(justify='center')
         //- v-col(cols='12' sm='4' md='6' ref='colWidth' align-self='stretch')
         v-col(cols='12' md='10').px-10.py-0
-          v-row(justify='space-between')
+          v-row(justify='space-between' style='padding-top: 20px;')
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.autopilot' v-on="on" label='Autopilot' inset color='highlight')
@@ -38,15 +38,36 @@ v-form(
                 | Keysend allows for accepting payments without generating an invoice
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
+                v-switch(v-model='settings.amp' v-on="on" label='AMP' style='padding-right: 5px;' inset color='highlight')
+              span
+                | Spontaneous payments through AMP will be accepted.
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.wumbo' v-on="on" label='Wumbo' inset color='highlight')
               span
                 | Allows LND to create channels larger than 0.1677 BTC
           v-row(justify='space-between' style='padding-top: 20px;')
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
-                v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' style='padding-right: 5px;' inset color='highlight')
+                v-switch(v-model='settings.allowcircularroute' v-on="on" label='Allow Circular Routes' inset color='highlight')
               span
-                | Automatically runs an automated compaction on the node's database at startup.
+                | Allows LND to let htlc forwards arrive and depart on the same channel.
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-switch(v-model='settings.gccanceledinvoicesonthefly' v-on="on" label='GC Canceled Invoices on the Fly' style='padding-right: 5px;' inset color='highlight')
+              span
+                | Delete newly canceled invoices on the fly.
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-switch(v-model='settings.gccanceledinvoicesonstartup' v-on="on" label='GC Canceled Invoices on Startup' style='padding-right: 5px;' inset color='highlight')
+              span
+                | Delete newly canceled invoices on startup.
+          v-row(justify='space-between' style='padding-top: 20px;')
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-switch(v-model='settings.wtclient' v-on="on" label='Watchtower Client' style='padding-right: 5px;' inset color='highlight')
+              span
+                | Turns on the watchtower client
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -63,6 +84,7 @@ v-form(
                 )
               span
                 | Minimum Channel Size in Satoshis that can be opened to you
+          v-row(justify='space-between' style='padding-top: 20px;')
             v-spacer
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
@@ -95,6 +117,39 @@ v-form(
                 )
               span
                 | Default fee rate that's set on created channels. Default is 1
+          v-row(justify='space-between' style='padding-top: 20px;')
+            v-spacer
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-text-field(
+                  v-model='settings.numgraphsyncpeers'
+                  label='numgraphsyncpeers'
+                  outlined
+                  color='highlight'
+                  background-color='secondary'
+                  :error-messages='numgraphsyncpeersErrorMessage'
+                  @click='numgraphsyncpeersErrorMessage = ""'
+                  @input='numgraphsyncpeersErrorMessage = ""'
+                  style='padding-right: 5px;'
+                )
+              span
+                | Number of nodes to sync the graph from
+            v-spacer
+            v-tooltip(top :open-on-click="true" :open-on-hover="true")
+              template(v-slot:activator="{ on }")
+                v-text-field(
+                  v-model='settings.maxpendingchannels'
+                  label='maxpendingchannels'
+                  outlined
+                  color='highlight'
+                  background-color='secondary'
+                  :error-messages='maxpendingchannelsErrorMessage'
+                  @click='maxpendingchannelsErrorMessage = ""'
+                  @input='maxpendingchannelsErrorMessage = ""'
+                  style='padding-right: 5px;'
+                )
+              span
+                | Maximum number of pending channels permitted per peer
             //- v-switch(v-model='backupMacaroon' label='Backup Macaroons' inset color='highlight')
         v-col(cols='12')
           v-row(justify='center')
@@ -108,7 +163,6 @@ v-form(
                   hide-mode-switch
                   hide-canvas
                   show-swatches
-                  hide-inputs
                   flat
                   :width="colWidth.clientWidth"
                 )
@@ -191,6 +245,8 @@ export default defineComponent({
     const minchanErrorMessage = ref('')
     const maxchanErrorMessage = ref('')
     const feerateErrorMessage = ref('')
+    const numgraphsyncpeersErrorMessage = ref('')
+    const maxpendingchannelsErrorMessage = ref('')
 
     const colWidth = ref<HTMLBaseElement|null>(null)
     const computedWidth = computed(() => {
@@ -224,6 +280,16 @@ export default defineComponent({
 
       if (settings.value.minchansize !== '' && isNaN(parseInt(settings.value.minchansize))) {
         minchanErrorMessage.value = 'Value must be a number'
+        return
+      }
+
+      if (settings.value.numgraphsyncpeers !== '' && isNaN(parseInt(settings.value.numgraphsyncpeers))) {
+        numgraphsyncpeersErrorMessage.value = 'Value must be a number'
+        return
+      }
+
+      if (settings.value.maxpendingchannels !== '' && isNaN(parseInt(settings.value.maxpendingchannels))) {
+        maxpendingchannelsErrorMessage.value = 'Value must be a number'
         return
       }
 
