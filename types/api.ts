@@ -43,6 +43,13 @@ export interface Settings {
     autocompaction: boolean
     defaultfeerate: string
     sphinx: boolean
+    numgraphsyncpeers: string
+    maxpendingchannels: string
+    allowcircularroute: boolean
+    gccanceledinvoicesonthefly: boolean
+    gccanceledinvoicesonstartup: boolean
+    wtclient: boolean
+    amp: boolean
 }
 
 export enum MacaroonLevel {
