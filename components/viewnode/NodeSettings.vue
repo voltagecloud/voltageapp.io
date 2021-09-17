@@ -37,6 +37,7 @@ v-form(
                 v-switch(v-model='settings.autocompaction' v-on="on" label='Auto-Compaction' inset color='highlight')
               span
                 | Automatically runs an automated compaction on the node's database at startup.
+          v-row(justify='space-between' style='padding-top: 20px;')
             v-tooltip(top :open-on-click="true" :open-on-hover="true")
               template(v-slot:activator="{ on }")
                 v-switch(v-model='settings.keysend' v-on="on" label='Keysend' inset color='highlight')
