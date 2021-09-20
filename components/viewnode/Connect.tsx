@@ -6,12 +6,13 @@ import {
 import type { Node } from "~/types/apiResponse";
 import { macaroonStore } from "~/store";
 import { MacaroonType } from "~/utils/bakeMacaroon";
-
+import MacaroonWarning from "~/components/MacaroonWarning";
 
 export default defineComponent({
   components: {
     NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
     ShowQr: () => import("~/components/ShowQr"),
+    MacaroonWarning
   },
   props: {
     node: {
@@ -37,7 +38,11 @@ export default defineComponent({
     }
 
     return () => {
-      if (!state.value.macaroon) {
+      if (props.node.macaroons.length < 1) {
+        return (
+          <MacaroonWarning />
+        );
+      } else if (!state.value.macaroon) {
         return (
           <node-password-input
             text="Connect"
