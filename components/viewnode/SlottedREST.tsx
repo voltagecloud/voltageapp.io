@@ -5,12 +5,14 @@ import { MacaroonType } from "~/utils/bakeMacaroon";
 import type { Node } from "~/types/apiResponse";
 import useFetch from "~/compositions/useFetch";
 import { VContainer, VBtn } from "vuetify/lib";
+import MacaroonWarning from "~/components/MacaroonWarning";
 
 export default defineComponent({
   components: {
     NodePasswordInput: () => import("~/components/NodePasswordInput.vue"),
     VContainer,
-    VBtn
+    VBtn,
+    MacaroonWarning
   },
   props: {
     node: {
@@ -73,6 +75,10 @@ export default defineComponent({
               Retry
             </v-btn>
           </v-container>
+        );
+      } else if (props.node?.macaroons.length < 1) {
+        return (
+          <MacaroonWarning />
         );
       } else if (!adminMacaroon.value.macaroonHex) {
         return (

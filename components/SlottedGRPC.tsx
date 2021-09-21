@@ -1,7 +1,11 @@
 import { defineComponent, PropType } from "@vue/composition-api";
 import type { Node } from "~/types/apiResponse";
+import MacaroonWarning from "~/components/MacaroonWarning";
 
 export default defineComponent({
+  components: {
+    MacaroonWarning
+  },
   props: {
     node: {
       type: Object as PropType<Node>,
@@ -21,6 +25,10 @@ export default defineComponent({
             This feature requires your node to be running. Make sure the node is
             running then try again.
           </div>
+        );
+      } else if (props.node?.macaroons.length < 1) {
+        return (
+          <MacaroonWarning />
         );
       } else if (props.node.settings?.grpc) {
         return props.child();
