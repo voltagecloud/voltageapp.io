@@ -62,7 +62,7 @@ export default defineComponent({
               <VImg src={require("~/assets/shellhacks.png")} />
               <div class="overline my-3">
                 Every contestant gets enough credits to run 2 Standard nodes for
-                30 days.
+                4 days.
               </div>
               {!authStore.user ? (
                 <span>
