@@ -59,7 +59,7 @@ export default defineComponent({
           <VCol cols="12" md="11" lg="9">
             <VSheet class="rounded-lg d-flex flex-column justify-center align-center pa-3 text-center">
               <div class="text-h4 my-6">FREE VOLTAGE NODES</div>
-              <VImg src={require("~/assets/shellhacks.png")} />
+              <VImg src={require("~/assets/shellhacks.jpg")} />
               <div class="overline my-3">
                 Every contestant gets enough credits to run 2 Standard nodes for
                 4 days.
