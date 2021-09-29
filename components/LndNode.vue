@@ -316,6 +316,10 @@ export default defineComponent({
             cipher_seed_mnemonic: createStore.seedPhrase,
             stateless_init: true,
             recovery_window: createStore.recoveryWindow,
+            // If an optional aezeed passphrase is provided, b64 encode it
+            aezeed_passphrase: createStore.aezeedPassphrase
+              ? btoa(createStore.aezeedPassphrase)
+              : null,
           };
 
           // here we mimic the shape of the seed response so the other logic is untouched

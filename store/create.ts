@@ -41,7 +41,7 @@ const defaultSettings = {
   gccanceledinvoicesonthefly: false,
   gccanceledinvoicesonstartup: false,
   wtclient: false,
-  amp: true
+  amp: true,
 };
 
 @Module({
@@ -86,21 +86,26 @@ export default class CreateModule extends VuexModule {
   seedPhrase: string[] = [];
   // SCB file converted to base64
   scb: string | null = null;
+  // AEZeed Passphrase for SCB
+  aezeedPassphrase: string | null = null;
 
   @Mutation
   RESTORE({
     recoveryWindow,
     seedPhrase,
     scb,
+    aezeedPassphrase,
   }: {
     recoveryWindow: number;
     seedPhrase: string[];
     scb: string | null;
+    aezeedPassphrase: string | null;
   }) {
     this.isRestore = true;
     this.recoveryWindow = recoveryWindow;
     this.seedPhrase = seedPhrase;
     this.scb = scb;
+    this.aezeedPassphrase = aezeedPassphrase;
   }
 
   @Mutation
