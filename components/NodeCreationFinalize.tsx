@@ -112,6 +112,10 @@ export default defineComponent({
     function handleRestore(): boolean {
       const seed = seedPhrase.value.trim().split(" ");
 
+      const aezeedPassphrase = aezeedPhrase.value
+        ? aezeedPhrase.value.trim()
+        : null;
+
       if (seed.length !== 24) {
         createStore.CREATE_ERROR({
           error: Error("Invalid seed phrase. Expected 24 words."),
@@ -137,7 +141,7 @@ export default defineComponent({
               recoveryWindow: recoveryWindow.value,
               seedPhrase: seed,
               scb,
-              aezeedPassphrase: aezeedPhrase.value ? aezeedPhrase.value : null,
+              aezeedPassphrase,
             });
           })
           .catch((e) => {
@@ -150,7 +154,7 @@ export default defineComponent({
           recoveryWindow: recoveryWindow.value,
           seedPhrase: seed,
           scb: null,
-          aezeedPassphrase: null,
+          aezeedPassphrase,
         });
       }
 
