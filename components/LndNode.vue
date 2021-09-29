@@ -311,16 +311,20 @@ export default defineComponent({
               }
             : null;
 
-          const initPayload = {
+          let initPayload: any = {
             wallet_password: btoa(initPassword.value), // b64 encode password string
             cipher_seed_mnemonic: createStore.seedPhrase,
             stateless_init: true,
             recovery_window: createStore.recoveryWindow,
-            // If an optional aezeed passphrase is provided, b64 encode it
-            aezeed_passphrase: createStore.aezeedPassphrase
-              ? btoa(createStore.aezeedPassphrase)
-              : null,
           };
+
+          // If an optional aezeed passphrase is provided, b64 encode it
+          if (createStore.aezeedPassphrase) {
+            initPayload = {
+              ...initPayload,
+              aezeed_passphrase: btoa(createStore.aezeedPassphrase),
+            };
+          }
 
           // here we mimic the shape of the seed response so the other logic is untouched
           seed = { data: { cipher_seed_mnemonic: createStore.seedPhrase } };
