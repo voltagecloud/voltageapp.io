@@ -96,6 +96,7 @@ export default defineComponent({
     const isSCBRestore = ref(false);
     const recoveryWindow = ref(2500);
     const seedPhrase = ref("");
+    const aezeedPhrase = ref("");
     const scbFile = ref<File | null>(null);
 
     function getBase64(file: File) {
@@ -110,6 +111,10 @@ export default defineComponent({
 
     function handleRestore(): boolean {
       const seed = seedPhrase.value.trim().split(" ");
+
+      const aezeedPassphrase = aezeedPhrase.value
+        ? aezeedPhrase.value.trim()
+        : null;
 
       if (seed.length !== 24) {
         createStore.CREATE_ERROR({
@@ -136,6 +141,7 @@ export default defineComponent({
               recoveryWindow: recoveryWindow.value,
               seedPhrase: seed,
               scb,
+              aezeedPassphrase,
             });
           })
           .catch((e) => {
@@ -148,6 +154,7 @@ export default defineComponent({
           recoveryWindow: recoveryWindow.value,
           seedPhrase: seed,
           scb: null,
+          aezeedPassphrase,
         });
       }
 
@@ -276,6 +283,15 @@ export default defineComponent({
                     label="Seed Phrase"
                     value={seedPhrase.value}
                     onInput={(v: string) => (seedPhrase.value = v)}
+                    type="text"
+                  />
+
+                  <VTextField
+                    outlined
+                    background-color="secondary"
+                    label="AEZeed Passphrase (optional)"
+                    value={aezeedPhrase.value}
+                    onInput={(v: string) => (aezeedPhrase.value = v)}
                     type="text"
                   />
 
